@@ -1,0 +1,1 @@
+@shortGun {   #fire {      "data/s/sgfire_02.wav", "sgfire_02"      data/s/shotgun_cock_01.wav shotgun_cock_01      data/s/shotgun_shell_03.wav shotgun_shell_03   }   #reload {      data/s/sgreload_addshell_03.wav sgreload_addshell_03      data/s/shotgun_use_01.wav shotgun_use_01   }}

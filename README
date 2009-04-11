@@ -1,0 +1,11 @@
+### for developers
+ln -s /data/siegerstein/admin/lang/libsml/src /usr/include/libsml
+
+
+
+$ cmake .
+$ make 
+or
+$ make VERBOSE=1
+
+$ make clean
