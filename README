@@ -1,3 +1,11 @@
+Require list:
+
+1. cmake ( sudo apt-get install cmake )
+2. FLAC - libflac++-dev
+3. PAI - lua ( sudo apt-get install liblua5.1-0-dev )
+4. ImageMagic - 
+
+
 ### for developers
 ln -s /data/siegerstein/admin/lang/libsml/src /usr/include/libsml
 
@@ -9,3 +17,6 @@ or
 $ make VERBOSE=1
 
 $ make clean
+
+TODO: Drop lua (planned)
+

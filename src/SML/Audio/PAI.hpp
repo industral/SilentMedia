@@ -19,7 +19,7 @@
 #ifndef __SS_SILENTMEDIA_PAI_HPP_
 #define __SS_SILENTMEDIA_PAI_HPP_
 
-#include <lua.hpp>
+#include <lua5.1/lua.hpp>
 #include <SML/sml.hpp>
 
 namespace SilentMedia {
@@ -27,7 +27,7 @@ namespace SilentMedia {
       public:
          Action ( void );
          ~Action ( void );
-         
+
          static Action * Instance ( void );
          void loadMap ( std::string map );
          lua_State * getMethod ( std::string object, std::string method );
@@ -41,7 +41,7 @@ namespace SilentMedia {
          Audio * audio;
          DecodedData * ddata;
          lua_State * L;
-         
+
          std::string map;
          std::string mapStringParam [ 7 ];
          int mapIntParam [ 7 ];

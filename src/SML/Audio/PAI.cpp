@@ -22,19 +22,19 @@
 
 namespace SilentMedia {
    Action * Action ::_action = NULL;
-   
+
    Action::Action ( void ) : audio ( Audio::Instance() ), ddata ( DecodedData::Instance() ) { }
    Action::~Action ( void ) {
       lua_close ( this -> L );
    }
-   
+
    Action * Action::Instance ( void ) {
       if ( _action == NULL ) {
          _action = new Action();
       }
       return ( _action );
    }
-   
+
    void Action::loadMap ( std::string map ) {
       this -> map = map;
       this -> L = lua_open();
@@ -43,23 +43,23 @@ namespace SilentMedia {
          lua_error ( this -> L );
       }
    }
-   
+
    lua_State * Action::getMethod ( std::string object, std::string method ) {
       // object - выбираем объект
       lua_getfield ( this -> L, LUA_GLOBALSINDEX, object.c_str() );
       if ( !lua_istable ( this -> L, -1 ) ) {
          luaL_error ( this -> L, ( object + " is not a valid object" ).c_str() );
       }
-      
+
       // object[method] - выбираем метод
       lua_getfield ( this -> L, -1, method.c_str() );
       if ( !lua_istable ( this -> L, -1 ) ) {
          luaL_error ( this -> L, ( method + " is not a valid method" ).c_str() );
       }
-      
+
       return ( this -> L );
    }
-   
+
    void Action::call ( std::string object, std::string method ) {
       this -> loadMap ( this -> map );
       lua_State * l = getMethod ( object, method );
@@ -83,7 +83,7 @@ namespace SilentMedia {
             lua_rawgeti ( l, -1, i );
             // object[method][i][i] - номер значения в таблицы
             lua_rawgeti ( l, -1, k );
-         
+
             // Перебираем все 5 пераметров в таблице
             if ( k == 1 || k == 2 || k == 3 ) { // 1 -3 это string
                this -> mapStringParam [ k ] = (std::string) lua_tostring ( this -> L, -1 );
@@ -95,7 +95,7 @@ namespace SilentMedia {
 //                std::cout << "result: " << result << std::endl;
             }
          }
-         
+
          /*
          mapStringParam [ 1 ] - название файла
          mapStringParam [ 2 ] - идентификатор файла
@@ -109,11 +109,11 @@ namespace SilentMedia {
          l_next [ i ] = mapStringParam [ 3 ];
          l_count [ i ] = mapIntParam [ 4 ];
          l_offset [ i ] = mapIntParam [ 5 ];
-         
+
          std::cout << "offset: " << l_offset [ i ] << std::endl;
          std::cout << "l_next: " << l_next [ i ] << std::endl;
          std::cout << "l_id: " << l_id [ i ] << std::endl;
-         
+
          this -> idToName [ l_id [ i ] ] = l_name [ i ];
          this -> countMap [ l_id [ i  ] ] = l_count [ i ];
 //          _l_id [ i ] = l_id [ i ];
@@ -164,7 +164,7 @@ namespace SilentMedia {
 //          this -> timeMark [ l_id [ i ] ] =  ( this -> ddata -> getTotalTime() + l_offset [ i ] );
 //          this -> audio -> closeF ( _l_id [ i ] );
 //          this -> audio -> destroyObj ( _l_id [ i ] );
-         
+
          // передаем полученые параметры
 //          audio -> play ( mapStringParam [ 1 ], mapStringParam [ 2 ], mapStringParam [ 3 ],
 //                          mapIntParam [ 4 ], mapIntParam [ 5 ] );
@@ -175,11 +175,11 @@ namespace SilentMedia {
       this -> timeMark . clear();
       this -> timeMapRelative . clear();
    }
-   
+
    void Action::play ( void ) {
       /*static */std::map < double, std::string >::iterator it;
 //                  std::map < double, std::string >::iterator it2;
-//                  std::pair < std::multimap < double, std::string >::iterator, 
+//                  std::pair < std::multimap < double, std::string >::iterator,
 //                  std::multimap < double, std::string >::iterator > ret;
 
 //       for (;;) {
@@ -194,12 +194,12 @@ namespace SilentMedia {
          std::cout << "PLAY: " << this -> idToName [ it -> second ] << std::endl;
          std::cout << "PLAY: " << it -> first << std::endl;
          std::cout << "PLAY: " << it -> second << std::endl;
-//          
+//
 //          for ( it2 = ret.first; it2!=ret.second; ++it2) {
             if ( it -> first > 0 ) {
                usleep ( it -> first );
             }
-            if ( l_count
+//            if ( l_count
             audio -> play ( this -> idToName [ it -> second ], it -> second, "stuff",
                             -1, 0 );
 //             cout << " " << (*it).second;
@@ -207,7 +207,7 @@ namespace SilentMedia {
 //                  }
 
 
-         
+
 // //          this -> timer ( 10 );
 //       std::cout << "it -> second: " << it -> second << std::endl;
 //       ++it;
@@ -216,18 +216,18 @@ namespace SilentMedia {
       }
 //       if ( this -> timeMark . find ( time );
    }
-   
+
    long int Action::timer ( int val ) {
       static long double time = 0;
       time += 100000;
       usleep ( 100000 );
       std::cout << "TIME: " << time << std::endl;
    }
-   
+
    void Action::addNew ( std::string actionName ) {
    }
-   
+
    void Action::addFile ( std::string fileName ) {
    }
-   
+
 }
