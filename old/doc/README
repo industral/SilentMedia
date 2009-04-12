@@ -5,9 +5,15 @@ Require list:
 3. PAI - lua ( sudo apt-get install liblua5.1-0-dev )
 4. ImageMagic - 
 
+To use project in Eclipse:
+
+cmake -G"Eclipse CDT4 - Unix Makefiles" -DECLIPSE_CDT4_GENERATE_SOURCE_PROJECT=TRUE .
+
+
+
 
 ### for developers
-ln -s /data/siegerstein/admin/lang/libsml/src /usr/include/libsml
+sudo ln -s ~/workspace/SilentMedia/src /usr/include/libsml
 
 
 
