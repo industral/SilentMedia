@@ -1,0 +1,18 @@
+Audio * audio = new Audio();
+
+audio -> init(); // init Audio system
+
+audio -> open("wav.wav", "file1");
+
+audio -> getInfo("file1");
+
+
+audio -> play("file1");
+audio -> pause("file1");
+audio -> play("file1");
+audio -> stop("file1");
+audio -> close("file1");
+
+audio -> finish();
+
+delete audio; audio = 0;
