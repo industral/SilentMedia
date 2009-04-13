@@ -1,62 +1,74 @@
-/***************************************************************************
- *   Copyright (C) 2008 by Alex J. Ivasyuv                                 *
- *   alex@siegerstein.org.ua                                               *
- *                                                                         *
- *   This program is free software: you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation, either version 3 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
- ***************************************************************************/
+/*******************************************************************************
+ * Copyright (c) 2009, Alex Ivasyuv                                            *
+ * All rights reserved.                                                        *
+ *                                                                             *
+ * Redistribution and use in source and binary forms, with or without          *
+ * modification, are permitted provided that the following conditions are met: *
+ *                                                                             *
+ * 1. Redistributions of source code must retain the above copyright           *
+ *    notice, this list of conditions and the following disclaimer.            *
+ * 2. Redistributions in binary form must reproduce the above copyright        *
+ *    notice, this list of conditions and the following disclaimer in the      *
+ *    documentation and/or other materials provided with the distribution.     *
+ *                                                                             *
+ * THIS SOFTWARE IS PROVIDED BY Alex Ivasyuv ''AS IS'' AND ANY                 *
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED   *
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE      *
+ * DISCLAIMED. IN NO EVENT SHALL Alex Ivasyuv BE LIABLE FOR ANY DIRECT,        *
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES          *
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;*
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND *
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  *
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF    *
+ * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
+ ******************************************************************************/
 
-#ifndef __SS_SILENTMEDIA_VORBIS_HPP_
-#define __SS_SILENTMEDIA_VORBIS_HPP_
+#ifndef _SILENTMEDIA_VORBIS_HPP_
+#define _SILENTMEDIA_VORBIS_HPP_
 
-#include <SML/sml.hpp>
-#include <SML/Audio/Codec/AbstractCodec.hpp>
+#include <map>
+#include <vector>
+
+#include <Audio/Codec/AbstractCodec.hpp>
+#include <Audio/SoundSystem/libao/AO.hpp>
 
 #include <vorbis/codec.h>
 #include <vorbis/vorbisfile.h>
 
+using namespace std;
+
 namespace SilentMedia {
-   class DecodedData;
-   namespace Codec {
-      class Vorbis : virtual public AbstractCodec {
-         public:
-            Vorbis ( void );
-            virtual ~Vorbis ( void );
+  namespace Codec {
+    class Vorbis: virtual public AbstractCodec {
+      public:
+        Vorbis(void);
+        virtual ~Vorbis(void);
 
-         // virtual
-            virtual bool init ( std::string inputfile );
-            virtual void play ( void );
-            virtual unsigned long int getCurrSeekPos ( void ) const;
-            virtual void setSeekPos ( double val );
-            virtual void flush ( void );
-            virtual void finish ( void ) { }; // flush
-         private:
-            void readVorbisComment ( void );
+        virtual void open(string fileName, string fileId);
+        virtual void play(string fileId);
+        virtual void pause(string fileId);
+        virtual void stop(string fileId);
+        virtual void close(string fileId);
 
-            OggVorbis_File vf;
-            OggVorbis_File pvf;
-         
-            DecodedData * ddata;
-            int dspDev;
-         
-            vorbis_info *vi;
+        virtual float getSeek(string fileId) const;
+        virtual void setSeek(string fileId, float seekVal);
+      private:
+        void readVorbisComment(void);
 
-            double length;
-            double seekPos;
-            bool seek;
-            std::string fileName;
-      };
-   }
+        OggVorbis_File vf;
+        OggVorbis_File pvf;
+
+        //        DecodedData * ddata;
+        int dspDev;
+
+        vorbis_info *vi;
+
+        double length;
+        double seekPos;
+        bool seek;
+        std::string fileName;
+    };
+  }
 }
 
 #endif

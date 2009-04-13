@@ -1,69 +1,65 @@
-/***************************************************************************
- *   Copyright (C) 2008 by Alex J. Ivasyuv                                 *
- *   alex@siegerstein.org.ua                                               *
- *                                                                         *
- *   This program is free software: you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation, either version 3 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
- ***************************************************************************/
+/*******************************************************************************
+ * Copyright (c) 2009, Alex Ivasyuv                                            *
+ * All rights reserved.                                                        *
+ *                                                                             *
+ * Redistribution and use in source and binary forms, with or without          *
+ * modification, are permitted provided that the following conditions are met: *
+ *                                                                             *
+ * 1. Redistributions of source code must retain the above copyright           *
+ *    notice, this list of conditions and the following disclaimer.            *
+ * 2. Redistributions in binary form must reproduce the above copyright        *
+ *    notice, this list of conditions and the following disclaimer in the      *
+ *    documentation and/or other materials provided with the distribution.     *
+ *                                                                             *
+ * THIS SOFTWARE IS PROVIDED BY Alex Ivasyuv ''AS IS'' AND ANY                 *
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED   *
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE      *
+ * DISCLAIMED. IN NO EVENT SHALL Alex Ivasyuv BE LIABLE FOR ANY DIRECT,        *
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES          *
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;*
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND *
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  *
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF    *
+ * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
+ ******************************************************************************/
 
-#ifndef __SS_SILENTMEDIA_ABSTRACTCODEC_HPP_
-#define __SS_SILENTMEDIA_ABSTRACTCODEC_HPP_
+#ifndef _SILENTMEDIA_ABSTRACTCODEC_HPP_
+#define _SILENTMEDIA_ABSTRACTCODEC_HPP_
 
-// #include "../Audio.hpp"
-// #include <SML/sml.hpp>
-
-#include <SML/slib.hpp>
-
-// используем макрос а не ф-цию, так как если ф-ция const то ф-ция не подойдет
-#define PRINT(funcName) ( std::cout << "WARNING: " << (funcName) << " stuff function! Please redefine it." << std::endl )
+#include <include.hpp>
 
 namespace SilentMedia {
-//          class DSP;
-   /// Абстрактный класс для последуещего наследования классами FlacDecode, WavDecode, VorbisDecode, WavpackDecode
-   class AbstractCodec {
-      public:
-         AbstractCodec ( void ) /*: dsp ( new DSP )*/ { };
-         virtual ~AbstractCodec ( void ) { };
-         // Делаем одну ф-цию чистой виртуальной чтобы сделать класс абстрактным. Тем более что это ф-ция уж точно должна быть переопределена :)
-         /// Инициализация файла.
-         /** Главная ф-ция для инициализация файла: его открытия, получения различного рода информации ( комментарии ( если они поддерживаются ),
-          *  технической информации ( размер файла, битрейт, частота дискретизации и т.д. ) ).
-          *  Если информации получена, и файл больше не нуждается в использовании ( напр. планируется инициализировать другой файл в целях получить
-          *  информацию с него, то обязательно закрываем файловый дискриптор, и освобождаем ресурсы ф-цией closeF() */
-         /// @param std::string inputfile - имя файла для инициализации
-         /// @return true - успешна инициализация, false - ошибка инициализации
-         virtual bool init ( std::string /*inputfile*/, std::string /*idObj*/ ) { return true; }
-         /// Начать воспроизведение файла
-         virtual bool play ( std::string /*id*/ ) { /*PRINT ( "play()" );*/ return false ; }
-         // возвращаем 0 не а true, ибо это должно быть значение, тем более что это unsigned
-         /// Получить текущею позицию воспроизводящегося файла
-         /// @return Текущея позиция в процентах от продолжительности всего файла
-         virtual unsigned long int getSeek ( void ) const { /*PRINT ( "getCurrSeekPos()" );*/ return 0; }
-         /// Установить текущею позицию
-         virtual void setSeek ( double /*val*/ ) { /*PRINT ( "setSeekPos()" );*/ }
-//         /// Закрыть файловый дискриптор
-         virtual void closeF ( void ) { /*PRINT ( "close()" );*/ }
-         /// Освободить системные ресурсы
-         virtual void flush ( void ) { /*PRINT ( "flush()" );*/ }
-         /// Завершить работу
-         virtual void finish ( void ) { /*PRINT ( "finish()" );*/ }
-//          int * getDSP ( void ) { return ( this -> dsp -> retDSP() ); }
-//          void setV ( int val ) { this -> checkVal = val; }
-//          int getV ( void ) { return this -> checkVal; }
-      protected:
-//          DSP * dsp;
-//          int checkVal;
-   };
+  class AbstractCodec {
+    public:
+      AbstractCodec(void) {
+      }
+      ;
+      virtual ~AbstractCodec(void) {
+      }
+
+      virtual void open(string fileName, string fileId) = 0;
+
+      virtual void play(string fileId) {
+      }
+      ;
+      virtual void pause(string fileId) {
+      }
+      ;
+      virtual void stop(string fileId) {
+      }
+      ;
+      virtual void close(string fileId) {
+      }
+      ;
+
+      virtual float getSeek(string fileId) const {
+      }
+      ;
+      virtual void setSeek(string fileId, float seekVal) {
+      }
+      ;
+    protected:
+  };
 }
 
 #endif

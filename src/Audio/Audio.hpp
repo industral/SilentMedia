@@ -1,93 +1,61 @@
-/***************************************************************************
- *   Copyright (C) 2008 by Alex J. Ivasyuv                                 *
- *   alex@siegerstein.org.ua                                               *
- *                                                                         *
- *   This program is free software: you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation, either version 3 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
- ***************************************************************************/
+/*******************************************************************************
+ * Copyright (c) 2009, Alex Ivasyuv                                            *
+ * All rights reserved.                                                        *
+ *                                                                             *
+ * Redistribution and use in source and binary forms, with or without          *
+ * modification, are permitted provided that the following conditions are met: *
+ *                                                                             *
+ * 1. Redistributions of source code must retain the above copyright           *
+ *    notice, this list of conditions and the following disclaimer.            *
+ * 2. Redistributions in binary form must reproduce the above copyright        *
+ *    notice, this list of conditions and the following disclaimer in the      *
+ *    documentation and/or other materials provided with the distribution.     *
+ *                                                                             *
+ * THIS SOFTWARE IS PROVIDED BY Alex Ivasyuv ''AS IS'' AND ANY                 *
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED   *
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE      *
+ * DISCLAIMED. IN NO EVENT SHALL Alex Ivasyuv BE LIABLE FOR ANY DIRECT,        *
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES          *
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;*
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND *
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  *
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF    *
+ * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
+ ******************************************************************************/
 
-#ifndef __SS_SILENTMEDIA_AUDIO_HPP_
-#define __SS_SILENTMEDIA_AUDIO_HPP_
+#ifndef _SILENTMEDIA_AUDIO_HPP_
+#define _SILENTMEDIA_AUDIO_HPP_
 
-// #include <SML/sml.hpp>
-// #include "Codec/AbstractCodec.hpp"
-// #include <SML/Audio/SoundSystem/OSS/DSP/dsp.hpp>
-// #include <SML/Audio/Codec/AbstractCodec.hpp>
+#include <iostream>
+#include <string>
+#include <map>
 
-// #include "SoundSystem/OSS/OSS.hpp"
+#include <Audio/Codec/Vorbis/Vorbis.hpp>
+#include <Audio/Codec/AbstractCodec.hpp>
 
-#include <SML/sml.hpp>
-#include <SML/slib.hpp>
-
-
-// #include <SML/Audio/Codec/DecodedData.hpp>
+using namespace std;
 
 namespace SilentMedia {
-   enum Status { Stop, Play, Pause, Resume, Active };
-//    class DSP;
-   class SoundSystemManager;
-   class DecodedData;
-   class AbstractCodec;
-   class Audio {
-      public:
-         ~Audio ( void );
+  class Audio: virtual public AbstractCodec {
+    public:
+      Audio(void);
+      ~Audio(void);
 
-         static Audio * Instance ( void );
-         bool init ( EngineType engineType, AudioComponents component, SoundSystemType soundSystem, std::string dspDev = "/dev/dsp",
-                     std::string mixerDev = "/dev/mixer");
-//          bool initMultiPlay ( void );
+      void init(string soundSystem, string dev);
+      void finish();
 
-         bool play ( std::string inputFile, std::string id, std::string next = NULL,
-                     int cycleCount = -1, unsigned int pauseDelay = 0 );
-         bool destroyObj ( std::string id );
-            
-         SilentMedia::AbstractCodec * getNeedObj ( void );
-         bool openFile ( std::string inputFile, std::string& id);
-         void closeF ( std::string id );
-         void closeF ( void );
-         void flush ( void );
-         void finish ( void );
-         
-         bool changeStatus ( Status myStatus );
+      virtual void open(string fileName, string fileId);
+      virtual void play(string fileId);
+      virtual void pause(string fileId);
+      virtual void stop(string fileId);
+      virtual void close(string fileId);
 
-         void play_ ( std::string id );
+      virtual float getSeek(string fileId);
+      virtual void setSeek(string fileId, float seekVal);
 
-         void setSeek ( int val );
-         double getSeek ( void );
-      private:
-         Audio ( void );
-
-         static Audio * _audio;
-         Audio * audio;
-         SoundSystemManager * ssystem;
-         DecodedData * ddata;
-         EngineType engineType;
-
-         std::map < std::string, SilentMedia::AbstractCodec * > objs;
-         std::map < std::string, SilentMedia::AbstractCodec * > idObjs;
-         std::map < std::string, pthread_t > threadMap;
-         std::set < std::string > idList;
-
-//          std::string id;
-         std::string ext;
-         std::string playExt;
-         std::string inputFile;
-//          std::string objId;
-
-         Status songStatus;
-
-         pthread_t thread1;
-   };
+    private:
+      std::map<string, AbstractCodec *> codecMap;
+  };
 }
 
 #endif
