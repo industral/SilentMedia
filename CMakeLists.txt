@@ -6,6 +6,7 @@ set(SilentMedia_src
 
 src/Audio/Audio.cpp
 src/Audio/SoundSystem/libao/AO.cpp
+src/Audio/AudioInfo.cpp
 src/Audio/Codec/Vorbis/Vorbis.cpp
 )
 include_directories (/usr/include /usr/include/c++/4.3 ${SilentMedia_SOURCE_DIR}/src)

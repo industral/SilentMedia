@@ -62,7 +62,7 @@ bool SilentMedia::Codec::WAV::init ( std::string inputFile, std::string idObj ) 
    this -> bitRate = ( ( wavinfo -> getByteRate() ) * 8 );
 
 //    std::cout << "WAV: " << ::_ddata << std::endl;
-   this -> ddata -> setMainParam ( this -> inputFile, wavinfo -> getChunkSize(), this -> totalTime,
+   this -> ddata -> setAudioParams ( this -> inputFile, wavinfo -> getChunkSize(), this -> totalTime,
                                    wavinfo -> getNumChannels(), wavinfo -> getSampleRate(),
                                          this -> bitRate, wavinfo -> getBitsPerSample()
                                  );

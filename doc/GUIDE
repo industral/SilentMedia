@@ -1,4 +1,5 @@
 cmake -G"Eclipse CDT4 - Unix Makefiles" -DECLIPSE_CDT4_GENERATE_SOURCE_PROJECT=TRUE .
+
 sudo ln -s ~/workspace/SilentMedia/src /usr/include/libsml
 sudo ln -s ~/workspace/SilentMedia/libsml.so /usr/lib
 

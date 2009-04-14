@@ -1,2 +1,7 @@
 - Start from writing test
 - Start from AbstractCodec
+
+- Move all classes to there names
+- Check all ifdef
+- Check private protected
+

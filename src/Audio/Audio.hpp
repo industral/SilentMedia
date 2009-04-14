@@ -36,26 +36,28 @@
 using namespace std;
 
 namespace SilentMedia {
-  class Audio: virtual public AbstractCodec {
-    public:
-      Audio(void);
-      ~Audio(void);
+  namespace Audio {
+    class Audio: virtual public Codec::AbstractCodec {
+      public:
+        Audio(void);
+        ~Audio(void);
 
-      void init(string soundSystem, string dev);
-      void finish();
+        void init(string soundSystem, string dev);
+        void finish();
 
-      virtual void open(string fileName, string fileId);
-      virtual void play(string fileId);
-      virtual void pause(string fileId);
-      virtual void stop(string fileId);
-      virtual void close(string fileId);
+        virtual void open(string fileName, string fileId);
+        virtual void play(string fileId);
+        virtual void pause(string fileId);
+        virtual void stop(string fileId);
+        virtual void close(string fileId);
 
-      virtual float getSeek(string fileId);
-      virtual void setSeek(string fileId, float seekVal);
+        virtual float getSeek(string fileId);
+        virtual void setSeek(string fileId, float seekVal);
 
-    private:
-      std::map<string, AbstractCodec *> codecMap;
-  };
+      private:
+        std::map < string, AbstractCodec * > codecMap;
+    };
+  }
 }
 
 #endif

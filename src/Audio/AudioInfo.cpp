@@ -23,58 +23,75 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
  ******************************************************************************/
 
-#include "Audio.hpp"
+#include "AudioInfo.hpp"
 
 namespace SilentMedia {
   namespace Audio {
-    Audio::Audio() {
+    AudioInfo * AudioInfo::_info = NULL;
+
+    AudioInfo::AudioInfo() {
+      //    ssystem(NULL), playCheck(false) {
+      //    this -> ssystem = SoundSystemManager::Instance();
+
+      //    this -> audio = Audio::Instance();
     }
 
-    Audio::~Audio() {
+    AudioInfo::~AudioInfo(void) {
+      //    cout << "AudioInfo Destructor.. " << endl;
     }
 
-    void Audio::init(string soundSystem, string dev) {
-      std::cout << "in audio init" << std::endl;
-
+    AudioInfo * AudioInfo::Instance(void) {
+      if (_info == NULL) {
+        _info = new AudioInfo();
+      }
+      return _info;
     }
 
-    void Audio::finish() {
-      std::cout << "close audio system" << std::endl;
+    void AudioInfo::setAudioParams(string fileName, long int fileSize,
+        double totalTime, int channels, int sampleRate, double bitRate,
+        int bitsPerSample) {
+      this -> fileName = fileName;
+      this -> fileSize = fileSize;
+      this -> totalTime = totalTime;
+      this -> channels = channels;
+      this -> sampleRate = sampleRate;
+      this -> bitRate = bitRate;
+      this -> bitsPerSample = bitsPerSample;
     }
 
-    void Audio::open(string fileName, string fileId) {
-      std::cout << "open file name with id: " + fileId << std::endl;
-
-      //    Codec::Vorbis * v = new Codec::Vorbis();
-      this -> codecMap["vorbis"] = new Codec::Vorbis();
-      this -> codecMap["vorbis"] -> open(fileName, fileId);
+    bool AudioInfo::play(const void * buf, string id) {
+      //    this -> ssystem -> play(buf, id);
+      return true;
     }
 
-    void Audio::play(string fileId) {
-      std::cout << "play file name with id: " + fileId << std::endl;
+  //  void AudioInfo::begin(string id) {
+  //    this -> ssystem -> allocateQuery(id);
+  //    this -> ssystem -> setParams(this -> channels, this -> sampleRate);
+  //  }
 
-      this -> codecMap["vorbis"] -> play(fileId);
-    }
+  //  void AudioInfo::end(string id) {
+  //    this -> audio = Audio::Instance();
+  //
+  //    this -> ssystem -> deAllocateQuery(id);
+  //    this -> audio -> destroyObj(id);
+  //  }
 
-    void Audio::pause(string fileId) {
-      std::cout << "pause file name with id: " + fileId << std::endl;
-    }
+  // int AudioInfo::getDSPDev ( void ) const {
+  //    return ( this -> ssystem -> getDSPDev() );
+  // }
 
-    void Audio::stop(string fileId) {
-      std::cout << "stop file name with id: " + fileId << std::endl;
-    }
+  //  void AudioInfo::clean(void) {
+  //    this -> picData . clear();
+  //    this -> vorbisComm . clear();
+  //  }
 
-    void Audio::close(string fileId) {
-      std::cout << "close file name with id: " + fileId << std::endl;
-    }
+  // void Audio::setCover ( string coverData ) {
+  // //    if ( this -> ext == "flac" ) {
+  // //       objs [ "flac" ] -> setPicture ( coverData );
+  // //       FlacDecode flacdec;
+  // //       flacdec . setPicture ( coverData );
+  // //    }
+  // }
 
-    float Audio::getSeek(string fileId) {
-      std::cout << "get seek.. " << std::endl;
-      return 0.0;
-    }
-
-    void Audio::setSeek(string fileId, float seekVal) {
-      std::cout << "set seek value " << seekVal << std::endl;
-    }
   }
 }

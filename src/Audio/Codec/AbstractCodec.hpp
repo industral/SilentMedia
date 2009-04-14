@@ -29,37 +29,29 @@
 #include <include.hpp>
 
 namespace SilentMedia {
-  class AbstractCodec {
-    public:
-      AbstractCodec(void) {
-      }
-      ;
-      virtual ~AbstractCodec(void) {
-      }
+  namespace Audio {
+    namespace Codec {
+      class AbstractCodec {
+        public:
+          AbstractCodec() {
+          }
 
-      virtual void open(string fileName, string fileId) = 0;
+          virtual ~AbstractCodec() {
+          }
 
-      virtual void play(string fileId) {
-      }
-      ;
-      virtual void pause(string fileId) {
-      }
-      ;
-      virtual void stop(string fileId) {
-      }
-      ;
-      virtual void close(string fileId) {
-      }
-      ;
+          virtual void open(string fileName, string fileId) = 0;
+          virtual void close(string fileId) = 0;
 
-      virtual float getSeek(string fileId) const {
-      }
-      ;
-      virtual void setSeek(string fileId, float seekVal) {
-      }
-      ;
-    protected:
-  };
+          virtual void play(string fileId) = 0;
+          virtual void pause(string fileId) = 0;
+          virtual void stop(string fileId) = 0;
+
+          virtual float getSeek(string fileId) = 0;
+          virtual void setSeek(string fileId, float seekVal) = 0;
+        protected:
+      };
+    }
+  }
 }
 
 #endif

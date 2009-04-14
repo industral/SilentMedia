@@ -23,58 +23,16 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
  ******************************************************************************/
 
-#include "Audio.hpp"
+#include "AudioProxy.hpp"
 
 namespace SilentMedia {
   namespace Audio {
-    Audio::Audio() {
+    AudioProxy::AudioProxy() {
+      this -> _soundSystem = SoundSystemManager::Instance();
     }
 
-    Audio::~Audio() {
+    AudioProxy::~AudioProxy() {
     }
 
-    void Audio::init(string soundSystem, string dev) {
-      std::cout << "in audio init" << std::endl;
-
-    }
-
-    void Audio::finish() {
-      std::cout << "close audio system" << std::endl;
-    }
-
-    void Audio::open(string fileName, string fileId) {
-      std::cout << "open file name with id: " + fileId << std::endl;
-
-      //    Codec::Vorbis * v = new Codec::Vorbis();
-      this -> codecMap["vorbis"] = new Codec::Vorbis();
-      this -> codecMap["vorbis"] -> open(fileName, fileId);
-    }
-
-    void Audio::play(string fileId) {
-      std::cout << "play file name with id: " + fileId << std::endl;
-
-      this -> codecMap["vorbis"] -> play(fileId);
-    }
-
-    void Audio::pause(string fileId) {
-      std::cout << "pause file name with id: " + fileId << std::endl;
-    }
-
-    void Audio::stop(string fileId) {
-      std::cout << "stop file name with id: " + fileId << std::endl;
-    }
-
-    void Audio::close(string fileId) {
-      std::cout << "close file name with id: " + fileId << std::endl;
-    }
-
-    float Audio::getSeek(string fileId) {
-      std::cout << "get seek.. " << std::endl;
-      return 0.0;
-    }
-
-    void Audio::setSeek(string fileId, float seekVal) {
-      std::cout << "set seek value " << seekVal << std::endl;
-    }
   }
 }

@@ -38,36 +38,38 @@
 using namespace std;
 
 namespace SilentMedia {
-  namespace Codec {
-    class Vorbis: virtual public AbstractCodec {
-      public:
-        Vorbis(void);
-        virtual ~Vorbis(void);
+  namespace Audio {
+    namespace Codec {
+      class Vorbis: virtual public AbstractCodec {
+        public:
+          Vorbis(void);
+          virtual ~Vorbis(void);
 
-        virtual void open(string fileName, string fileId);
-        virtual void play(string fileId);
-        virtual void pause(string fileId);
-        virtual void stop(string fileId);
-        virtual void close(string fileId);
+          virtual void open(string fileName, string fileId);
+          virtual void play(string fileId);
+          virtual void pause(string fileId);
+          virtual void stop(string fileId);
+          virtual void close(string fileId);
 
-        virtual float getSeek(string fileId) const;
-        virtual void setSeek(string fileId, float seekVal);
-      private:
-        void readVorbisComment(void);
+          virtual float getSeek(string fileId);
+          virtual void setSeek(string fileId, float seekVal);
+        private:
+          void readVorbisComment(void);
 
-        OggVorbis_File vf;
-        OggVorbis_File pvf;
+          OggVorbis_File vf;
+          OggVorbis_File pvf;
 
-        //        DecodedData * ddata;
-        int dspDev;
+          //        DecodedData * ddata;
+          int dspDev;
 
-        vorbis_info *vi;
+          vorbis_info *vi;
 
-        double length;
-        double seekPos;
-        bool seek;
-        std::string fileName;
-    };
+          double length;
+          double seekPos;
+          bool seek;
+          std::string fileName;
+      };
+    }
   }
 }
 

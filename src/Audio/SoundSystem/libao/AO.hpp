@@ -29,30 +29,36 @@
 #include <iostream>
 #include <string>
 
+#include <Audio/SoundSystem/AbstractSoundSystem.hpp>
+
 #include <ao/ao.h>
 
 using namespace std;
 
 namespace SilentMedia {
-  class AO {
-    public:
-      AO();
-      ~AO();
+  namespace Audio {
+    namespace SoundSystem {
+      class AO : virtual public AbstractSoundSystem {
+        public:
+          AO();
+          virtual ~AO();
 
-      /**
-       * Main sound system initialized method. Use it to set output audio driver.
-       * @param driver libao driver. See http://www.xiph.org/ao/doc/drivers.html
-       * @return > 1 in success, < 1 in false.
-       */
-      bool init(string driver);
-      void setParams(int channels, int sampleRate, int bits);
-      int play(char * buf, const int bufSize);
+          /**
+           * Main sound system initialized method. Use it to set output audio driver.
+           * @param driver libao driver. See http://www.xiph.org/ao/doc/drivers.html
+           * @return > 1 in success, < 1 in false.
+           */
+          virtual bool init(string driver);
+          virtual void setParams(int channels, int sampleRate, int bits);
+          virtual int play(char * buf, const int bufSize);
 
-    private:
-      ao_sample_format format;
-      ao_device * device;
-      int default_driver;
-  };
+        private:
+          ao_sample_format format;
+          ao_device * device;
+          int default_driver;
+      };
+    }
+  }
 }
 
 #endif

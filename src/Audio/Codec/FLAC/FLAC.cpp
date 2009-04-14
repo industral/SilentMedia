@@ -236,7 +236,7 @@ void SilentMedia::Codec::FLAC::getPicture(void) {
 }
 
 void SilentMedia::Codec::FLAC::setDSPParam(void) {
-  this -> ddata -> setMainParam(this -> fileSize, this -> totalTime,
+  this -> ddata -> setAudioParams(this -> fileSize, this -> totalTime,
       this -> streamInfo -> get_channels(),
       this -> streamInfo -> get_sample_rate(), this -> avrBitrate,
       this -> streamInfo -> get_bits_per_sample());

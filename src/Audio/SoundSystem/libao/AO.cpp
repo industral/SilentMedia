@@ -26,34 +26,38 @@
 #include "AO.hpp"
 
 namespace SilentMedia {
-  AO::AO() {
-    device = NULL;
-    default_driver = -1;
-    ao_initialize();
-  }
+  namespace Audio {
+    namespace SoundSystem {
+      AO::AO() {
+        device = NULL;
+        default_driver = -1;
+        ao_initialize();
+      }
 
-  AO::~AO() {
-  }
+      AO::~AO() {
+      }
 
-  bool AO::init(string driver) {
-    if (driver.empty()) {
-      default_driver = ao_default_driver_id();
-    } else {
-      default_driver = ao_driver_id(driver.c_str());
+      bool AO::init(string driver) {
+        if (driver.empty()) {
+          default_driver = ao_default_driver_id();
+        } else {
+          default_driver = ao_driver_id(driver.c_str());
+        }
+        return default_driver;
+      }
+
+      void AO::setParams(int channels, int sampleRate, int bits) {
+        format.bits = bits;
+        format.channels = channels;
+        format.rate = sampleRate;
+        format.byte_format = AO_FMT_LITTLE;
+
+        device = ao_open_live(default_driver, &format, NULL);
+      }
+
+      int AO::play(char * buf, const int bufSize) {
+        return (ao_play(device, buf, bufSize));
+      }
     }
-    return default_driver;
-  }
-
-  void AO::setParams(int channels, int sampleRate, int bits) {
-    format.bits = bits;
-    format.channels = channels;
-    format.rate = sampleRate;
-    format.byte_format = AO_FMT_LITTLE;
-
-    device = ao_open_live(default_driver, &format, NULL);
-  }
-
-  int AO::play(char * buf, const int bufSize) {
-    return (ao_play(device, buf, bufSize));
   }
 }

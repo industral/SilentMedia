@@ -42,7 +42,7 @@ bool SilentMedia::Codec::WavPack::init ( std::string inputFile ) {
    this -> fileSize = WavpackGetFileSize ( this -> wpc );
    this -> totalTime = WavpackGetNumSamples ( this -> wpc ) / WavpackGetSampleRate ( this -> wpc );
 
-   this -> ddata -> setMainParam ( this -> fileSize, this -> totalTime, WavpackGetNumChannels ( this -> wpc ), WavpackGetSampleRate ( this -> wpc ),
+   this -> ddata -> setAudioParams ( this -> fileSize, this -> totalTime, WavpackGetNumChannels ( this -> wpc ), WavpackGetSampleRate ( this -> wpc ),
                              WavpackGetAverageBitrate ( this -> wpc, 0 ), WavpackGetBitsPerSample ( this -> wpc ) );
 //    this -> readVorbisComment();
 
