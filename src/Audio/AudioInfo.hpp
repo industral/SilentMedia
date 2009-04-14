@@ -23,12 +23,10 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
  ******************************************************************************/
 
-#ifndef _SILENTMEDIA_DECODEDDATA_HPP_
-#define _SILENTMEDIA_DECODEDDATA_HPP_
+#ifndef _SILENTMEDIA_AUDIOINFO_HPP_
+#define _SILENTMEDIA_AUDIOINFO_HPP_
 
-#include <iostream>
-#include <string>
-#include <map>
+#include <include.hpp>
 
 using namespace std;
 
@@ -36,6 +34,7 @@ namespace SilentMedia {
   namespace Audio {
     class AudioInfo {
       public:
+        AudioInfo();
         ~AudioInfo();
 
         static AudioInfo * Instance(void);
@@ -91,9 +90,9 @@ namespace SilentMedia {
         bool play(const void * buf, string id);
         //          int getDSPDev ( void ) const;
       private:
-        AudioInfo();
 
-        static AudioInfo * _info;
+
+        static AudioInfo * _audioInfo;
 
         bool playCheck;
 

@@ -26,19 +26,15 @@
 #ifndef _SILENTMEDIA_AO_HPP_
 #define _SILENTMEDIA_AO_HPP_
 
-#include <iostream>
-#include <string>
-
+#include <include.hpp>
 #include <Audio/SoundSystem/AbstractSoundSystem.hpp>
-
 #include <ao/ao.h>
-
-using namespace std;
 
 namespace SilentMedia {
   namespace Audio {
     namespace SoundSystem {
-      class AO : virtual public AbstractSoundSystem {
+
+      class AO: public AbstractSoundSystem {
         public:
           AO();
           virtual ~AO();

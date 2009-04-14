@@ -26,23 +26,31 @@
 #ifndef _SILENTMEDIA_AUDIO_HPP_
 #define _SILENTMEDIA_AUDIO_HPP_
 
-#include <iostream>
-#include <string>
-#include <map>
+// main include
+#include <include.hpp>
 
-#include <Audio/Codec/Vorbis/Vorbis.hpp>
+/*
+ * We should include:
+ * SoundSystem, AbstractCodec, AudioInfo.
+ */
+#include <Audio/SoundSystem/SoundSystem.hpp>
 #include <Audio/Codec/AbstractCodec.hpp>
-
-using namespace std;
+#include <Audio/AudioInfo.hpp>
 
 namespace SilentMedia {
   namespace Audio {
-    class Audio: virtual public Codec::AbstractCodec {
+    class Audio {
       public:
-        Audio(void);
-        ~Audio(void);
+        Audio();
+        ~Audio();
 
-        void init(string soundSystem, string dev);
+        /**
+         * Initialized audio system with appropriate sound driver.
+         * @param driver audio system driver.
+         * @return true in success, false in error.
+         * @see http://www.xiph.org/ao/doc/drivers.html
+         */
+        bool init(string driver);
         void finish();
 
         virtual void open(string fileName, string fileId);
@@ -55,7 +63,8 @@ namespace SilentMedia {
         virtual void setSeek(string fileId, float seekVal);
 
       private:
-        std::map < string, AbstractCodec * > codecMap;
+        SoundSystem::SoundSystem * soundSystem;
+        map < string, Codec::AbstractCodec * > codecHashMap;
     };
   }
 }

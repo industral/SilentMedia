@@ -26,15 +26,17 @@
 #ifndef _SILENTMEDIA_AUDIOPROXY_HPP_
 #define _SILENTMEDIA_AUDIOPROXY_HPP_
 
-#include <iostream>
-#include <string>
+#include <include.hpp>
+#include <Audio/AudioInfo.hpp>
+#include <Audio/SoundSystem/SoundSystem.hpp>
 
 using namespace std;
 
 namespace SilentMedia {
   namespace Audio {
-    class AudioProxy: virtual public AudioInfo, virtual public SoundSystemManager {
+    class AudioProxy: public AudioInfo, public SoundSystem::SoundSystem {
       public:
+        AudioProxy();
         ~AudioProxy();
 
       private:

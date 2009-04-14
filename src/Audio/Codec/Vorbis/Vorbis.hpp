@@ -26,8 +26,7 @@
 #ifndef _SILENTMEDIA_VORBIS_HPP_
 #define _SILENTMEDIA_VORBIS_HPP_
 
-#include <map>
-#include <vector>
+#include <include.hpp>
 
 #include <Audio/Codec/AbstractCodec.hpp>
 #include <Audio/SoundSystem/libao/AO.hpp>

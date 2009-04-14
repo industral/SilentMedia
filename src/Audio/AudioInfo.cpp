@@ -27,7 +27,7 @@
 
 namespace SilentMedia {
   namespace Audio {
-    AudioInfo * AudioInfo::_info = NULL;
+    AudioInfo * AudioInfo::_audioInfo = NULL;
 
     AudioInfo::AudioInfo() {
       //    ssystem(NULL), playCheck(false) {
@@ -41,10 +41,10 @@ namespace SilentMedia {
     }
 
     AudioInfo * AudioInfo::Instance(void) {
-      if (_info == NULL) {
-        _info = new AudioInfo();
+      if (_audioInfo == NULL) {
+        _audioInfo = new AudioInfo();
       }
-      return _info;
+      return _audioInfo;
     }
 
     void AudioInfo::setAudioParams(string fileName, long int fileSize,

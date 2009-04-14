@@ -23,8 +23,8 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
  ******************************************************************************/
 
-#ifndef _SILENTMEDIA_INCLUDE_HPP_
-#define _SILENTMEDIA_INCLUDE_HPP_
+#ifndef _SILENTMEDIA_ALL_HPP_
+#define _SILENTMEDIA_ALL_HPP_
 
 #include "include.hpp"
 

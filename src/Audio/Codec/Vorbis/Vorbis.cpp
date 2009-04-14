@@ -75,9 +75,7 @@ namespace SilentMedia {
         int eof = 0;
         int current_section = 0;
 
-        SoundSystem::AO * ao = new SoundSystem::AO();
-        ao -> init("pulse");
-        ao -> setParams(2, 44100, 16);
+
 
         while (!eof) {
           long ret = ov_read(&this -> pvf, buf, buf_size, 0, 2, 1,
@@ -87,7 +85,7 @@ namespace SilentMedia {
           } else if (ret < 0) {
             std::cout << "ERROR in ov_read()" << std::endl;
           } else {
-            ao->play(buf, buf_size);
+//            ao->play(buf, buf_size);
           }
         }
         ov_clear(&pvf);

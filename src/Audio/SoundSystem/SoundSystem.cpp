@@ -23,35 +23,31 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
  ******************************************************************************/
 
-#ifndef _SILENTMEDIA_SOUNDSYSTEM_HPP_
-#define _SILENTMEDIA_SOUNDSYSTEM_HPP_
-
-#include <include.hpp>
-#include <Audio/SoundSystem/AbstractSoundSystem.hpp>
-#include <Audio/SoundSystem/libao/AO.hpp>
+#include "SoundSystem.hpp"
 
 namespace SilentMedia {
   namespace Audio {
     namespace SoundSystem {
-      class SoundSystem {
-        public:
-          SoundSystem();
-          ~SoundSystem();
+      SoundSystem * SoundSystem::_soundSystem = NULL;
 
-          static SoundSystem * Instance(void);
+      SoundSystem::SoundSystem() {
+        ao = new AO();
+      }
 
-          bool init(string driver);
-          void setParams(int channels, int sampleRate, int bits);
-          int play(char * buf, const int bufSize);
+      SoundSystem::~SoundSystem() {
+      }
 
-        private:
-          // Singleton variable
-          static SoundSystem * _soundSystem;
-          // libao object
-          AbstractSoundSystem * ao;
-      };
+      SoundSystem * SoundSystem::Instance(void) {
+        if (_soundSystem == NULL) {
+          _soundSystem = new SoundSystem();
+        }
+        return _soundSystem;
+      }
+
+      bool SoundSystem::init(string driver) {
+        return (ao -> init(driver));
+      }
+
     }
   }
 }
-
-#endif

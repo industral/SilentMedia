@@ -28,7 +28,7 @@
 namespace SilentMedia {
   namespace Audio {
     AudioProxy::AudioProxy() {
-      this -> _soundSystem = SoundSystemManager::Instance();
+//      this -> _soundSystem = SoundSystemManager::Instance();
     }
 
     AudioProxy::~AudioProxy() {

@@ -28,13 +28,16 @@
 namespace SilentMedia {
   namespace Audio {
     Audio::Audio() {
+      soundSystem = SoundSystem::SoundSystem::Instance();
     }
 
     Audio::~Audio() {
     }
 
-    void Audio::init(string soundSystem, string dev) {
+    bool Audio::init(string driver) {
       std::cout << "in audio init" << std::endl;
+      soundSystem -> init(driver);
+      //    ao -> setParams(2, 44100, 16);
 
     }
 
@@ -46,14 +49,14 @@ namespace SilentMedia {
       std::cout << "open file name with id: " + fileId << std::endl;
 
       //    Codec::Vorbis * v = new Codec::Vorbis();
-      this -> codecMap["vorbis"] = new Codec::Vorbis();
-      this -> codecMap["vorbis"] -> open(fileName, fileId);
+//      this -> codecMap["vorbis"] = new Codec::Vorbis();
+//      this -> codecMap["vorbis"] -> open(fileName, fileId);
     }
 
     void Audio::play(string fileId) {
       std::cout << "play file name with id: " + fileId << std::endl;
 
-      this -> codecMap["vorbis"] -> play(fileId);
+//      this -> codecMap["vorbis"] -> play(fileId);
     }
 
     void Audio::pause(string fileId) {
