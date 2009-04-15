@@ -28,13 +28,10 @@
 
 #include <include.hpp>
 
-using namespace std;
-
 namespace SilentMedia {
   namespace Audio {
     class AudioInfo {
       public:
-        AudioInfo();
         ~AudioInfo();
 
         static AudioInfo * Instance(void);
@@ -47,7 +44,7 @@ namespace SilentMedia {
             double bitRate = -1, int bitsPerSample = -1);
 
         //      void clean(void);
-        //          bool setParams ( void );
+        //          bool setAudioParams ( void );
 
         map < string, string > getVorbisComment(void) {
           return (this -> vorbisComm);
@@ -87,12 +84,18 @@ namespace SilentMedia {
           return (this -> bitsPerSample);
         }
 
-        bool play(const void * buf, string id);
         //          int getDSPDev ( void ) const;
+
+        //
+        string getFileNameByFileId(const string& fileId);
+        void setFileId(const string& fileId, const string& fileName);
+
       private:
-
-
+        // self instance variable
         static AudioInfo * _audioInfo;
+
+        // storage hashmap fileId => fileName
+        map < string, string > fileIdMap;
 
         bool playCheck;
 
@@ -110,7 +113,8 @@ namespace SilentMedia {
 
         map < string, string > vorbisTags;
         map < string, string > coverData;
-
+      protected:
+        AudioInfo();
     };
   }
 }

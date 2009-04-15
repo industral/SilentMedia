@@ -29,44 +29,60 @@ namespace SilentMedia {
   namespace Audio {
     namespace Codec {
 
-      Vorbis::Vorbis(void) :
-        dspDev(-1), vi(NULL), length(0), seekPos(0), seek(0) {
-        //      this -> ddata = DecodedData::Instance();
+      Vorbis::Vorbis() {
+        // create instance for AudioProxy
+        this -> audioProxy = new AudioProxy();
+        this -> vi = NULL;
+
+        // audio parameters
+        this -> length = NULL;
+        this -> seekPos = NULL;
+        this -> seek = false;
       }
 
-      Vorbis::~Vorbis(void) {
-
+      Vorbis::~Vorbis() {
+        // release resources
+        delete this -> audioProxy;
+        this -> audioProxy = NULL;
       }
 
-      void Vorbis::open(std::string fileName, string fileId) {
-        //      this -> dspDev = this -> ddata -> getDSPDev();
-        //      this -> dspDev = "default";
-        this -> fileName = fileName;
+      bool Vorbis::open(string fileId) {
+        // get fileName
+        this -> fileName = this -> audioProxy -> getFileNameByFileId(fileId);
 
+        // try to open file
         int openRetVal = ov_fopen(
             const_cast < char* > (this -> fileName.c_str()), &vf);
 
+        // check open result
         if (openRetVal < 0) {
-          cerr << "Error to open file " << this -> fileName << endl;
+          cerr << "Error to open file \"" << this -> fileName << "\"" << endl;
+          exit(-1);
         }
 
-        vi = ov_info(&vf, -1);
-        //      this -> ddata -> setMainParam(Utils::Func::getFileSize(
-        //          this -> fileName.c_str()), ov_time_total(&vf, -1), vi -> channels,
-        //          vi -> rate, vi -> bitrate_nominal, -1);
+        // get file information
+        this -> vi = ov_info(&this -> vf, -1);
+
+        // update audio information
+        this -> audioProxy -> setAudioParams(this -> fileName,
+            Utils::Func::getFileSize(this -> fileName), ov_time_total(
+                &this -> vf, -1), this -> vi -> channels, this -> vi -> rate,
+            this -> vi -> bitrate_nominal, 16);
+
+        // read vorbis comments
         this -> readVorbisComment();
       }
 
       void Vorbis::play(string fileId) {
-        if (seek == 0) {
+        if (this -> seek == 0) {
           ov_fopen(const_cast < char* > (this -> fileName.c_str()),
-              &this -> pvf);
+              &this -> tvf);
         }
 
-        if (ov_seekable(&this -> pvf)) {
-          this -> length = ov_time_total(&this -> pvf, -1);
+        if (ov_seekable(&this -> tvf)) {
+          this -> length = ov_time_total(&this -> tvf, -1);
         } else {
-          std::cout << "Source is not seekable." << std::endl;
+          cout << "Source is not seekable." << endl;
         }
 
         const int buf_size = 64;
@@ -75,59 +91,58 @@ namespace SilentMedia {
         int eof = 0;
         int current_section = 0;
 
-
-
         while (!eof) {
-          long ret = ov_read(&this -> pvf, buf, buf_size, 0, 2, 1,
+          long ret = ov_read(&this -> tvf, buf, buf_size, 0, 2, 1,
               &current_section);
           if (ret == 0) {
             eof = 1;
           } else if (ret < 0) {
-            std::cout << "ERROR in ov_read()" << std::endl;
+            cerr << "ERROR in ov_read()" << endl;
           } else {
-//            ao->play(buf, buf_size);
+
+            this -> audioProxy -> play(buf, buf_size);
           }
         }
-        ov_clear(&pvf);
+        ov_clear(&tvf);
       }
 
       void Vorbis::pause(string fileId) {
-        std::cout << "pause" << std::endl;
+        cout << "pause" << endl;
       }
 
       void Vorbis::stop(string fileId) {
-        std::cout << "stop" << std::endl;
+        cout << "stop" << endl;
       }
 
       void Vorbis::close(string fileId) {
-        std::cout << "close" << std::endl;
+        cout << "close" << endl;
       }
 
       void Vorbis::setSeek(string fileId, float val) {
         this -> seek = 1;
 
-        int retCode = ov_time_seek(&this -> pvf, ((this -> length)
+        int retCode = ov_time_seek(&this -> tvf, ((this -> length)
             * (val / 100)));
         if (retCode != 0) {
           if (retCode == OV_ENOSEEK) {
-            std::cout << "Error in ov_time_seek(): Bitstream is not seekable"
-                << std::endl;
+            cerr << "Error in ov_time_seek(): Bitstream is not seekable"
+                << endl;
           } else if (retCode == OV_EINVAL) {
-            std::cout
+            cerr
                 << "Error in ov_time_seek(): Invalid argument value; possibly called with an OggVorbis_File structure that isn't open"
-                << std::endl;
+                << endl;
           } else if (retCode == OV_EREAD) {
-            std::cout
+            cerr
                 << "Error in ov_time_seek(): A read from media returned an error"
-                << std::endl;
+                << endl;
           } else if (retCode == OV_EFAULT) {
-            std::cout
+            cerr
                 << "Error in ov_time_seek(): Internal logic fault; indicates a bug or heap/stack corruption."
-                << std::endl;
+                << endl;
           } else if (retCode == OV_EBADLINK) {
-            std::cout
+            cerr
                 << "Error in ov_time_seek(): Invalid stream section supplied to libvorbisfile, or the requested link is corrupt."
-                << std::endl;
+                << endl;
           }
         }
       }
@@ -137,7 +152,7 @@ namespace SilentMedia {
           return 0;
         } else {
           return (100 / (this -> length / ov_time_tell(
-              const_cast < OggVorbis_File* > (&this -> pvf))));
+              const_cast < OggVorbis_File* > (&this -> tvf))));
         }
       }
 
@@ -146,16 +161,16 @@ namespace SilentMedia {
       //    }
 
       void Vorbis::readVorbisComment(void) {
-        //    std::cout << ov_comment ( &vf, -1 ) -> vendor << std::endl;
+        //    cout << ov_comment ( &vf, -1 ) -> vendor << endl;
         char **ptr = ov_comment(&vf, -1) -> user_comments;
 
-        std::vector < std::string > vorbisCommList;
+        vector < string > vorbisCommList;
 
-        std::map < std::string, std::string > vorbisComm;
+        map < string, string > vorbisComm;
         vorbisComm . clear();
 
         while (*ptr) {
-          std::string myStr = *ptr;
+          string myStr = *ptr;
           int find = myStr . find_first_of("=");
           if (find) {
             //          vorbisComm[Utils::Func::toUpper(myStr . substr(0, find))]

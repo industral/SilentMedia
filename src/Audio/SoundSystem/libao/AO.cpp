@@ -46,8 +46,8 @@ namespace SilentMedia {
         return default_driver;
       }
 
-      void AO::setParams(int channels, int sampleRate, int bits) {
-        format.bits = bits;
+      void AO::setAudioParams(int channels, int sampleRate, int bitsPerSample) {
+        format.bits = bitsPerSample;
         format.channels = channels;
         format.rate = sampleRate;
         format.byte_format = AO_FMT_LITTLE;
@@ -56,7 +56,9 @@ namespace SilentMedia {
       }
 
       int AO::play(char * buf, const int bufSize) {
+        //        cout << "asd: " << buf << endl;
         return (ao_play(device, buf, bufSize));
+
       }
     }
   }

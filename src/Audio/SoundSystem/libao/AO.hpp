@@ -45,7 +45,8 @@ namespace SilentMedia {
            * @return > 1 in success, < 1 in false.
            */
           virtual bool init(string driver);
-          virtual void setParams(int channels, int sampleRate, int bits);
+          virtual void setAudioParams(int channels, int sampleRate,
+              int bitsPerSample);
           virtual int play(char * buf, const int bufSize);
 
         private:

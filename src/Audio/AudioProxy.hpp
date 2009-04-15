@@ -26,7 +26,12 @@
 #ifndef _SILENTMEDIA_AUDIOPROXY_HPP_
 #define _SILENTMEDIA_AUDIOPROXY_HPP_
 
+// main include
 #include <include.hpp>
+
+/*
+ * We should include AudioInfo, SoundSystem
+ */
 #include <Audio/AudioInfo.hpp>
 #include <Audio/SoundSystem/SoundSystem.hpp>
 
@@ -34,13 +39,41 @@ using namespace std;
 
 namespace SilentMedia {
   namespace Audio {
-    class AudioProxy: public AudioInfo, public SoundSystem::SoundSystem {
+    class AudioProxy {
       public:
         AudioProxy();
         ~AudioProxy();
 
-      private:
+        // AudioInfo methods
+        string getFileNameByFileId(const string& fileId);
 
+        // SoundSystem methods
+        /**
+         * Start playback file.
+         * @param[in] buf data audio buffer.
+         * @param[in] bufSize buffer size.
+         */
+        int play(char * buf, const int bufSize);
+
+        /**
+         * Set audio information. Set information about file name, file size,
+         * total time, channels, sample rate, bits rate, bits per sample.
+         * This method update information in AudioInfo and set appropriate
+         * parameters in SoundSystem.
+         * @params[in] fileName name of track that playback.
+         * @param[in] fileSize size of file in bytes.
+         * @param[in] totalTime total time of track.
+         * @param[in] channels channels in audio (1/2).
+         * @param[in] sampleRate sample rate of track (44100/48000).
+         * @param[in] bitRate bit rate of track (224 kbps).
+         * @param[in] bitsPerSample bits per sample in track(16/24/32).
+         */
+        void setAudioParams(string fileName, long int fileSize = -1,
+            double totalTime = -1, int channels = -1, int sampleRate = -1,
+            double bitRate = -1, int bitsPerSample = -1);
+      private:
+        AudioInfo * _audioInfo;
+        SoundSystem::SoundSystem * _soundSystem;
     };
   }
 }

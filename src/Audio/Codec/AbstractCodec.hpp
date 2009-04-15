@@ -39,7 +39,7 @@ namespace SilentMedia {
           virtual ~AbstractCodec() {
           }
 
-          virtual void open(string fileName, string fileId) = 0;
+          virtual bool open(string fileId) = 0;
           virtual void close(string fileId) = 0;
 
           virtual void play(string fileId) = 0;

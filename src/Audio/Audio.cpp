@@ -28,35 +28,72 @@
 namespace SilentMedia {
   namespace Audio {
     Audio::Audio() {
-      soundSystem = SoundSystem::SoundSystem::Instance();
+      // create SoundSystem instance
+      _soundSystem = SoundSystem::SoundSystem::Instance();
+      // create AudioInfo instance
+      _audioInfo = AudioInfo::Instance();
+
+      // Create a list of supported file formats
+      supportedFormats.push_back("wav");
+      supportedFormats.push_back("ogg");
+      supportedFormats.push_back("flac");
+      supportedFormats.push_back("wv");
+
+      codecHashMap["ogg"] = new Codec::Vorbis();
     }
 
     Audio::~Audio() {
+      delete _soundSystem;
+      _soundSystem = NULL;
+
+      delete _audioInfo;
+      _audioInfo = NULL;
     }
 
     bool Audio::init(string driver) {
       std::cout << "in audio init" << std::endl;
-      soundSystem -> init(driver);
-      //    ao -> setParams(2, 44100, 16);
-
+      return (_soundSystem -> init(driver));
+      //    ao -> setAudioParams(2, 44100, 16);
     }
 
     void Audio::finish() {
       std::cout << "close audio system" << std::endl;
     }
 
-    void Audio::open(string fileName, string fileId) {
+    bool Audio::open(string fileName, string fileId) {
       std::cout << "open file name with id: " + fileId << std::endl;
 
-      //    Codec::Vorbis * v = new Codec::Vorbis();
-//      this -> codecMap["vorbis"] = new Codec::Vorbis();
-//      this -> codecMap["vorbis"] -> open(fileName, fileId);
+      /*
+       * Opening file contains with follow steps:
+       * 1. We should check file extension (.ogg, .wav, .flac)
+       * 2. Check if file extension equal one of supported file formats.
+       * 3. (NOT IMPLEMENTED YET) If this extension is missing, we should find
+       * the type of file.
+       * 4. If file extension not supported, exit.
+       */
+
+      // get file extension
+      this -> fileExt = Utils::Func::getFileExtension(fileName);
+
+      // check if extension is in supportedFormat list
+      if (!checkSupportedFormat()) {
+        cerr << "File extension \"" << fileExt << "\" is unsupported." << endl;
+        return false;
+      }
+
+      // register fileId with fileName in AudioInfo database
+      this -> _audioInfo -> setFileId(fileId, fileName);
+
+      // call open method in appropriate codec
+      this -> codecHashMap[this -> fileExt] -> open(fileId);
+
+      return true;
     }
 
     void Audio::play(string fileId) {
       std::cout << "play file name with id: " + fileId << std::endl;
 
-//      this -> codecMap["vorbis"] -> play(fileId);
+      codecHashMap[fileExt] -> play(fileId);
     }
 
     void Audio::pause(string fileId) {
@@ -78,6 +115,16 @@ namespace SilentMedia {
 
     void Audio::setSeek(string fileId, float seekVal) {
       std::cout << "set seek value " << seekVal << std::endl;
+    }
+
+    bool Audio::checkSupportedFormat(void) {
+      list < string >::iterator it;
+      for (it = supportedFormats.begin(); it != supportedFormats.end(); ++it) {
+        if (fileExt.compare(*it)) {
+          return true;
+        }
+        return false;
+      }
     }
   }
 }

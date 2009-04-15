@@ -45,7 +45,16 @@ namespace SilentMedia {
       }
 
       bool SoundSystem::init(string driver) {
-        return (ao -> init(driver));
+        return (this -> ao -> init(driver));
+      }
+
+      void SoundSystem::setAudioParams(int channels, int sampleRate, int bitsPerSample) {
+        this -> ao -> setAudioParams(channels, sampleRate, bitsPerSample);
+      }
+
+      int SoundSystem::play(char * buf, const int bufSize) {
+
+        return (this -> ao -> play(buf, bufSize));
       }
 
     }

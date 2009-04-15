@@ -29,6 +29,9 @@
 // main include
 #include <include.hpp>
 
+// Util class
+#include <Utils/Func/Func.hpp>
+
 /*
  * We should include:
  * SoundSystem, AbstractCodec, AudioInfo.
@@ -37,34 +40,58 @@
 #include <Audio/Codec/AbstractCodec.hpp>
 #include <Audio/AudioInfo.hpp>
 
+/*
+ * Include all audio codec.
+ */
+#include <Audio/Codec/Vorbis/Vorbis.hpp>
+
 namespace SilentMedia {
   namespace Audio {
+    /**
+     * Main audio class. Should start programming from here. Provide main
+     * interface to play music, control it and fetch information about it.
+     */
     class Audio {
       public:
+        /**
+         * Constructor.
+         */
         Audio();
+
+        /**
+         * Destructor.
+         */
         ~Audio();
 
         /**
          * Initialized audio system with appropriate sound driver.
-         * @param driver audio system driver.
+         * @param[in] driver audio system driver.
          * @return true in success, false in error.
          * @see http://www.xiph.org/ao/doc/drivers.html
          */
         bool init(string driver);
         void finish();
 
-        virtual void open(string fileName, string fileId);
-        virtual void play(string fileId);
-        virtual void pause(string fileId);
-        virtual void stop(string fileId);
-        virtual void close(string fileId);
+        bool open(string fileName, string fileId);
+        void play(string fileId);
+        void pause(string fileId);
+        void stop(string fileId);
+        void close(string fileId);
 
-        virtual float getSeek(string fileId);
-        virtual void setSeek(string fileId, float seekVal);
+        float getSeek(string fileId);
+        void setSeek(string fileId, float seekVal);
 
       private:
-        SoundSystem::SoundSystem * soundSystem;
+        bool checkSupportedFormat(void);
+
+        list < string > supportedFormats;
+
+        SoundSystem::SoundSystem * _soundSystem;
+        AudioInfo * _audioInfo;
         map < string, Codec::AbstractCodec * > codecHashMap;
+
+        // file extension
+        string fileExt;
     };
   }
 }

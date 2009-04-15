@@ -26,23 +26,32 @@
 #ifndef _SILENTMEDIA_SOUNDSYSTEM_HPP_
 #define _SILENTMEDIA_SOUNDSYSTEM_HPP_
 
+// main include
 #include <include.hpp>
+
+/*
+ * We should include AbstractSoundSystem
+ */
 #include <Audio/SoundSystem/AbstractSoundSystem.hpp>
+
+// include available sound systems
 #include <Audio/SoundSystem/libao/AO.hpp>
 
 namespace SilentMedia {
   namespace Audio {
     namespace SoundSystem {
-      class SoundSystem {
+      class SoundSystem: public AbstractSoundSystem {
         public:
           SoundSystem();
           ~SoundSystem();
 
           static SoundSystem * Instance(void);
 
-          bool init(string driver);
-          void setParams(int channels, int sampleRate, int bits);
-          int play(char * buf, const int bufSize);
+          // Inheritance methods
+          virtual bool init(string driver);
+          virtual void setAudioParams(int channels, int sampleRate,
+              int bitsPerSample);
+          virtual int play(char * buf, const int bufSize);
 
         private:
           // Singleton variable

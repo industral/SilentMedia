@@ -31,20 +31,21 @@ int main(void) {
   Audio::Audio * audio = new Audio::Audio();
   audio -> init("alsa"); // init Audio system
 
-  audio -> open("src/test/music/file.ogg", "file1");
+  if (audio -> open("src/test/music/file.ogg", "file1")) {
 
-  //  audio -> getInfo("file1");
+    //  audio -> getInfo("file1");
 
-  audio -> play("file1");
-  //  audio -> pause("file1");
-  //  audio -> play("file1");
-  //  audio -> stop("file1");
-  //  audio -> close("file1");
+    audio -> play("file1");
+    //  audio -> pause("file1");
+    //  audio -> play("file1");
+    //  audio -> stop("file1");
+    //  audio -> close("file1");
+  }
 
   //  audio -> finish();
 
   delete audio;
-  audio = 0;
+  audio = NULL;
 
   return 0;
 }

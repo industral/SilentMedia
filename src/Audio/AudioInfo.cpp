@@ -36,7 +36,7 @@ namespace SilentMedia {
       //    this -> audio = Audio::Instance();
     }
 
-    AudioInfo::~AudioInfo(void) {
+    AudioInfo::~AudioInfo() {
       //    cout << "AudioInfo Destructor.. " << endl;
     }
 
@@ -59,39 +59,42 @@ namespace SilentMedia {
       this -> bitsPerSample = bitsPerSample;
     }
 
-    bool AudioInfo::play(const void * buf, string id) {
-      //    this -> ssystem -> play(buf, id);
-      return true;
+    //  void AudioInfo::begin(string id) {
+    //    this -> ssystem -> allocateQuery(id);
+    //    this -> ssystem -> setAudioParams(this -> channels, this -> sampleRate);
+    //  }
+
+    //  void AudioInfo::end(string id) {
+    //    this -> audio = Audio::Instance();
+    //
+    //    this -> ssystem -> deAllocateQuery(id);
+    //    this -> audio -> destroyObj(id);
+    //  }
+
+    // int AudioInfo::getDSPDev ( void ) const {
+    //    return ( this -> ssystem -> getDSPDev() );
+    // }
+
+    //  void AudioInfo::clean(void) {
+    //    this -> picData . clear();
+    //    this -> vorbisComm . clear();
+    //  }
+
+    // void Audio::setCover ( string coverData ) {
+    // //    if ( this -> ext == "flac" ) {
+    // //       objs [ "flac" ] -> setPicture ( coverData );
+    // //       FlacDecode flacdec;
+    // //       flacdec . setPicture ( coverData );
+    // //    }
+    // }
+
+    string AudioInfo::getFileNameByFileId(const string& fileId) {
+      return (this -> fileIdMap[fileId]);
     }
 
-  //  void AudioInfo::begin(string id) {
-  //    this -> ssystem -> allocateQuery(id);
-  //    this -> ssystem -> setParams(this -> channels, this -> sampleRate);
-  //  }
-
-  //  void AudioInfo::end(string id) {
-  //    this -> audio = Audio::Instance();
-  //
-  //    this -> ssystem -> deAllocateQuery(id);
-  //    this -> audio -> destroyObj(id);
-  //  }
-
-  // int AudioInfo::getDSPDev ( void ) const {
-  //    return ( this -> ssystem -> getDSPDev() );
-  // }
-
-  //  void AudioInfo::clean(void) {
-  //    this -> picData . clear();
-  //    this -> vorbisComm . clear();
-  //  }
-
-  // void Audio::setCover ( string coverData ) {
-  // //    if ( this -> ext == "flac" ) {
-  // //       objs [ "flac" ] -> setPicture ( coverData );
-  // //       FlacDecode flacdec;
-  // //       flacdec . setPicture ( coverData );
-  // //    }
-  // }
+    void AudioInfo::setFileId(const string& fileId, const string& fileName) {
+      this -> fileIdMap[fileId] = fileName;
+    }
 
   }
 }

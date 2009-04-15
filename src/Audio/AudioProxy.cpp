@@ -28,11 +28,33 @@
 namespace SilentMedia {
   namespace Audio {
     AudioProxy::AudioProxy() {
-//      this -> _soundSystem = SoundSystemManager::Instance();
+      // create SoundSystem instance
+      _soundSystem = SoundSystem::SoundSystem::Instance();
+      // create AudioInfo instance
+      _audioInfo = AudioInfo::Instance();
     }
 
     AudioProxy::~AudioProxy() {
     }
 
+    // AudioInfo methods
+    string AudioProxy::getFileNameByFileId(const string& fileId) {
+      return (this -> _audioInfo -> getFileNameByFileId(fileId));
+    }
+
+    // SoundSystem methods
+    int AudioProxy::play(char * buf, const int bufSize) {
+      return (_soundSystem -> play(buf, bufSize));
+    }
+
+    void AudioProxy::setAudioParams(string fileName, long int fileSize,
+        double totalTime, int channels, int sampleRate, double bitRate,
+        int bitsPerSample) {
+      // update information in AudioInfo
+      _audioInfo -> setAudioParams(fileName, fileSize, totalTime, channels,
+          sampleRate, bitRate, bitsPerSample);
+      // set audio parameters for audio in SoundSystem
+      _soundSystem -> setAudioParams(channels, sampleRate, bitsPerSample);
+    }
   }
 }

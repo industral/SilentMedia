@@ -26,11 +26,19 @@
 #ifndef _SILENTMEDIA_VORBIS_HPP_
 #define _SILENTMEDIA_VORBIS_HPP_
 
+// main include
 #include <include.hpp>
 
-#include <Audio/Codec/AbstractCodec.hpp>
-#include <Audio/SoundSystem/libao/AO.hpp>
+// include Util class
+#include <Utils/Func/Func.hpp>
 
+/*
+ * We should include AbstractCodec, AudioProxy.
+ */
+#include <Audio/Codec/AbstractCodec.hpp>
+#include <Audio/AudioProxy.hpp>
+
+// Vorbis include
 #include <vorbis/codec.h>
 #include <vorbis/vorbisfile.h>
 
@@ -41,10 +49,10 @@ namespace SilentMedia {
     namespace Codec {
       class Vorbis: virtual public AbstractCodec {
         public:
-          Vorbis(void);
-          virtual ~Vorbis(void);
+          Vorbis();
+          virtual ~Vorbis();
 
-          virtual void open(string fileName, string fileId);
+          virtual bool open(string fileId);
           virtual void play(string fileId);
           virtual void pause(string fileId);
           virtual void stop(string fileId);
@@ -53,20 +61,24 @@ namespace SilentMedia {
           virtual float getSeek(string fileId);
           virtual void setSeek(string fileId, float seekVal);
         private:
-          void readVorbisComment(void);
+          // AudioProxy object
+          AudioProxy * audioProxy;
 
+          // vorbis variables
+          // playback vorbis file object
           OggVorbis_File vf;
-          OggVorbis_File pvf;
-
-          //        DecodedData * ddata;
-          int dspDev;
-
+          // temp vorbis file object
+          OggVorbis_File tvf;
+          // vorbis informaion object
           vorbis_info *vi;
 
+          void readVorbisComment(void);
+
+          // audio parameters
+          std::string fileName;
           double length;
           double seekPos;
           bool seek;
-          std::string fileName;
       };
     }
   }
