@@ -1,8 +1,0 @@
-<area shape="rect" href="$include_8hpp.html" title="include.hpp" alt="" coords="513,304,601,331">
-<area shape="rect" href="$_func_8hpp.html" title="Utils/Func/Func.hpp" alt="" coords="1001,229,1140,256">
-<area shape="rect" href="$_sound_system_8hpp.html" title="Audio/SoundSystem/SoundSystem.hpp" alt="" coords="5,80,256,107">
-<area shape="rect" href="$_abstract_codec_8hpp.html" title="Audio/Codec/AbstractCodec.hpp" alt="" coords="337,155,548,181">
-<area shape="rect" href="$_audio_info_8hpp.html" title="Audio/AudioInfo.hpp" alt="" coords="472,80,611,107">
-<area shape="rect" href="$_vorbis_8hpp.html" title="Audio/Codec/Vorbis/Vorbis.hpp" alt="" coords="635,80,835,107">
-<area shape="rect" href="$_abstract_sound_system_8hpp.html" title="Audio/SoundSystem/AbstractSoundSystem.hpp" alt="" coords="49,229,348,256">
-<area shape="rect" href="$_a_o_8hpp.html" title="Audio/SoundSystem/libao/AO.hpp" alt="" coords="95,155,313,181">
