@@ -7,5 +7,5 @@ CMakeCache.txt
 cmake_install.cmake
 CMakeFiles
 
-libsml.so
-test1
+*.so
+test*
