@@ -25,8 +25,18 @@
 
 #include "Audio.hpp"
 
+void * playThreadFunc(void * data) {
+  SilentMedia::Audio::Audio * audio = SilentMedia::Audio::Audio::Instance();
+  string id = static_cast < const char * > (data);
+  cout << "Id: " << id << endl;
+  audio -> play_(id);
+  return NULL;
+}
+
 namespace SilentMedia {
   namespace Audio {
+    Audio * Audio::_audio = NULL;
+
     Audio::Audio() {
       // create SoundSystem instance
       _soundSystem = SoundSystem::SoundSystem::Instance();
@@ -43,11 +53,21 @@ namespace SilentMedia {
     }
 
     Audio::~Audio() {
+      //TODO: Need to support multiple
+      pthread_join(this -> threadMap[this -> tmpId], NULL);
+
       delete _soundSystem;
       _soundSystem = NULL;
 
       delete _audioInfo;
       _audioInfo = NULL;
+    }
+
+    Audio * Audio::Instance() {
+      if (_audio == NULL) {
+        _audio = new Audio();
+      }
+      return _audio;
     }
 
     bool Audio::init(string driver) {
@@ -91,8 +111,13 @@ namespace SilentMedia {
     }
 
     void Audio::play(string fileId) {
-      std::cout << "play file name with id: " + fileId << std::endl;
+      pthread_create(&this -> threadMap[fileId], NULL, playThreadFunc,
+          (void *) fileId.c_str());
+      this -> tmpId = fileId;
+    }
 
+    void Audio::play_(string fileId) {
+      std::cout << "play file name with id: " + fileId << std::endl;
       codecHashMap[fileExt] -> play(fileId);
     }
 

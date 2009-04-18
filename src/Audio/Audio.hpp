@@ -45,6 +45,9 @@
  */
 #include <libsml/Audio/Codec/Vorbis/Vorbis.hpp>
 
+// include pthread
+#include <pthread.h>
+
 namespace SilentMedia {
   namespace Audio {
     /**
@@ -63,6 +66,8 @@ namespace SilentMedia {
          */
         ~Audio();
 
+        static Audio * Instance();
+
         /**
          * Initialized audio system with appropriate sound driver.
          * @param[in] driver audio system driver.
@@ -74,6 +79,7 @@ namespace SilentMedia {
 
         bool open(string fileName, string fileId);
         void play(string fileId);
+        void play_(string fileId);
         void pause(string fileId);
         void stop(string fileId);
         void close(string fileId);
@@ -82,16 +88,21 @@ namespace SilentMedia {
         void setSeek(string fileId, float seekVal);
 
       private:
-        bool checkSupportedFormat(void);
-
-        list < string > supportedFormats;
+        // self instance variable
+        static Audio * _audio;
 
         SoundSystem::SoundSystem * _soundSystem;
         AudioInfo * _audioInfo;
+
+        list < string > supportedFormats;
         map < string, Codec::AbstractCodec * > codecHashMap;
+        map < string, pthread_t > threadMap;
 
         // file extension
         string fileExt;
+        string tmpId;
+
+        bool checkSupportedFormat(void);
     };
   }
 }

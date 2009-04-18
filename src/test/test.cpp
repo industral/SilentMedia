@@ -28,7 +28,7 @@
 
 using namespace SilentMedia;
 int main(void) {
-  Audio::Audio * audio = new Audio::Audio();
+  Audio::Audio * audio = Audio::Audio::Instance();
   audio -> init("alsa"); // init Audio system
 
   if (audio -> open("src/test/music/file.ogg", "file1")) {
