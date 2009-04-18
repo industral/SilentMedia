@@ -26,8 +26,8 @@
 #ifndef _SILENTMEDIA_AO_HPP_
 #define _SILENTMEDIA_AO_HPP_
 
-#include <include.hpp>
-#include <Audio/SoundSystem/AbstractSoundSystem.hpp>
+#include <libsml/include.hpp>
+#include <libsml/Audio/SoundSystem/AbstractSoundSystem.hpp>
 #include <ao/ao.h>
 
 namespace SilentMedia {

@@ -26,7 +26,7 @@
 #ifndef _SILENTMEDIA_AUDIOINFO_HPP_
 #define _SILENTMEDIA_AUDIOINFO_HPP_
 
-#include <include.hpp>
+#include <libsml/include.hpp>
 
 namespace SilentMedia {
   namespace Audio {

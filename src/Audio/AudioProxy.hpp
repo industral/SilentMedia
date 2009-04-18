@@ -27,13 +27,13 @@
 #define _SILENTMEDIA_AUDIOPROXY_HPP_
 
 // main include
-#include <include.hpp>
+#include <libsml/include.hpp>
 
 /*
  * We should include AudioInfo, SoundSystem
  */
-#include <Audio/AudioInfo.hpp>
-#include <Audio/SoundSystem/SoundSystem.hpp>
+#include <libsml/Audio/AudioInfo.hpp>
+#include <libsml/Audio/SoundSystem/SoundSystem.hpp>
 
 using namespace std;
 

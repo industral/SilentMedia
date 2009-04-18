@@ -23,8 +23,8 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
  ******************************************************************************/
 
-#include <all.hpp>
-#include <Audio/Audio.hpp>
+#include <libsml/all.hpp>
+#include <libsml/Audio/Audio.hpp>
 
 using namespace SilentMedia;
 int main(void) {

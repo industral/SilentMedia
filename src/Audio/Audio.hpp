@@ -27,23 +27,23 @@
 #define _SILENTMEDIA_AUDIO_HPP_
 
 // main include
-#include <include.hpp>
+#include <libsml/include.hpp>
 
 // Util class
-#include <Utils/Func/Func.hpp>
+#include <libsml/Utils/Func/Func.hpp>
 
 /*
  * We should include:
  * SoundSystem, AbstractCodec, AudioInfo.
  */
-#include <Audio/SoundSystem/SoundSystem.hpp>
-#include <Audio/Codec/AbstractCodec.hpp>
-#include <Audio/AudioInfo.hpp>
+#include <libsml/Audio/SoundSystem/SoundSystem.hpp>
+#include <libsml/Audio/Codec/AbstractCodec.hpp>
+#include <libsml/Audio/AudioInfo.hpp>
 
 /*
  * Include all audio codec.
  */
-#include <Audio/Codec/Vorbis/Vorbis.hpp>
+#include <libsml/Audio/Codec/Vorbis/Vorbis.hpp>
 
 namespace SilentMedia {
   namespace Audio {

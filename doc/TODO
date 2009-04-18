@@ -9,3 +9,5 @@
 - add logger
 
 
+=== Add playback if thread mode ===
+=== Need to add all check, if user set Audio driver, ope file, etc... ====

@@ -27,16 +27,16 @@
 #define _SILENTMEDIA_VORBIS_HPP_
 
 // main include
-#include <include.hpp>
+#include <libsml/include.hpp>
 
 // include Util class
-#include <Utils/Func/Func.hpp>
+#include <libsml/Utils/Func/Func.hpp>
 
 /*
  * We should include AbstractCodec, AudioProxy.
  */
-#include <Audio/Codec/AbstractCodec.hpp>
-#include <Audio/AudioProxy.hpp>
+#include <libsml/Audio/Codec/AbstractCodec.hpp>
+#include <libsml/Audio/AudioProxy.hpp>
 
 // Vorbis include
 #include <vorbis/codec.h>

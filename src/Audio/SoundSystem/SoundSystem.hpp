@@ -27,15 +27,15 @@
 #define _SILENTMEDIA_SOUNDSYSTEM_HPP_
 
 // main include
-#include <include.hpp>
+#include <libsml/include.hpp>
 
 /*
  * We should include AbstractSoundSystem
  */
-#include <Audio/SoundSystem/AbstractSoundSystem.hpp>
+#include <libsml/Audio/SoundSystem/AbstractSoundSystem.hpp>
 
 // include available sound systems
-#include <Audio/SoundSystem/libao/AO.hpp>
+#include <libsml/Audio/SoundSystem/libao/AO.hpp>
 
 namespace SilentMedia {
   namespace Audio {

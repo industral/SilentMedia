@@ -28,7 +28,7 @@
 #ifndef _SILENTMEDIA_FUNC_HPP_
 #define _SILENTMEDIA_FUNC_HPP_
 
-#include <include.hpp>
+#include <libsml/include.hpp>
 
 namespace SilentMedia {
   namespace Utils {

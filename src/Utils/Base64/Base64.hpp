@@ -26,7 +26,7 @@
 #ifndef _SILENTMEDIA_BASE64_HPP_
 #define _SILENTMEDIA_BASE64_HPP_
 
-#include <include.hpp>
+#include <libsml/include.hpp>
 
 namespace Utils {
   namespace Base64 {

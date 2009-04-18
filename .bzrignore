@@ -9,3 +9,4 @@ CMakeFiles
 
 *.so
 test*
+doc/api/*
