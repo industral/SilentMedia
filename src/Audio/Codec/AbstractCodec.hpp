@@ -39,15 +39,15 @@ namespace SilentMedia {
           virtual ~AbstractCodec() {
           }
 
-          virtual bool open(string fileId) = 0;
-          virtual void close(string fileId) = 0;
+          virtual bool open(const string &fileId) = 0;
+          virtual void close(const string &fileId) = 0;
 
-          virtual void play(string fileId) = 0;
-          virtual void pause(string fileId) = 0;
-          virtual void stop(string fileId) = 0;
+          virtual void play(const string &fileId) = 0;
+          virtual void pause(const string &fileId) = 0;
+          virtual void stop(const string &fileId) = 0;
 
-          virtual float getSeek(string fileId) = 0;
-          virtual void setSeek(string fileId, float seekVal) = 0;
+          virtual float getSeek(const string &fileId) = 0;
+          virtual void setSeek(const string &fileId, const float &seekVal) = 0;
         protected:
       };
     }

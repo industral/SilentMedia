@@ -47,16 +47,36 @@ namespace SilentMedia {
       return _audioInfo;
     }
 
-    void AudioInfo::setAudioParams(string fileName, long int fileSize,
-        double totalTime, int channels, int sampleRate, double bitRate,
-        int bitsPerSample) {
-      this -> fileName = fileName;
-      this -> fileSize = fileSize;
-      this -> totalTime = totalTime;
-      this -> channels = channels;
-      this -> sampleRate = sampleRate;
-      this -> bitRate = bitRate;
-      this -> bitsPerSample = bitsPerSample;
+    void AudioInfo::setAudioParams(const string& fileId,
+        const string& fileName, long fileSize, double totalTime, int channels,
+        int sampleRate, double bitRate, int bitsPerSample) {
+      this -> fileNameMap[fileId] = fileName;
+      this -> fileSizeMap[fileId] = fileSize;
+      this -> totalTimeMap[fileId] = totalTime;
+      this -> channelsMap[fileId] = channels;
+      this -> sampleRateMap[fileId] = sampleRate;
+      this -> bitRateMap[fileId] = bitRate;
+      this -> bitsPerSampleMap[fileId] = bitsPerSample;
+    }
+
+    // get methods
+    long AudioInfo::getFileSize(const string &fileId) {
+      return (this -> fileSizeMap[fileId]);
+    }
+    double AudioInfo::getTotalTime(const string &fileId) {
+      return (this -> totalTimeMap[fileId]);
+    }
+    int AudioInfo::getChannels(const string &fileId) {
+      return (this -> channelsMap[fileId]);
+    }
+    int AudioInfo::getSampleRate(const string &fileId) {
+      return (this -> sampleRateMap[fileId]);
+    }
+    double AudioInfo::getBitRate(const string &fileId) {
+      return (this -> bitRateMap[fileId]);
+    }
+    int AudioInfo::getBitsPerSample(const string &fileId) {
+      return (this -> bitsPerSampleMap[fileId]);
     }
 
     //  void AudioInfo::begin(string id) {

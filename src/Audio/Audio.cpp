@@ -25,14 +25,6 @@
 
 #include "Audio.hpp"
 
-void * playThreadFunc(void * data) {
-  SilentMedia::Audio::Audio * audio = SilentMedia::Audio::Audio::Instance();
-  string id = static_cast < const char * > (data);
-  cout << "Id: " << id << endl;
-  audio -> play_(id);
-  return NULL;
-}
-
 namespace SilentMedia {
   namespace Audio {
     Audio * Audio::_audio = NULL;
@@ -53,9 +45,6 @@ namespace SilentMedia {
     }
 
     Audio::~Audio() {
-      //TODO: Need to support multiple
-      pthread_join(this -> threadMap[this -> tmpId], NULL);
-
       delete _soundSystem;
       _soundSystem = NULL;
 
@@ -70,17 +59,20 @@ namespace SilentMedia {
       return _audio;
     }
 
-    bool Audio::init(string driver) {
-      std::cout << "in audio init" << std::endl;
+    bool Audio::init() {
+      return (_soundSystem -> init());
+    }
+
+    bool Audio::init(const string &driver) {
+      //      std::cout << "in audio init" << std::endl;
       return (_soundSystem -> init(driver));
-      //    ao -> setAudioParams(2, 44100, 16);
     }
 
     void Audio::finish() {
       std::cout << "close audio system" << std::endl;
     }
 
-    bool Audio::open(string fileName, string fileId) {
+    bool Audio::open(const string &fileName, const string &fileId) {
       std::cout << "open file name with id: " + fileId << std::endl;
 
       /*
@@ -110,39 +102,45 @@ namespace SilentMedia {
       return true;
     }
 
-    void Audio::play(string fileId) {
-      pthread_create(&this -> threadMap[fileId], NULL, playThreadFunc,
-          (void *) fileId.c_str());
-      this -> tmpId = fileId;
+    void Audio::play(const string &fileId) {
+      this -> threadMap[fileId] = new boost::thread(boost::bind(
+          &Audio::playInThread, this, fileId));
     }
 
-    void Audio::play_(string fileId) {
+    void Audio::playInThread(const string &fileId) {
       std::cout << "play file name with id: " + fileId << std::endl;
       codecHashMap[fileExt] -> play(fileId);
+      this -> threadMap[fileId] -> join();
     }
 
-    void Audio::pause(string fileId) {
+    void Audio::pause(const string &fileId) {
       std::cout << "pause file name with id: " + fileId << std::endl;
     }
 
-    void Audio::stop(string fileId) {
+    void Audio::stop(const string &fileId) {
+      if (threadMap[fileId]) {
+        cout << "try to stop" << endl;
+        this -> threadMap[fileId] -> join();
+      }
+
       std::cout << "stop file name with id: " + fileId << std::endl;
     }
 
-    void Audio::close(string fileId) {
+    void Audio::close(const string &fileId) {
       std::cout << "close file name with id: " + fileId << std::endl;
+      this -> codecHashMap[this -> fileExt] -> close(fileId);
     }
 
-    float Audio::getSeek(string fileId) {
+    float Audio::getSeek(const string &fileId) {
       std::cout << "get seek.. " << std::endl;
       return 0.0;
     }
 
-    void Audio::setSeek(string fileId, float seekVal) {
+    void Audio::setSeek(const string &fileId, const float &seekVal) {
       std::cout << "set seek value " << seekVal << std::endl;
     }
 
-    bool Audio::checkSupportedFormat(void) {
+    bool Audio::checkSupportedFormat() {
       list < string >::iterator it;
       for (it = supportedFormats.begin(); it != supportedFormats.end(); ++it) {
         if (fileExt.compare(*it)) {
@@ -150,6 +148,27 @@ namespace SilentMedia {
         }
         return false;
       }
+      return false;
+    }
+
+    // AudioInfo methods
+    long Audio::getFileSize(const string &fileId) {
+      return _audioInfo -> getFileSize(fileId);
+    }
+    double Audio::getTotalTime(const string &fileId) {
+      return _audioInfo -> getTotalTime(fileId);
+    }
+    int Audio::getChannels(const string &fileId) {
+      return _audioInfo -> getChannels(fileId);
+    }
+    int Audio::getSampleRate(const string &fileId) {
+      return _audioInfo -> getSampleRate(fileId);
+    }
+    double Audio::getBitRate(const string &fileId) {
+      return _audioInfo -> getBitRate(fileId);
+    }
+    int Audio::getBitsPerSample(const string &fileId) {
+      return _audioInfo -> getBitsPerSample(fileId);
     }
   }
 }

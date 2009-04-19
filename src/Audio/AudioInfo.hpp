@@ -39,9 +39,9 @@ namespace SilentMedia {
         //      void begin(string id);
         //      void end(string id);
 
-        void setAudioParams(string fileName, long int fileSize = -1,
-            double totalTime = -1, int channels = -1, int sampleRate = -1,
-            double bitRate = -1, int bitsPerSample = -1);
+        void setAudioParams(const string& fileId, const string& fileName,
+            long fileSize = -1, double totalTime = -1, int channels = -1,
+            int sampleRate = -1, double bitRate = -1, int bitsPerSample = -1);
 
         //      void clean(void);
         //          bool setAudioParams ( void );
@@ -65,24 +65,12 @@ namespace SilentMedia {
         }
 
         // get func
-        unsigned long int getFileSize(void) {
-          return (this -> fileSize);
-        }
-        double getTotalTime(void) {
-          return (this -> totalTime);
-        }
-        unsigned int getChannels(void) {
-          return (this -> channels);
-        }
-        unsigned int getSampleRate(void) {
-          return (this -> sampleRate);
-        }
-        double getBitRate(void) {
-          return (this -> bitRate);
-        }
-        short int getBitsPerSample(void) {
-          return (this -> bitsPerSample);
-        }
+        long getFileSize(const string &fileId);
+        double getTotalTime(const string &fileId);
+        int getChannels(const string &fileId);
+        int getSampleRate(const string &fileId);
+        double getBitRate(const string &fileId);
+        int getBitsPerSample(const string &fileId);
 
         //          int getDSPDev ( void ) const;
 
@@ -100,13 +88,13 @@ namespace SilentMedia {
         bool playCheck;
 
         //      map < string, map < string, void * > > archive;
-        string fileName;
-        long int fileSize;
-        double totalTime;
-        int channels;
-        int sampleRate;
-        double bitRate;
-        int bitsPerSample;
+        map < string, string > fileNameMap;
+        map < string, long > fileSizeMap;
+        map < string, double > totalTimeMap;
+        map < string, int > channelsMap;
+        map < string, int > sampleRateMap;
+        map < string, double > bitRateMap;
+        map < string, int > bitsPerSampleMap;
 
         //      multimap < ::FLAC__StreamMetadata_Picture_Type, string > picData;
         map < string, string > vorbisComm; // Vorbis Comment

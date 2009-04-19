@@ -69,8 +69,8 @@ bool SilentMedia::Codec::WAV::init ( std::string inputFile, std::string idObj ) 
    return true;
 }
 
-bool SilentMedia::Codec::WAV::play ( std::string id ) {
-//    std::cout << "WAV::play(): id = " << id << std::endl;
+bool SilentMedia::Codec::WAV::write ( std::string id ) {
+//    std::cout << "WAV::write(): id = " << id << std::endl;
    // Записываем размер файла в переменную, так как при каждой инициализации другого файла это значение будет менятся
    this -> fileSize = wavinfo -> getChunkSize(); // ?
    // Не открываем файл повторно если он в режиме воспроизведения или делался seek
@@ -92,7 +92,7 @@ bool SilentMedia::Codec::WAV::play ( std::string id ) {
    this -> ddata -> begin ( this -> idObj );
    while ( ( actlen = read ( this -> input_fd, buf, bufSize ) ) ) {
       this -> offsetPos += actlen;
-      this -> ddata -> play ( &buf, this -> idObj );
+      this -> ddata -> write ( &buf, this -> idObj );
 //       write ( dspDev, buf, actlen );
 //       fwrite(buf,1,actlen,stdout);
 //       std::cout << offsetPos << std::endl;

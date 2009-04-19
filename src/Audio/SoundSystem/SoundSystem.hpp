@@ -45,13 +45,15 @@ namespace SilentMedia {
           SoundSystem();
           ~SoundSystem();
 
-          static SoundSystem * Instance(void);
+          static SoundSystem * Instance();
 
           // Inheritance methods
-          virtual bool init(string driver);
-          virtual void setAudioParams(int channels, int sampleRate,
-              int bitsPerSample);
-          virtual int play(char * buf, const int bufSize);
+          virtual int init(const string &driver);
+          virtual int init();
+          virtual int close();
+          virtual void setAudioParams(const int &channels,
+              const int &sampleRate, const int &bitsPerSample);
+          virtual int write(char &buf, const int &bufSize);
 
         private:
           // Singleton variable

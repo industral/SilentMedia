@@ -9,5 +9,6 @@
 - add logger
 
 
-=== Add playback if thread mode ===
+Change architecture to drop Singleton from Audio
+
 === Need to add all check, if user set Audio driver, ope file, etc... ====

@@ -37,28 +37,39 @@ namespace SilentMedia {
       AO::~AO() {
       }
 
-      bool AO::init(string driver) {
+      int AO::init(const string &driver) {
         if (driver.empty()) {
-          default_driver = ao_default_driver_id();
+          this -> init();
         } else {
-          default_driver = ao_driver_id(driver.c_str());
+          this -> default_driver = ao_driver_id(driver.c_str());
         }
-        return default_driver;
+        return this -> default_driver;
       }
 
-      void AO::setAudioParams(int channels, int sampleRate, int bitsPerSample) {
+      int AO::init() {
+        this -> default_driver = ao_default_driver_id();
+        return (this -> default_driver);
+      }
+
+      int AO::close() {
+        return (ao_close(this -> device));
+      }
+
+      void AO::setAudioParams(const int &channels, const int &sampleRate,
+          const int &bitsPerSample) {
         format.bits = bitsPerSample;
         format.channels = channels;
         format.rate = sampleRate;
         format.byte_format = AO_FMT_LITTLE;
 
         device = ao_open_live(default_driver, &format, NULL);
+        if (device == NULL) {
+          cerr << "Error to set audio parameters" << endl;
+        }
       }
 
-      int AO::play(char * buf, const int bufSize) {
-        //        cout << "asd: " << buf << endl;
-        return (ao_play(device, buf, bufSize));
-
+      int AO::write(char &buf, const int &bufSize) {
+        return (ao_play(device, &buf, bufSize));
       }
     }
   }

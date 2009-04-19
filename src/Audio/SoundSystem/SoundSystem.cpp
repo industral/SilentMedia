@@ -37,24 +37,32 @@ namespace SilentMedia {
       SoundSystem::~SoundSystem() {
       }
 
-      SoundSystem * SoundSystem::Instance(void) {
+      SoundSystem * SoundSystem::Instance() {
         if (_soundSystem == NULL) {
           _soundSystem = new SoundSystem();
         }
         return _soundSystem;
       }
 
-      bool SoundSystem::init(string driver) {
+      int SoundSystem::init(const string &driver) {
         return (this -> ao -> init(driver));
       }
 
-      void SoundSystem::setAudioParams(int channels, int sampleRate, int bitsPerSample) {
+      int SoundSystem::init() {
+        return (this -> ao -> init());
+      }
+
+      int SoundSystem::close() {
+        return (this -> ao -> close());
+      }
+
+      void SoundSystem::setAudioParams(const int &channels,
+          const int &sampleRate, const int &bitsPerSample) {
         this -> ao -> setAudioParams(channels, sampleRate, bitsPerSample);
       }
 
-      int SoundSystem::play(char * buf, const int bufSize) {
-
-        return (this -> ao -> play(buf, bufSize));
+      int SoundSystem::write(char &buf, const int &bufSize) {
+        return (this -> ao -> write(buf, bufSize));
       }
 
     }

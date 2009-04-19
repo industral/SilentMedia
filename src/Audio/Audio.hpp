@@ -45,14 +45,15 @@
  */
 #include <libsml/Audio/Codec/Vorbis/Vorbis.hpp>
 
-// include pthread
-#include <pthread.h>
+// include Boost Thread
+#include <boost/thread/thread.hpp>
+#include <boost/bind.hpp>
 
 namespace SilentMedia {
   namespace Audio {
     /**
      * Main audio class. Should start programming from here. Provide main
-     * interface to play music, control it and fetch information about it.
+     * interface to write music, control it and fetch information about it.
      */
     class Audio {
       public:
@@ -74,19 +75,27 @@ namespace SilentMedia {
          * @return true in success, false in error.
          * @see http://www.xiph.org/ao/doc/drivers.html
          */
-        bool init(string driver);
+        bool init(const string &driver);
+        bool init();
+
         void finish();
 
-        bool open(string fileName, string fileId);
-        void play(string fileId);
-        void play_(string fileId);
-        void pause(string fileId);
-        void stop(string fileId);
-        void close(string fileId);
+        bool open(const string &fileName, const string &fileId);
+        void play(const string &fileId);
+        void pause(const string &fileId);
+        void stop(const string &fileId);
+        void close(const string &fileId);
 
-        float getSeek(string fileId);
-        void setSeek(string fileId, float seekVal);
+        float getSeek(const string &fileId);
+        void setSeek(const string &fileId, const float &seekVal);
 
+        // AudioInfo methods
+        long getFileSize(const string &fileId);
+        double getTotalTime(const string &fileId);
+        int getChannels(const string &fileId);
+        int getSampleRate(const string &fileId);
+        double getBitRate(const string &fileId);
+        int getBitsPerSample(const string &fileId);
       private:
         // self instance variable
         static Audio * _audio;
@@ -96,13 +105,16 @@ namespace SilentMedia {
 
         list < string > supportedFormats;
         map < string, Codec::AbstractCodec * > codecHashMap;
-        map < string, pthread_t > threadMap;
+
+        map < string, boost::thread * > threadMap;
+        //        list < pthread_t > threadList;
 
         // file extension
         string fileExt;
         string tmpId;
 
-        bool checkSupportedFormat(void);
+        bool checkSupportedFormat();
+        void playInThread(const string &fileId);
     };
   }
 }

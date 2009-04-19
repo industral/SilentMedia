@@ -33,18 +33,24 @@ namespace SilentMedia {
     namespace SoundSystem {
       class AbstractSoundSystem {
         public:
+          /*
+           * Default constructor.
+           */
           AbstractSoundSystem() {
           }
 
           virtual ~AbstractSoundSystem() {
           }
 
-          virtual bool init(string driver) = 0;
-          virtual void setAudioParams(int channels, int sampleRate,
-              int bitsPerSample) = 0;
-          virtual int play(char * buf, const int bufSize) = 0;
+          virtual int init(const string &driver) = 0;
+          virtual int init() = 0;
+          virtual int close() = 0;
+          virtual void setAudioParams(const int &channels,
+              const int &sampleRate, const int &bitsPerSample) = 0;
+          virtual int write(char &buf, const int &bufSize) = 0;
 
         protected:
+        private:
       };
     }
   }

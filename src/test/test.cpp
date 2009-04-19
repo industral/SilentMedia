@@ -27,9 +27,12 @@
 #include <libsml/Audio/Audio.hpp>
 
 using namespace SilentMedia;
-int main(void) {
+int main() {
   Audio::Audio * audio = Audio::Audio::Instance();
-  audio -> init("alsa"); // init Audio system
+  audio -> init(); // init Audio system
+
+  Audio::Audio * audio2 = Audio::Audio::Instance();
+  audio2 -> init(); // init Audio system
 
   if (audio -> open("src/test/music/file.ogg", "file1")) {
 
@@ -37,15 +40,23 @@ int main(void) {
 
     audio -> play("file1");
     //  audio -> pause("file1");
-    //  audio -> play("file1");
+    //  audio -> write("file1");
     //  audio -> stop("file1");
     //  audio -> close("file1");
   }
 
-  //  audio -> finish();
-
   delete audio;
   audio = NULL;
+
+  if (audio2 -> open("src/test/music/file.ogg", "file2")) {
+    audio2 -> play("file2");
+  }
+
+  //  audio -> finish();
+
+
+  delete audio2;
+  audio2 = NULL;
 
   return 0;
 }

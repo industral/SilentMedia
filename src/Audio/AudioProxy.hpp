@@ -53,13 +53,14 @@ namespace SilentMedia {
          * @param[in] buf data audio buffer.
          * @param[in] bufSize buffer size.
          */
-        int play(char * buf, const int bufSize);
+        int write(char &buf, const int &bufSize);
 
         /**
          * Set audio information. Set information about file name, file size,
          * total time, channels, sample rate, bits rate, bits per sample.
-         * This method update information in AudioInfo and set appropriate
-         * parameters in SoundSystem.
+         * This method update information in AudioInfo.
+         * This method should call every time when we get information about
+         * track.
          * @params[in] fileName name of track that playback.
          * @param[in] fileSize size of file in bytes.
          * @param[in] totalTime total time of track.
@@ -68,9 +69,15 @@ namespace SilentMedia {
          * @param[in] bitRate bit rate of track (224 kbps).
          * @param[in] bitsPerSample bits per sample in track(16/24/32).
          */
-        void setAudioParams(string fileName, long int fileSize = -1,
-            double totalTime = -1, int channels = -1, int sampleRate = -1,
-            double bitRate = -1, int bitsPerSample = -1);
+        void setAudioParams(const string& fileId, const string& fileName,
+            long fileSize = -1, double totalTime = -1, int channels = -1,
+            int sampleRate = -1, double bitRate = -1, int bitsPerSample = -1);
+
+        /**
+         * Set appropriates parameter to SoundSystem. This method should call
+         * every time when new song start.
+         */
+        void setSoundSystemParams(const string &fileId);
       private:
         AudioInfo * _audioInfo;
         SoundSystem::SoundSystem * _soundSystem;

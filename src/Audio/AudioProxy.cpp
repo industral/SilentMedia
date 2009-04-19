@@ -43,18 +43,23 @@ namespace SilentMedia {
     }
 
     // SoundSystem methods
-    int AudioProxy::play(char * buf, const int bufSize) {
-      return (_soundSystem -> play(buf, bufSize));
+    int AudioProxy::write(char &buf, const int &bufSize) {
+      return (_soundSystem -> write(buf, bufSize));
     }
 
-    void AudioProxy::setAudioParams(string fileName, long int fileSize,
-        double totalTime, int channels, int sampleRate, double bitRate,
-        int bitsPerSample) {
+    void AudioProxy::setAudioParams(const string& fileId,
+        const string& fileName, long fileSize, double totalTime, int channels,
+        int sampleRate, double bitRate, int bitsPerSample) {
       // update information in AudioInfo
-      _audioInfo -> setAudioParams(fileName, fileSize, totalTime, channels,
-          sampleRate, bitRate, bitsPerSample);
+      _audioInfo -> setAudioParams(fileId, fileName, fileSize, totalTime,
+          channels, sampleRate, bitRate, bitsPerSample);
+    }
+
+    void AudioProxy::setSoundSystemParams(const string &fileId) {
       // set audio parameters for audio in SoundSystem
-      _soundSystem -> setAudioParams(channels, sampleRate, bitsPerSample);
+      _soundSystem -> setAudioParams(_audioInfo -> getChannels(fileId),
+          _audioInfo -> getSampleRate(fileId), _audioInfo -> getBitsPerSample(
+              fileId));
     }
   }
 }

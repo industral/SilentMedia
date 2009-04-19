@@ -52,33 +52,31 @@ namespace SilentMedia {
           Vorbis();
           virtual ~Vorbis();
 
-          virtual bool open(string fileId);
-          virtual void play(string fileId);
-          virtual void pause(string fileId);
-          virtual void stop(string fileId);
-          virtual void close(string fileId);
+          virtual bool open(const string &fileId);
+          virtual void play(const string &fileId);
+          virtual void pause(const string &fileId);
+          virtual void stop(const string &fileId);
+          virtual void close(const string &fileId);
 
-          virtual float getSeek(string fileId);
-          virtual void setSeek(string fileId, float seekVal);
+          virtual float getSeek(const string &fileId);
+          virtual void setSeek(const string &fileId, const float &seekVal);
         private:
           // AudioProxy object
           AudioProxy * audioProxy;
 
-          // vorbis variables
-          // playback vorbis file object
-          OggVorbis_File vf;
-          // temp vorbis file object
-          OggVorbis_File tvf;
-          // vorbis informaion object
-          vorbis_info *vi;
+          // Vorbis File map
+          map < string, OggVorbis_File > vorbisFileMap;
 
-          void readVorbisComment(void);
+          // Vorbis Info map
+          map < string, vorbis_info * > vorbisInfoMap;
 
           // audio parameters
-          std::string fileName;
-          double length;
-          double seekPos;
-          bool seek;
+          map < string, string > fileNameMap;
+          map < string, double > lengthMap;
+          map < string, double > seekPosMap;
+          map < string, bool > seekMap;
+
+          void readVorbisComment(const string &fileId);
       };
     }
   }
