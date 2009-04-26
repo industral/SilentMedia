@@ -44,10 +44,10 @@
  * Include all audio codec.
  */
 #include <libsml/Audio/Codec/Vorbis/Vorbis.hpp>
+#include <libsml/Audio/Codec/FLAC/FLAC.hpp>
 
-// include Boost Thread
-#include <boost/thread/thread.hpp>
-#include <boost/bind.hpp>
+// include pthread
+#include <pthread.h>
 
 namespace SilentMedia {
   namespace Audio {
@@ -81,7 +81,9 @@ namespace SilentMedia {
         void finish();
 
         bool open(const string &fileName, const string &fileId);
-        void play(const string &fileId);
+        void play(const string &fileId, bool resume = false);
+        void playInThread(const string &fileId, bool resume = false);
+        void playInThread();
         void pause(const string &fileId);
         void stop(const string &fileId);
         void close(const string &fileId);
@@ -93,8 +95,8 @@ namespace SilentMedia {
         long getFileSize(const string &fileId);
         double getTotalTime(const string &fileId);
         int getChannels(const string &fileId);
-        int getSampleRate(const string &fileId);
-        double getBitRate(const string &fileId);
+        long getSampleRate(const string &fileId);
+        long getBitRate(const string &fileId);
         int getBitsPerSample(const string &fileId);
       private:
         // self instance variable
@@ -106,15 +108,15 @@ namespace SilentMedia {
         list < string > supportedFormats;
         map < string, Codec::AbstractCodec * > codecHashMap;
 
-        map < string, boost::thread * > threadMap;
-        //        list < pthread_t > threadList;
+        map < string, pthread_t > threadMap;
+        list < pthread_t > threadList;
 
-        // file extension
-        string fileExt;
-        string tmpId;
+        //
+        string lastFileId;
+        bool lastResume;
+        //
 
-        bool checkSupportedFormat();
-        void playInThread(const string &fileId);
+        bool checkSupportedFormat(const string &fileName);
     };
   }
 }

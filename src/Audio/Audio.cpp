@@ -25,6 +25,20 @@
 
 #include "Audio.hpp"
 
+class songPref {
+  public:
+    string fileId;
+    bool resume;
+};
+
+// write thread function
+void * playThreadFunc(void * data) {
+  SilentMedia::Audio::Audio * audio =
+      static_cast < SilentMedia::Audio::Audio * > (data);
+  audio -> playInThread();
+  return NULL;
+}
+
 namespace SilentMedia {
   namespace Audio {
     Audio * Audio::_audio = NULL;
@@ -42,6 +56,7 @@ namespace SilentMedia {
       supportedFormats.push_back("wv");
 
       codecHashMap["ogg"] = new Codec::Vorbis();
+      codecHashMap["flac"] = new Codec::FLAC();
     }
 
     Audio::~Audio() {
@@ -64,7 +79,6 @@ namespace SilentMedia {
     }
 
     bool Audio::init(const string &driver) {
-      //      std::cout << "in audio init" << std::endl;
       return (_soundSystem -> init(driver));
     }
 
@@ -84,12 +98,10 @@ namespace SilentMedia {
        * 4. If file extension not supported, exit.
        */
 
-      // get file extension
-      this -> fileExt = Utils::Func::getFileExtension(fileName);
-
       // check if extension is in supportedFormat list
-      if (!checkSupportedFormat()) {
-        cerr << "File extension \"" << fileExt << "\" is unsupported." << endl;
+      if (!checkSupportedFormat(fileName)) {
+        cerr << "File extension \"" << Utils::Func::getFileExtension(fileName)
+            << "\" is unsupported." << endl;
         return false;
       }
 
@@ -97,30 +109,39 @@ namespace SilentMedia {
       this -> _audioInfo -> setFileId(fileId, fileName);
 
       // call open method in appropriate codec
-      this -> codecHashMap[this -> fileExt] -> open(fileId);
+      this -> codecHashMap[Utils::Func::getFileExtension(fileName)] -> open(
+          fileId);
 
       return true;
     }
 
-    void Audio::play(const string &fileId) {
-      this -> threadMap[fileId] = new boost::thread(boost::bind(
-          &Audio::playInThread, this, fileId));
+    void Audio::play(const string &fileId, bool resume) {
+      this -> lastFileId = fileId;
+      this -> lastResume = resume;
+
+      pthread_create(&this -> threadMap[fileId], NULL, playThreadFunc, this);
+      //      threadList.push_back(this -> threadMap[fileId]);
     }
 
-    void Audio::playInThread(const string &fileId) {
+    void Audio::playInThread() {
+      this -> playInThread(this -> lastFileId, this -> lastResume);
+    }
+
+    void Audio::playInThread(const string &fileId, bool resume) {
       std::cout << "play file name with id: " + fileId << std::endl;
-      codecHashMap[fileExt] -> play(fileId);
-      this -> threadMap[fileId] -> join();
+      this -> codecHashMap[Utils::Func::getFileExtension(
+          _audioInfo -> getFileNameByFileId(fileId))] -> play(fileId, resume);
     }
 
     void Audio::pause(const string &fileId) {
       std::cout << "pause file name with id: " + fileId << std::endl;
+      pthread_cancel(this -> threadMap[fileId]);
     }
 
     void Audio::stop(const string &fileId) {
       if (threadMap[fileId]) {
         cout << "try to stop" << endl;
-        this -> threadMap[fileId] -> join();
+        pthread_cancel(this -> threadMap[fileId]);
       }
 
       std::cout << "stop file name with id: " + fileId << std::endl;
@@ -128,22 +149,25 @@ namespace SilentMedia {
 
     void Audio::close(const string &fileId) {
       std::cout << "close file name with id: " + fileId << std::endl;
-      this -> codecHashMap[this -> fileExt] -> close(fileId);
+      this -> codecHashMap[Utils::Func::getFileExtension(
+          _audioInfo -> getFileNameByFileId(fileId))] -> close(fileId);
     }
 
     float Audio::getSeek(const string &fileId) {
-      std::cout << "get seek.. " << std::endl;
-      return 0.0;
+      return (this -> codecHashMap[Utils::Func::getFileExtension(
+          _audioInfo -> getFileNameByFileId(fileId))] -> getSeek(fileId));
     }
 
     void Audio::setSeek(const string &fileId, const float &seekVal) {
-      std::cout << "set seek value " << seekVal << std::endl;
+      this -> codecHashMap[Utils::Func::getFileExtension(
+          _audioInfo -> getFileNameByFileId(fileId))] -> setSeek(fileId,
+          seekVal);
     }
 
-    bool Audio::checkSupportedFormat() {
+    bool Audio::checkSupportedFormat(const string &fileName) {
       list < string >::iterator it;
       for (it = supportedFormats.begin(); it != supportedFormats.end(); ++it) {
-        if (fileExt.compare(*it)) {
+        if (Utils::Func::getFileExtension(fileName).compare(*it)) {
           return true;
         }
         return false;
@@ -161,10 +185,10 @@ namespace SilentMedia {
     int Audio::getChannels(const string &fileId) {
       return _audioInfo -> getChannels(fileId);
     }
-    int Audio::getSampleRate(const string &fileId) {
+    long Audio::getSampleRate(const string &fileId) {
       return _audioInfo -> getSampleRate(fileId);
     }
-    double Audio::getBitRate(const string &fileId) {
+    long Audio::getBitRate(const string &fileId) {
       return _audioInfo -> getBitRate(fileId);
     }
     int Audio::getBitsPerSample(const string &fileId) {

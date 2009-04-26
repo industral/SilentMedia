@@ -69,10 +69,10 @@ namespace SilentMedia {
     int AudioInfo::getChannels(const string &fileId) {
       return (this -> channelsMap[fileId]);
     }
-    int AudioInfo::getSampleRate(const string &fileId) {
+    long AudioInfo::getSampleRate(const string &fileId) {
       return (this -> sampleRateMap[fileId]);
     }
-    double AudioInfo::getBitRate(const string &fileId) {
+    long AudioInfo::getBitRate(const string &fileId) {
       return (this -> bitRateMap[fileId]);
     }
     int AudioInfo::getBitsPerSample(const string &fileId) {

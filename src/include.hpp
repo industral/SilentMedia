@@ -28,6 +28,7 @@
 
 #include <iostream>
 #include <string>
+#include <sstream>
 #include <map>
 #include <list>
 #include <vector>

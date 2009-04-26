@@ -74,11 +74,14 @@ namespace SilentMedia {
         //        this -> readVorbisComment(fileId);
       }
 
-      void Vorbis::play(const string &fileId) {
-        // now set parameters to sound system
-        this -> audioProxy -> setSoundSystemParams(fileId);
+      void Vorbis::play(const string &fileId, bool resume) {
+        // set params if it in first time
+        if (!resume) {
+          // now set parameters to sound system
+          this -> audioProxy -> setSoundSystemParams(fileId);
+        }
 
-        if (this -> seekMap[fileId] == 0) {
+        if (this -> seekMap[fileId] == false && resume == false) {
           ov_fopen(const_cast < char* > (this -> fileNameMap[fileId].c_str()),
               &this -> vorbisFileMap[fileId]);
         }
@@ -90,7 +93,7 @@ namespace SilentMedia {
           cout << "Source is not seekable." << endl;
         }
 
-        const int buf_size = 64;
+        const int buf_size = 128;
         char buf[buf_size];
 
         int eof = 0;
@@ -110,16 +113,7 @@ namespace SilentMedia {
         ov_clear(&this -> vorbisFileMap[fileId]);
       }
 
-      void Vorbis::pause(const string &fileId) {
-        cout << "pause" << endl;
-      }
-
-      void Vorbis::stop(const string &fileId) {
-        cout << "stop" << endl;
-      }
-
       void Vorbis::close(const string &fileId) {
-        cout << "close" << endl;
         ov_clear(&this -> vorbisFileMap[fileId]);
 
         // clean vorbis maps
@@ -128,13 +122,13 @@ namespace SilentMedia {
       }
 
       void Vorbis::setSeek(const string &fileId, const float &val) {
-        this -> seekMap[fileId] = 1;
+        this -> seekMap[fileId] = true;
 
         int retCode = ov_time_seek(&this -> vorbisFileMap[fileId],
             ((this -> lengthMap[fileId]) * (val / 100)));
         if (retCode != 0) {
           if (retCode == OV_ENOSEEK) {
-            cerr << "Error in ov_time_seek(): Bitstream is not seekable"
+            cerr << "Error in ov_time_seek(): bitstream is not seekable"
                 << endl;
           } else if (retCode == OV_EINVAL) {
             cerr

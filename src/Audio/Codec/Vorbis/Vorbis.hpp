@@ -53,9 +53,7 @@ namespace SilentMedia {
           virtual ~Vorbis();
 
           virtual bool open(const string &fileId);
-          virtual void play(const string &fileId);
-          virtual void pause(const string &fileId);
-          virtual void stop(const string &fileId);
+          virtual void play(const string &fileId, bool resume = false);
           virtual void close(const string &fileId);
 
           virtual float getSeek(const string &fileId);

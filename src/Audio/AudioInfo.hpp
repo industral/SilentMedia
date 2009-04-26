@@ -68,8 +68,8 @@ namespace SilentMedia {
         long getFileSize(const string &fileId);
         double getTotalTime(const string &fileId);
         int getChannels(const string &fileId);
-        int getSampleRate(const string &fileId);
-        double getBitRate(const string &fileId);
+        long getSampleRate(const string &fileId);
+        long getBitRate(const string &fileId);
         int getBitsPerSample(const string &fileId);
 
         //          int getDSPDev ( void ) const;
