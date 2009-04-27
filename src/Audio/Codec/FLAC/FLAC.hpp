@@ -59,7 +59,7 @@ namespace SilentMedia {
           virtual void close(const string &fileId);
 
           virtual float getSeek(const string &fileId);
-          virtual void setSeek(const string &fileId, const float &seekVal);
+          virtual void setSeek(const string &fileId, const double &seekVal);
 
           // public
           /// Установить обложку

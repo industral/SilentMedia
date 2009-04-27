@@ -28,16 +28,10 @@
 namespace SilentMedia {
   namespace Audio {
     namespace Codec {
-      FLAC::FLAC(void) {
-        // create instance for AudioProxy
-        this -> audioProxy = new AudioProxy();
-      }
 
-      FLAC::~FLAC() {
-        // release resources
-        delete this -> audioProxy;
-        this -> audioProxy = NULL;
-      }
+      // --------------------------------------------------------------------
+      // Functions
+      // --------------------------------------------------------------------
 
       FLAC__StreamDecoderWriteStatus write_callback(
           const FLAC__StreamDecoder * dec, const FLAC__Frame * frame,
@@ -135,6 +129,21 @@ namespace SilentMedia {
         return true;
       }
 
+      // --------------------------------------------------------------------
+      // Public methods
+      // --------------------------------------------------------------------
+
+      FLAC::FLAC(void) {
+        // create instance for AudioProxy
+        this -> audioProxy = new AudioProxy();
+      }
+
+      FLAC::~FLAC() {
+        // release resources
+        delete this -> audioProxy;
+        this -> audioProxy = NULL;
+      }
+
       bool FLAC::open(const string &fileId) {
         //        this -> dspDev = this -> ddata -> getDSPDev();
         //        cout << "FLAC in init()" << " : " << getV() << endl;
@@ -192,7 +201,7 @@ namespace SilentMedia {
         }
       }
 
-      void FLAC::setSeek(const string &fileId, const float &seekVal) {
+      void FLAC::setSeek(const string &fileId, const double &seekVal) {
         this -> seekCheck = true;
         FLAC__uint64 sample_pos = (((this -> totalSamples) * (seekVal / 100)));
         if (FLAC__stream_decoder_seek_absolute(this -> pdecoder, sample_pos)
@@ -201,6 +210,10 @@ namespace SilentMedia {
         }
         //        this -> setCurrSample(sample_pos);
       }
+
+      // --------------------------------------------------------------------
+      // Private methods
+      // --------------------------------------------------------------------
 
       //      void FLAC::readVorbisComment() {
       //        this -> vorbisComm . clear();

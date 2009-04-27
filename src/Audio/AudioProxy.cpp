@@ -61,5 +61,34 @@ namespace SilentMedia {
           _audioInfo -> getSampleRate(fileId), _audioInfo -> getBitsPerSample(
               fileId));
     }
+
+    // --------------------------------------------------------------------
+    // AudioInfo methods
+    // --------------------------------------------------------------------
+
+    long AudioProxy::getFileSize(const string &fileId) {
+      return (this -> _audioInfo -> getFileSize(fileId));
+    }
+
+    double AudioProxy::getTotalTime(const string &fileId) {
+      return (this -> _audioInfo -> getTotalTime(fileId));
+    }
+
+    int AudioProxy::getChannels(const string &fileId) {
+      return (this -> _audioInfo -> getChannels(fileId));
+    }
+
+    long AudioProxy::getSampleRate(const string &fileId) {
+      return (this -> _audioInfo -> getSampleRate(fileId));
+    }
+
+    long AudioProxy::getBitRate(const string &fileId) {
+      return (this -> _audioInfo -> getBitRate(fileId));
+    }
+
+    int AudioProxy::getBitsPerSample(const string &fileId) {
+      return (this -> _audioInfo -> getBitsPerSample(fileId));
+    }
+
   }
 }

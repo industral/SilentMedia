@@ -78,6 +78,18 @@ namespace SilentMedia {
          * every time when new song start.
          */
         void setSoundSystemParams(const string &fileId);
+
+        // --------------------------------------------------------------------
+        // AudioInfo methods
+        // --------------------------------------------------------------------
+
+        long getFileSize(const string &fileId);
+        double getTotalTime(const string &fileId);
+        int getChannels(const string &fileId);
+        long getSampleRate(const string &fileId);
+        long getBitRate(const string &fileId);
+        int getBitsPerSample(const string &fileId);
+
       private:
         AudioInfo * _audioInfo;
         SoundSystem::SoundSystem * _soundSystem;

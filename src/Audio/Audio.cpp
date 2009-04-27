@@ -36,6 +36,7 @@ void * playThreadFunc(void * data) {
   SilentMedia::Audio::Audio * audio =
       static_cast < SilentMedia::Audio::Audio * > (data);
   audio -> playInThread();
+//  pthread_exit(NULL);
   return NULL;
 }
 
@@ -136,12 +137,14 @@ namespace SilentMedia {
     void Audio::pause(const string &fileId) {
       std::cout << "pause file name with id: " + fileId << std::endl;
       pthread_cancel(this -> threadMap[fileId]);
+//      pthread_join(this -> threadMap[fileId], NULL);
     }
 
     void Audio::stop(const string &fileId) {
       if (threadMap[fileId]) {
         cout << "try to stop" << endl;
         pthread_cancel(this -> threadMap[fileId]);
+//        pthread_join(this -> threadMap[fileId], NULL);
       }
 
       std::cout << "stop file name with id: " + fileId << std::endl;

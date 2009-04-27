@@ -23,6 +23,10 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
  ******************************************************************************/
 
+/*
+ * http://www.xiph.org/vorbis/doc/vorbisfile/index.html
+ */
+
 #ifndef _SILENTMEDIA_VORBIS_HPP_
 #define _SILENTMEDIA_VORBIS_HPP_
 
@@ -53,11 +57,11 @@ namespace SilentMedia {
           virtual ~Vorbis();
 
           virtual bool open(const string &fileId);
-          virtual void play(const string &fileId, bool resume = false);
+          virtual inline void play(const string &fileId, bool resume = false);
           virtual void close(const string &fileId);
 
           virtual float getSeek(const string &fileId);
-          virtual void setSeek(const string &fileId, const float &seekVal);
+          virtual void setSeek(const string &fileId, const double &seekVal);
         private:
           // AudioProxy object
           AudioProxy * audioProxy;
@@ -67,12 +71,6 @@ namespace SilentMedia {
 
           // Vorbis Info map
           map < string, vorbis_info * > vorbisInfoMap;
-
-          // audio parameters
-          map < string, string > fileNameMap;
-          map < string, double > lengthMap;
-          map < string, double > seekPosMap;
-          map < string, bool > seekMap;
 
           void readVorbisComment(const string &fileId);
       };

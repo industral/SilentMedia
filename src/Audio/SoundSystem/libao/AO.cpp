@@ -35,6 +35,7 @@ namespace SilentMedia {
       }
 
       AO::~AO() {
+        ao_shutdown();
       }
 
       int AO::init(const string &driver) {
