@@ -47,7 +47,7 @@ namespace SilentMedia {
           virtual int close() = 0;
           virtual void setAudioParams(const int &channels,
               const int &sampleRate, const int &bitsPerSample) = 0;
-          virtual int write(char &buf, const int &bufSize) = 0;
+          virtual int write(void *buf, const int &bufSize) = 0;
 
         protected:
         private:

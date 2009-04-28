@@ -48,6 +48,10 @@ namespace SilentMedia {
         // get fileName
         string fileName = this -> audioProxy -> getFileNameByFileId(fileId);
 
+        if (!Utils::Func::checkFileAvailable(fileName)) {
+          return false;
+        }
+
         // try to open file
         int openRetVal = ov_fopen(const_cast < char* > (fileName.c_str()),
             &this -> vorbisFileMap[fileId]);
@@ -95,7 +99,7 @@ namespace SilentMedia {
           } else if (ret < 0) {
             cerr << "ERROR in ov_read()" << endl;
           } else {
-            this -> audioProxy -> write(*buf, buf_size);
+            this -> audioProxy -> write(buf, buf_size);
           }
         }
         ov_clear(&this -> vorbisFileMap[fileId]);

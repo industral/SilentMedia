@@ -65,24 +65,20 @@ namespace SilentMedia {
           /// Установить обложку
           /** Устанавливает обложку изменением внутренных данных в файле. Файл должен быть доступный в режиме чтение/запись */
           /// @param coverData непосредственно данные рисунка
-//          void setPicture(std::string coverData);
+          //          void setPicture(std::string coverData);
           // public for internal use
-//          inline void setCurrSample(FLAC__uint64 curr_sample) {
-//            this -> curr_sample = curr_sample;
-//          }
-//          inline FLAC__uint64 getCurrSample(void) const {
-//            return this -> curr_sample;
-//          }
-//          int getdspDev(void) {
-//            return (this -> dspDev);
-//          }
+          //          inline void setCurrSample(FLAC__uint64 curr_sample) {
+          //            this -> curr_sample = curr_sample;
+          //          }
+          //          inline FLAC__uint64 getCurrSample(void) const {
+          //            return this -> curr_sample;
+          //          }
+          AudioProxy * getAudioProxy() {
+            return (this -> audioProxy);
+          }
         private:
           // AudioProxy object
           AudioProxy * audioProxy;
-
-          map < string, string > fileNameMap;
-
-
 
           //             ::FLAC::Metadata::Picture * picture;
           std::string spdata;
@@ -100,30 +96,33 @@ namespace SilentMedia {
           //                };
 
           // private
-          bool templateInitFile(FLAC__StreamDecoder * dec);
-//          void parseMetaData(void);
-//          void readVorbisComment(void);
-//          void getPicture(void);
-//          void setDSPParam(void);
-//          double getTotalSamples(void) const {
-//            return this -> totalSamples;
-//          }
+          bool templateInitFile(FLAC__StreamDecoder * dec,
+              const string &fileName);
+          void parseMetaData(const string &fileId);
+          //          void readVorbisComment(void);
+          //          void getPicture(void);
+          //          double getTotalSamples(void) const {
+          //            return this -> totalSamples;
+          //          }
 
-//          DecodedData * ddata;
+          //          DecodedData * ddata;
           std::map < std::string, std::string > vorbisComm;
-          std::string fileName;
           /*
            Почему не работает FLAC::Decoder::File *encoder= new FLAC::Decoder::File()?
            Приходится применять FLAC__stream_decoder_new()
            */
-          FLAC__StreamDecoder * decoder; // указатель для инициализации
-          FLAC__StreamDecoder * pdecoder; // указатель для воспроизвдения
-          ::FLAC::Metadata::SimpleIterator * iterator;
-          int dspDev;
+          //          FLAC__StreamDecoder * decoder; // указатель для инициализации
+          //          FLAC__StreamDecoder * pdecoder; // указатель для воспроизвдения
+
+          map < string, FLAC__StreamDecoder * > decoderMap;
+          map < string, ::FLAC::Metadata::StreamInfo::StreamInfo * >
+              streamInfoMap;
+
+          map < string, ::FLAC::Metadata::SimpleIterator * > iteratorMap;
 
           // стражи
-          bool playCheck;
-          bool seekCheck;
+          map < string, bool > playCheckMap;
+          map < string, bool > seekCheckMap;
 
           /*
            используем double для totalSamples а не FLAC__uint64 чтобы не использовать потом static_cast,
@@ -131,14 +130,10 @@ namespace SilentMedia {
            см. int libssoss::FlacDecode::getCurrSeekPos ( void ) const
            */
 
-          int fileSize;
-          int streamSize;
-          double avrBitrate;
-          double totalSamples;
-          int totalTime;
+          map < string, double > totalSamples;
           FLAC__uint64 curr_sample;
           FLAC__uint64 * position;
-          ::FLAC::Metadata::StreamInfo::StreamInfo * streamInfo;
+
       };
     }
   }

@@ -69,5 +69,16 @@ namespace SilentMedia {
 
       return (end - begin);
     }
+
+    bool Func::checkFileAvailable(const string &fileName) {
+      ifstream fin(fileName.c_str(), ifstream::in);
+      if (fin.is_open()) {
+        // file exist
+        return true;
+      }
+      // file did not exist
+      return false;
+    }
+
   }
 }

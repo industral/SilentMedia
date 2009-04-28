@@ -36,7 +36,7 @@ void * playThreadFunc(void * data) {
   SilentMedia::Audio::Audio * audio =
       static_cast < SilentMedia::Audio::Audio * > (data);
   audio -> playInThread();
-//  pthread_exit(NULL);
+  //  pthread_exit(NULL);
   return NULL;
 }
 
@@ -87,12 +87,13 @@ namespace SilentMedia {
       std::cout << "close audio system" << std::endl;
     }
 
+    //TODO: Need to check if id is unique
     bool Audio::open(const string &fileName, const string &fileId) {
       std::cout << "open file name with id: " + fileId << std::endl;
 
       /*
        * Opening file contains with follow steps:
-       * 1. We should check file extension (.ogg, .wav, .flac)
+       * 1. We should check file extension (.ogg, .wav, .flac, .wv)
        * 2. Check if file extension equal one of supported file formats.
        * 3. (NOT IMPLEMENTED YET) If this extension is missing, we should find
        * the type of file.
@@ -137,16 +138,14 @@ namespace SilentMedia {
     void Audio::pause(const string &fileId) {
       std::cout << "pause file name with id: " + fileId << std::endl;
       pthread_cancel(this -> threadMap[fileId]);
-//      pthread_join(this -> threadMap[fileId], NULL);
     }
 
     void Audio::stop(const string &fileId) {
       if (threadMap[fileId]) {
         cout << "try to stop" << endl;
         pthread_cancel(this -> threadMap[fileId]);
-//        pthread_join(this -> threadMap[fileId], NULL);
       }
-
+      this -> close(fileId);
       std::cout << "stop file name with id: " + fileId << std::endl;
     }
 

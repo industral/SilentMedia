@@ -36,16 +36,15 @@ namespace SilentMedia {
       FLAC__StreamDecoderWriteStatus write_callback(
           const FLAC__StreamDecoder * dec, const FLAC__Frame * frame,
           const FLAC__int32 * const buf[], void * client_data) {
-        //          cout << "write_callback" << endl;
 
-        FLAC * flacObj = static_cast < FLAC * > (client_data);
+        FLAC * flacObj = (FLAC *) (client_data);
         int decoded_size = frame -> header.blocksize * frame -> header.channels
             * (frame -> header.bits_per_sample / 8); // 16384, 18432
 
         int samples = frame -> header.blocksize;
         int sample = 0;
         int i = 0;
-        short int channel = 0;
+        unsigned int channel = 0; // use unsigned to avoid warning from compile
 
         int16_t outbuf[FLAC__MAX_BLOCK_SIZE * FLAC__MAX_CHANNELS
             * sizeof(int32_t)]; // 65535 * 8 * 4
@@ -54,9 +53,10 @@ namespace SilentMedia {
           for (channel = 0; channel < frame -> header.channels; channel++, i++) {
             outbuf[i] = buf[channel][sample];
           }
-          //          flacObj -> setCurrSample(flacObj -> getCurrSample() + 1);
+          //          flacObj -> getAudioProxy() -> getTotalSamples()
+          //                    flacObj -> setCurrSample(flacObj -> getCurrSample() + 1);
         }
-        //        write(flacObj -> getdspDev(), outbuf, decoded_size);
+        flacObj -> getAudioProxy() -> write(outbuf, decoded_size);
         return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
       }
 
@@ -64,7 +64,9 @@ namespace SilentMedia {
           const FLAC__StreamMetadata * block, void * client_data) {
       }
 
-      // callback-ф-ция для перехвата ошибок
+      /*
+       * Callback error catch function.
+       */
       void error_callback(const ::FLAC__StreamDecoder *decoder,
           ::FLAC__StreamDecoderErrorStatus status, void *client_data) {
         if (status == FLAC__STREAM_DECODER_ERROR_STATUS_LOST_SYNC) {
@@ -88,10 +90,11 @@ namespace SilentMedia {
         }
       }
 
-      bool FLAC::templateInitFile(FLAC__StreamDecoder * dec) {
+      bool FLAC::templateInitFile(FLAC__StreamDecoder * dec,
+          const string &fileName) {
 
         FLAC__StreamDecoderInitStatus retCode = FLAC__stream_decoder_init_file(
-            dec, this -> fileName.c_str(), write_callback, metadata_callback,
+            dec, fileName.c_str(), write_callback, metadata_callback,
             error_callback, this);
 
         switch (retCode) {
@@ -131,9 +134,9 @@ namespace SilentMedia {
 
       // --------------------------------------------------------------------
       // Public methods
-      // --------------------------------------------------------------------
 
-      FLAC::FLAC(void) {
+      FLAC::FLAC() :
+        curr_sample(0), position(new FLAC__uint64) {
         // create instance for AudioProxy
         this -> audioProxy = new AudioProxy();
       }
@@ -145,48 +148,44 @@ namespace SilentMedia {
       }
 
       bool FLAC::open(const string &fileId) {
-        //        this -> dspDev = this -> ddata -> getDSPDev();
-        //        cout << "FLAC in init()" << " : " << getV() << endl;
-        //        this -> fileName = inputFile;
-
         // get fileName
-        this -> fileNameMap[fileId]
-            = this -> audioProxy -> getFileNameByFileId(fileId);
+        string fileName = this -> audioProxy -> getFileNameByFileId(fileId);
 
-        this -> decoder = FLAC__stream_decoder_new();
-        this -> templateInitFile(this -> decoder);
+        if (!Utils::Func::checkFileAvailable(fileName)) {
+          return false;
+        }
 
-        // обязательно для заполнения стуктуры
-        FLAC__stream_decoder_process_single(this -> decoder);
+        this -> decoderMap[fileId] = FLAC__stream_decoder_new();
+        this -> templateInitFile(this -> decoderMap[fileId], fileName);
 
-        //        this -> parseMetaData();
+        // important for populate structure
+        FLAC__stream_decoder_process_single(this -> decoderMap[fileId]);
+
+        this -> parseMetaData(fileId);
 
         return true;
       }
 
       void FLAC::play(const string &fileId, bool resume) {
-        if (!this -> seekCheck) { // если мы делаем seek то выделать заново память не нужно
-          this -> pdecoder = FLAC__stream_decoder_new();
+        // set params if it in first time
+        if (!resume) {
+          // now set parameters to sound system
+          this -> audioProxy -> setSoundSystemParams(fileId);
         }
-        if (this -> pdecoder == NULL) {
-          cout << "Error to FLAC__stream_decoder_new() " << endl;
-        }
-        if (!this -> playCheck) {
-          //          this -> templateInitFile(this -> pdecoder);
-        }
-        this -> playCheck = true;
+
+        this -> playCheckMap[fileId] = true;
         // обязательно для заполнения стуктуры
-        FLAC__stream_decoder_process_single(this -> pdecoder);
-        this -> totalSamples = FLAC__stream_decoder_get_total_samples(
-            this -> pdecoder);
+        FLAC__stream_decoder_process_single(this -> decoderMap[fileId]);
+        this -> totalSamples[fileId] = FLAC__stream_decoder_get_total_samples(
+            this -> decoderMap[fileId]);
 
         cout << "FLAC in play()" << endl;
 
-        //        this -> ddata -> setParam();
         while (FLAC__stream_decoder_process_until_end_of_stream(
-            this -> pdecoder)) {
-          if (FLAC__stream_decoder_get_state(this -> pdecoder)
+            this -> decoderMap[fileId])) {
+          if (FLAC__stream_decoder_get_state(this -> decoderMap[fileId])
               == FLAC__STREAM_DECODER_END_OF_STREAM) {
+            this -> close(fileId);
             cout << "End of stream." << endl;
           }
           break;
@@ -197,15 +196,16 @@ namespace SilentMedia {
         if (!this -> curr_sample) {
           return 0;
         } else {
-          return (100 / (this -> totalSamples / this -> curr_sample));
+          return (100 / (this -> totalSamples[fileId] / this -> curr_sample));
         }
       }
 
       void FLAC::setSeek(const string &fileId, const double &seekVal) {
-        this -> seekCheck = true;
-        FLAC__uint64 sample_pos = (((this -> totalSamples) * (seekVal / 100)));
-        if (FLAC__stream_decoder_seek_absolute(this -> pdecoder, sample_pos)
-            != true) {
+        this -> seekCheckMap[fileId] = true;
+        FLAC__uint64 sample_pos = (((this -> totalSamples[fileId]) * (seekVal
+            / 100)));
+        if (FLAC__stream_decoder_seek_absolute(this -> decoderMap[fileId],
+            sample_pos) != true) {
           cout << "Error in FLAC__stream_decoder_seek_absolute()" << endl;
         }
         //        this -> setCurrSample(sample_pos);
@@ -240,7 +240,7 @@ namespace SilentMedia {
       //
       //        //          Proxy < ::FLAC::Metadata::Picture > picture;
       //
-      //        //           short int count = 0;
+      //        //            int count = 0;
       //        if (::FLAC::Metadata::get_picture(this-> fileName . c_str(), picture,
       //			static_cast<::FLAC__StreamMetadata_Picture_Type> (-1), NULL, NULL,
       //			-1, -1, -1, -1) == true) {
@@ -264,12 +264,6 @@ namespace SilentMedia {
       //        //               delete picture; picture = 0;
       //      }
 
-      //      void FLAC::setDSPParam() {
-      //        this -> ddata -> setAudioParams(this -> fileSize, this -> totalTime,
-      //            this -> streamInfo -> get_channels(),
-      //            this -> streamInfo -> get_sample_rate(), this -> avrBitrate,
-      //            this -> streamInfo -> get_bits_per_sample());
-      //      }
 
       //      void FLAC::setPicture(string coverData) {
       //        ::FLAC::Metadata::Picture * picture = new ::FLAC::Metadata::Picture;
@@ -310,93 +304,120 @@ namespace SilentMedia {
       //      }
 
       void FLAC::close(const string &fileId) {
-        //        FLAC__stream_decoder_finish(this -> decoder);
-        //        FLAC__stream_decoder_flush(this -> decoder);
+        if (this -> decoderMap[fileId] != NULL) {
+          FLAC__stream_decoder_finish(this -> decoderMap[fileId]);
+          FLAC__stream_decoder_flush(this -> decoderMap[fileId]);
+          FLAC__stream_decoder_delete(this -> decoderMap[fileId]);
+
+          // clean maps
+          this -> decoderMap.erase(fileId);
+          cout << "release resource: " << this -> decoderMap[fileId] << endl;
+        }
+
+        delete this -> streamInfoMap[fileId];
+        this -> streamInfoMap[fileId] = NULL;
+
+        delete this -> iteratorMap[fileId];
+        this -> iteratorMap[fileId] = NULL;
       }
-    //
-    //      void FLAC::flush() {
-    //        cout << "FLAC in flush()" << endl;
-    //        /*
-    //         Ставим стражей в исходное положение.
-    //         Возможно следовало как то бы пересоздавать обяек?
-    //         */
-    //        this -> playCheck = false;
-    //        this -> seekCheck = false;
-    //
-    //        this -> setCurrSample(0);
-    //        //          this -> setSeekPos ( 0 );
-    //
-    //        //          if ( ( this -> pdecoder ) != NULL ) {
-    //        //             FLAC__stream_decoder_finish ( this -> pdecoder );
-    //        //             FLAC__stream_decoder_flush ( this -> pdecoder );
-    //        //          }
-    //        //          if ( ( this -> decoder ) != NULL ) {
-    //        //             FLAC__stream_decoder_finish ( this -> decoder );
-    //        //             FLAC__stream_decoder_finish ( this -> decoder );
-    //        //          }
-    //        // FLAC__stream_decoder_flush ( this -> dec );
-    //
-    //        //          FLAC__stream_decoder_delete ( decoder );
-    //        // delete streamInfo;
-    //        //          delete decoder;
-    //
-    //      }
+      //
+      //      void FLAC::flush() {
+      //        cout << "FLAC in flush()" << endl;
+      //        /*
+      //         Ставим стражей в исходное положение.
+      //         Возможно следовало как то бы пересоздавать обяек?
+      //         */
+      //        this -> playCheck = false;
+      //        this -> seekCheck = false;
+      //
+      //        this -> setCurrSample(0);
+      //        //          this -> setSeekPos ( 0 );
+      //
+      //        //          if ( ( this -> decoderMap[fileId] ) != NULL ) {
+      //        //             FLAC__stream_decoder_finish ( this -> decoderMap[fileId] );
+      //        //             FLAC__stream_decoder_flush ( this -> decoderMap[fileId] );
+      //        //          }
+      //        //          if ( ( this -> decoderMap[fileId] ) != NULL ) {
+      //        //             FLAC__stream_decoder_finish ( this -> decoderMap[fileId] );
+      //        //             FLAC__stream_decoder_finish ( this -> decoderMap[fileId] );
+      //        //          }
+      //        // FLAC__stream_decoder_flush ( this -> dec );
+      //
+      //        //          FLAC__stream_decoder_delete ( decoderMap[fileId] );
+      //        // delete streamInfo;
+      //        //          delete decoderMap[fileId];
+      //
+      //      }
 
-    //      void FLAC::finish() {
-    //        //          FLAC__stream_decoder_finish ( this -> dec );
-    //        //          FLAC__stream_decoder_flush ( this -> dec );
-    //      }
+      //      void FLAC::finish() {
+      //        //          FLAC__stream_decoder_finish ( this -> dec );
+      //        //          FLAC__stream_decoder_flush ( this -> dec );
+      //      }
 
-    //      void FLAC::parseMetaData() {
-    //        iterator -> init(this -> fileName.c_str(), false, true);
-    //
-    //        ::FLAC::Metadata::get_streaminfo(this -> fileName.c_str(),
-    //            *this -> streamInfo);
-    //
-    //        this -> fileSize = Utils::Func::getFileSize(this -> fileName);
-    //        // применяем сдесь ф-цию FLAC__stream_decoder_get_total_samples() !
-    //        this -> totalTime = (FLAC__stream_decoder_get_total_samples(
-    //            this -> decoder) / this -> streamInfo -> get_sample_rate());
-    //
-    //        int size = 0; // переменная для инкремента размера всех найденых блоков
-    //        while (!iterator -> is_last()) {
-    //          switch (iterator -> get_block_type()) {
-    //          case FLAC__METADATA_TYPE_STREAMINFO:
-    //            //                   cout << "FLAC__METADATA_TYPE_STREAMINFO" << endl;
-    //            break;
-    //          case FLAC__METADATA_TYPE_PADDING:
-    //            //                   cout << "FLAC__METADATA_TYPE_PADDING" << endl;
-    //            break;
-    //          case FLAC__METADATA_TYPE_APPLICATION:
-    //            //                   cout << "FLAC__METADATA_TYPE_APPLICATION" << endl;
-    //            break;
-    //          case FLAC__METADATA_TYPE_SEEKTABLE:
-    //            //                   cout << "FLAC__METADATA_TYPE_SEEKTABLE" << endl;
-    //            break;
-    //          case FLAC__METADATA_TYPE_VORBIS_COMMENT:
-    //            //                   cout << "FLAC__METADATA_TYPE_VORBIS_COMMENT" << endl;
-    //            this -> readVorbisComment();
-    //            break;
-    //          case FLAC__METADATA_TYPE_CUESHEET:
-    //            //                   cout << "FLAC__METADATA_TYPE_CUESHEET" << endl;
-    //            break;
-    //          case FLAC__METADATA_TYPE_PICTURE:
-    //            //                   cout << "FLAC__METADATA_TYPE_PICTURE" << endl;
-    //            this -> getPicture();
-    //            break;
-    //          case FLAC__METADATA_TYPE_UNDEFINED:
-    //            //                   cout << "FLAC__METADATA_TYPE_UNDEFINED" << endl;
-    //            break;
-    //          }
-    //          iterator -> next(); // движемся далее
-    //          size += iterator -> get_block_length();
-    //        }
-    //        // получаем размер полезных аудио-данных
-    //        this -> streamSize = this -> fileSize - size;
-    //        // получаем средний битрейт
-    //        this -> avrBitrate = this -> streamSize / this -> totalTime * 8;
-    //        this -> setDSPParam();
-    //      }
+      void FLAC::parseMetaData(const string &fileId) {
+        // get file name
+        string fileName = this -> audioProxy -> getFileNameByFileId(fileId);
+
+        this -> iteratorMap[fileId] = new ::FLAC::Metadata::SimpleIterator;
+        this -> iteratorMap[fileId] -> init(fileName.c_str(), true, true);
+
+        this -> streamInfoMap[fileId]
+            = new ::FLAC::Metadata::StreamInfo::StreamInfo;
+
+        ::FLAC::Metadata::get_streaminfo(fileName.c_str(),
+            *this -> streamInfoMap[fileId]);
+
+        long fileSize = Utils::Func::getFileSize(fileName);
+        // применяем сдесь ф-цию FLAC__stream_decoder_get_total_samples() !
+        double totalTime = (FLAC__stream_decoder_get_total_samples(
+            this -> decoderMap[fileId])
+            / this -> streamInfoMap[fileId] -> get_sample_rate());
+
+        int size = 0; // переменная для инкремента размера всех найденых блоков
+        while (!this -> iteratorMap[fileId] -> is_last()) {
+          switch (this -> iteratorMap[fileId] -> get_block_type()) {
+          case FLAC__METADATA_TYPE_STREAMINFO:
+            //                   cout << "FLAC__METADATA_TYPE_STREAMINFO" << endl;
+            break;
+          case FLAC__METADATA_TYPE_PADDING:
+            //                   cout << "FLAC__METADATA_TYPE_PADDING" << endl;
+            break;
+          case FLAC__METADATA_TYPE_APPLICATION:
+            //                   cout << "FLAC__METADATA_TYPE_APPLICATION" << endl;
+            break;
+          case FLAC__METADATA_TYPE_SEEKTABLE:
+            //                   cout << "FLAC__METADATA_TYPE_SEEKTABLE" << endl;
+            break;
+          case FLAC__METADATA_TYPE_VORBIS_COMMENT:
+            //                   cout << "FLAC__METADATA_TYPE_VORBIS_COMMENT" << endl;
+            //            this -> readVorbisComment();
+            break;
+          case FLAC__METADATA_TYPE_CUESHEET:
+            //                   cout << "FLAC__METADATA_TYPE_CUESHEET" << endl;
+            break;
+          case FLAC__METADATA_TYPE_PICTURE:
+            //                   cout << "FLAC__METADATA_TYPE_PICTURE" << endl;
+            //            this -> getPicture();
+            break;
+          case FLAC__METADATA_TYPE_UNDEFINED:
+            //                   cout << "FLAC__METADATA_TYPE_UNDEFINED" << endl;
+            break;
+          }
+          this -> iteratorMap[fileId] -> next(); // движемся далее
+          size += this -> iteratorMap[fileId] -> get_block_length();
+        }
+
+        // get size of useful data
+        int streamSize = fileSize - size;
+        // get the average bitrate
+        double avrBitrate = streamSize / totalTime * 8;
+
+        this -> audioProxy -> setAudioParams(fileId, fileName, fileSize,
+            totalTime, this -> streamInfoMap[fileId] -> get_channels(),
+            this -> streamInfoMap[fileId] -> get_sample_rate(), avrBitrate,
+            this -> streamInfoMap[fileId] -> get_bits_per_sample());
+      }
+
     }
   }
 }

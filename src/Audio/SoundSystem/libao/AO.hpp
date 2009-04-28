@@ -103,7 +103,7 @@ namespace SilentMedia {
            * @return > 0 = success. 0 indicates failure. The device should be
            * closed.
            */
-          virtual inline int write(char &buf, const int &bufSize);
+          virtual inline int write(void *buf, const int &bufSize);
 
         private:
           ao_sample_format format;

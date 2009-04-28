@@ -53,7 +53,7 @@ namespace SilentMedia {
          * @param[in] buf data audio buffer.
          * @param[in] bufSize buffer size.
          */
-        int write(char &buf, const int &bufSize);
+        int write(void *buf, const int &bufSize);
 
         /**
          * Set audio information. Set information about file name, file size,
@@ -89,6 +89,13 @@ namespace SilentMedia {
         long getSampleRate(const string &fileId);
         long getBitRate(const string &fileId);
         int getBitsPerSample(const string &fileId);
+
+        // --------------------------------------------------------------------
+        // Additional AudioInfo methods
+        // --------------------------------------------------------------------
+
+        void setTotalSamples(const string &fileId, double totalSamples);
+        double getTotalSamples(const string &fileId);
 
       private:
         AudioInfo * _audioInfo;

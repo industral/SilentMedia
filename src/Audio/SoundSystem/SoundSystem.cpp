@@ -61,7 +61,7 @@ namespace SilentMedia {
         this -> ao -> setAudioParams(channels, sampleRate, bitsPerSample);
       }
 
-      int SoundSystem::write(char &buf, const int &bufSize) {
+      int SoundSystem::write(void *buf, const int &bufSize) {
         return (this -> ao -> write(buf, bufSize));
       }
 

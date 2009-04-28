@@ -72,6 +72,13 @@ namespace SilentMedia {
          * @return file size in bytes.
          */
         static long int getFileSize(string inputFile);
+
+        /**
+         * Check if file available.
+         * @param[in] fileName file that should be checked
+         * @return true if exist, false if none or can't open.
+         */
+        static bool checkFileAvailable(const string &fileName);
     };
   }
 }

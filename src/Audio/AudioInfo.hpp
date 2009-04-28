@@ -72,9 +72,10 @@ namespace SilentMedia {
         long getBitRate(const string &fileId);
         int getBitsPerSample(const string &fileId);
 
-        //          int getDSPDev ( void ) const;
+        // Additional information
+        void setTotalSamples(const string &fileId, double totalSamples);
+        double getTotalSamples(const string &fileId);
 
-        //
         string getFileNameByFileId(const string& fileId);
         void setFileId(const string& fileId, const string& fileName);
 
@@ -95,6 +96,9 @@ namespace SilentMedia {
         map < string, int > sampleRateMap;
         map < string, double > bitRateMap;
         map < string, int > bitsPerSampleMap;
+
+        // Additional information
+        map < string, double > totalSamples;
 
         //      multimap < ::FLAC__StreamMetadata_Picture_Type, string > picData;
         map < string, string > vorbisComm; // Vorbis Comment

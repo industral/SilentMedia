@@ -12,3 +12,5 @@
 Change architecture to drop Singleton from Audio
 
 === Need to add all check, if user set Audio driver, ope file, etc... ====
+
+http://www.google.com.ua/codesearch/p?hl=ru#aZWG5SnVrM8/libzzub-0.1/src/libzzub/ccm.cpp&q=FLAC__stream_decoder_new

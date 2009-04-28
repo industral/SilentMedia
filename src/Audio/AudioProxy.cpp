@@ -43,7 +43,7 @@ namespace SilentMedia {
     }
 
     // SoundSystem methods
-    int AudioProxy::write(char &buf, const int &bufSize) {
+    int AudioProxy::write(void *buf, const int &bufSize) {
       return (_soundSystem -> write(buf, bufSize));
     }
 
@@ -88,6 +88,18 @@ namespace SilentMedia {
 
     int AudioProxy::getBitsPerSample(const string &fileId) {
       return (this -> _audioInfo -> getBitsPerSample(fileId));
+    }
+
+    // --------------------------------------------------------------------
+    // Additional AudioInfo methods
+    // --------------------------------------------------------------------
+
+    void AudioProxy::setTotalSamples(const string &fileId, double totalSamples) {
+      this -> _audioInfo -> setTotalSamples(fileId, totalSamples);
+    }
+
+    double AudioProxy::getTotalSamples(const string &fileId) {
+      return (this -> _audioInfo -> getTotalSamples(fileId));
     }
 
   }

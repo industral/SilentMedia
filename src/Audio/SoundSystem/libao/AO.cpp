@@ -69,8 +69,8 @@ namespace SilentMedia {
         }
       }
 
-      int AO::write(char &buf, const int &bufSize) {
-        return (ao_play(device, &buf, bufSize));
+      int AO::write(void *buf, const int &bufSize) {
+        return (ao_play(device, (char *)buf, bufSize));
       }
     }
   }
