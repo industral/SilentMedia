@@ -81,6 +81,7 @@ namespace SilentMedia {
 
         string getFileNameByFileId(const string& fileId);
         void setFileId(const string& fileId, const string& fileName);
+        void removeFileId(const string &fileId);
 
       private:
         // self instance variable

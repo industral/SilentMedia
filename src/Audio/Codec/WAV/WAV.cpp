@@ -1,135 +1,180 @@
-#include <SML/config.hpp>
+/*******************************************************************************
+ * Copyright (c) 2009, Alex Ivasyuv                                            *
+ * All rights reserved.                                                        *
+ *                                                                             *
+ * Redistribution and use in source and binary forms, with or without          *
+ * modification, are permitted provided that the following conditions are met: *
+ *                                                                             *
+ * 1. Redistributions of source code must retain the above copyright           *
+ *    notice, this list of conditions and the following disclaimer.            *
+ * 2. Redistributions in binary form must reproduce the above copyright        *
+ *    notice, this list of conditions and the following disclaimer in the      *
+ *    documentation and/or other materials provided with the distribution.     *
+ *                                                                             *
+ * THIS SOFTWARE IS PROVIDED BY Alex Ivasyuv ''AS IS'' AND ANY                 *
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED   *
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE      *
+ * DISCLAIMED. IN NO EVENT SHALL Alex Ivasyuv BE LIABLE FOR ANY DIRECT,        *
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES          *
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;*
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND *
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  *
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF    *
+ * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
+ ******************************************************************************/
+
 #include "WAV.hpp"
-#include <SML/Audio/Codec/DecodedData.hpp>
 
-SilentMedia::Codec::WAV::WAV ( void ) :
-/*
-   offsetPos в 0 а не в -1, ибо он только увиличивается инкрементом а не инициализируется. Соответственно нужно инициализировать в ноль.
-   Тем более что как раз прочитаное количество семплов в начале будет равно нулю, что и есть верно.
-*/
-wavinfo ( new WavInfo ), input_fd ( -1 ), offsetPos ( 0 ), fileSize ( -1 ), totalTime ( -1 ),
-          totalSamples ( -1 ), bitRate ( -1 ), playCheck ( false ), seekCheck ( false )
-{
-   this -> ddata = DecodedData::Instance();
-}
-
-SilentMedia::Codec::WAV::~WAV ( void ) {
-//    std::cout << "WAV Destructor.. " << std::endl;
-   delete wavinfo; wavinfo = NULL;
-   this -> flush();
-}
-
-bool SilentMedia::Codec::WAV::init ( std::string inputFile, std::string idObj ) {
-   this -> inputFile = inputFile;
-   this -> idObj = idObj;
-//    std::cout << "file: " << this -> inputFile << std::endl;
-
-   // открываем файловый дискриптор
-   this -> pFile = fopen ( this -> inputFile . c_str(), "rb" );
-// 
-   // Считываем информацию в класс WAV
-   // http://ccrma.stanford.edu/CCRMA/Courses/422/projects/WaveFormat/
-//    std::cout << "wavinfo: " << this -> wavinfo << std::endl;
-//    std::cout << "pFile: " << this -> pFile << std::endl;
-   fread ( this -> wavinfo, sizeof ( WavInfo ), 1, this -> pFile );
-   // закрываем файловый дискриптор
-   if ( fclose ( this -> pFile ) != 0 ) {
-      std::cout << "Error in WavDecode::init(): error in fclose()" << std::endl;
-   }
-//    if ( SILENTMEDIA_DEBUG == true ) {
-//       std::cout << "ChunkID: " << wavinfo -> getChunkID() << std::endl;
-//       std::cout << "ChunkSize: " << wavinfo -> getChunkSize() << std::endl;
-//       std::cout << "Format: " << wavinfo -> getFormat() << std::endl;
-//       std::cout << "Subchunk1ID: " << wavinfo -> getSubchunk1ID() << std::endl;
-//       std::cout << "Subchunk1Size: " << wavinfo -> getSubchunk1Size() << std::endl;
-//       std::cout << "AudioFormat: " << wavinfo -> getAudioFormat() << std::endl;
-//       std::cout << "NumChannels: " << wavinfo -> getNumChannels() << std::endl;
-//       std::cout << "SampleRate: " << wavinfo -> getSampleRate() << std::endl;
-//       std::cout << "ByteRate: " << wavinfo -> getByteRate() << std::endl;
-//       std::cout << "BlockAlign: " << wavinfo -> getBlockAlign() << std::endl;
-//       std::cout << "BitsPerSample: " << wavinfo -> getBitsPerSample() << std::endl;
-//       std::cout << "Subchunk2ID: " << wavinfo -> getSubchunk2ID() << std::endl;
-//       std::cout << "Subchunk2Size: " << wavinfo -> getSubchunk2Size() << std::endl;
-//    }
-
-   // Общее время звучания файла получаем с делением размера полезных аудио-данных ( pcm-поток ) на байтрейт ( размер занимаемых данных за секунду )
-   // По идеи это общее количество семплов разделено на количество семплов за секунду ( sampleRate ). Но тут нету общего количество семплов.
-   // По этому приходится считать так извращенно :)
-   this -> totalTime = ( static_cast < double > ( wavinfo -> getChunkSize() ) / ( wavinfo -> getByteRate() ) );
-
-   // Общее количество семплов = количество семплов за секунду * общее время звучания песни
-   this -> totalSamples = ( ( wavinfo -> getSampleRate() ) * ( this -> totalTime ) );
-   this -> bitRate = ( ( wavinfo -> getByteRate() ) * 8 );
-
-//    std::cout << "WAV: " << ::_ddata << std::endl;
-   this -> ddata -> setAudioParams ( this -> inputFile, wavinfo -> getChunkSize(), this -> totalTime,
-                                   wavinfo -> getNumChannels(), wavinfo -> getSampleRate(),
-                                         this -> bitRate, wavinfo -> getBitsPerSample()
-                                 );
-   return true;
-}
-
-bool SilentMedia::Codec::WAV::write ( std::string id ) {
-//    std::cout << "WAV::write(): id = " << id << std::endl;
-   // Записываем размер файла в переменную, так как при каждой инициализации другого файла это значение будет менятся
-   this -> fileSize = wavinfo -> getChunkSize(); // ?
-   // Не открываем файл повторно если он в режиме воспроизведения или делался seek
-   if ( this -> playCheck == false || this -> seekCheck == false ) {
-      if ( ( this -> input_fd = open ( this -> inputFile . c_str(), O_RDONLY ) ) == -1 ) {
-//          std::cout << "WAV: " << this -> inputFile << std::endl;
-         return ( _debug ( this -> inputFile ) );
+namespace SilentMedia {
+  namespace Audio {
+    namespace Codec {
+      WAV::WAV() {
+        // create instance for AudioProxy
+        this -> audioProxy = new AudioProxy();
       }
-   }
 
-   this -> playCheck = true;
-
-   const int buf_size = 4096;
-   int k = 2 * wavinfo -> getNumChannels();
-   int bufSize = k * buf_size;
-   int actlen = 0;
-   char buf [ bufSize ];
-
-   this -> ddata -> begin ( this -> idObj );
-   while ( ( actlen = read ( this -> input_fd, buf, bufSize ) ) ) {
-      this -> offsetPos += actlen;
-      this -> ddata -> write ( &buf, this -> idObj );
-//       write ( dspDev, buf, actlen );
-//       fwrite(buf,1,actlen,stdout);
-//       std::cout << offsetPos << std::endl;
-   }
-   std::cout << "End stream!" << std::endl;
-   this -> ddata -> end ( this -> idObj );
-}
-
-// Получаем текущее значение временной метки путем деления полного размера файла в байтах на количество уже считаных байт
-unsigned long int SilentMedia::Codec::WAV::getSeek ( void ) const {
-   return ( 100 / ( this -> fileSize / ( this -> offsetPos ) ) ) ;
-}
-
-void SilentMedia::Codec::WAV::setSeek ( double val ) {
-   this -> seekCheck = true;
-   unsigned long int resultPos = ( this -> fileSize * ( val / 100 ) );
-   /*
-   Если число resultPos получится не парное, то вместо музыки мы услышим шум...
-   Поэтому проверяем парное ли число, если нет то прибавляем единицу.
-   */
-   if ( resultPos % 2 != 0 ) { ++resultPos; }
-   this -> offsetPos = lseek ( this -> input_fd, resultPos, SEEK_SET );
-}
-
-void SilentMedia::Codec::WAV::flush ( void ) {
-//    std::cout << "in Codec::WAV::flush()" << std::endl;
-   // обнуляем показатели
-   this -> playCheck = false;
-   this -> seekCheck = false;
-   this -> offsetPos = 0;
-
-   // закрываем файловый дискриптор
-   if ( this -> input_fd != -1 ) {
-      if ( close ( this -> input_fd ) != 0 ) {
-         std::cout << "Error in close()" << std::endl;
+      WAV::~WAV() {
+        //        delete wavinfo;
+        //        wavinfo = NULL;
+        //        this -> flush();
       }
-   }
-   this -> input_fd = -1;
+
+      bool WAV::open(const string &fileId) {
+        // get fileName
+        string fileName = this -> audioProxy -> getFileNameByFileId(fileId);
+
+        if (!Utils::Func::checkFileAvailable(fileName)) {
+          return false;
+        }
+
+        this -> wavInfoMap[fileId] = new WAVInfo();
+
+        // open file
+        FILE * pFile = fopen(fileName.c_str(), "rb");
+
+        /*
+         * Read info into object of class WAVInfo
+         * http://ccrma.stanford.edu/CCRMA/Courses/422/projects/WaveFormat/
+         */
+
+        fread(this -> wavInfoMap[fileId], sizeof(WAVInfo), 1, pFile);
+
+        // close file
+        if (fclose(pFile) != 0) {
+          cerr << "Error in WAV::open(): error in fclose()" << endl;
+        }
+
+        //       cout << "ChunkID: " << wavinfo -> getChunkID() << endl;
+        //       cout << "ChunkSize: " << wavinfo -> getChunkSize() << endl;
+        //       cout << "Format: " << wavinfo -> getFormat() << endl;
+        //       cout << "Subchunk1ID: " << wavinfo -> getSubchunk1ID() << endl;
+        //       cout << "Subchunk1Size: " << wavinfo -> getSubchunk1Size() << endl;
+        //       cout << "AudioFormat: " << wavinfo -> getAudioFormat() << endl;
+        //       cout << "NumChannels: " << wavinfo -> getNumChannels() << endl;
+        //       cout << "SampleRate: " << wavinfo -> getSampleRate() << endl;
+        //       cout << "ByteRate: " << wavinfo -> getByteRate() << endl;
+        //       cout << "BlockAlign: " << wavinfo -> getBlockAlign() << endl;
+        //       cout << "BitsPerSample: " << wavinfo -> getBitsPerSample() << endl;
+        //       cout << "Subchunk2ID: " << wavinfo -> getSubchunk2ID() << endl;
+        //       cout << "Subchunk2Size: " << wavinfo -> getSubchunk2Size() << endl;
+
+        /*
+         * Getting total time by dividing useful audio data (pcm stream) on
+         * bitrate (size of data per second).
+         * It should be total count of samples dividing on samples per second (sample rate).
+         * But here we can't use it, as we miss sample rate.
+         */
+        double
+            totalTime =
+                (static_cast < double > (this -> wavInfoMap[fileId] -> getChunkSize())
+                    / (this -> wavInfoMap[fileId] -> getByteRate()));
+
+        // Общее количество семплов = количество семплов за секунду * общее время звучания песни
+        //        this -> totalSamples = ((wavinfo -> getSampleRate())
+        //            * (this -> totalTime));
+        int bitRate = ((this -> wavInfoMap[fileId] -> getByteRate()) * 8);
+
+        // update audio information
+        this -> audioProxy -> setAudioParams(fileId, fileName,
+            this -> wavInfoMap[fileId] -> getChunkSize(), totalTime,
+            this -> wavInfoMap[fileId] -> getNumChannels(),
+            this -> wavInfoMap[fileId] -> getSampleRate(), bitRate,
+            this -> wavInfoMap[fileId] -> getBitsPerSample());
+
+        return true;
+      }
+
+      void WAV::play(const string &fileId, bool resume) {
+        // get fileName
+        string fileName = this -> audioProxy -> getFileNameByFileId(fileId);
+
+        // set params if it in first time
+        if (!resume) {
+          // now set parameters to sound system
+          this -> audioProxy -> setSoundSystemParams(fileId);
+        }
+
+        const int bufSize = 4096;
+        char buf[bufSize];
+
+        int actlen = 0;
+
+        if ((this -> inputFDMap[fileId] = ::open(fileName.c_str(), O_RDONLY))
+            == -1) {
+          cerr << "Error: Unable to open file: " << fileName << endl;
+        }
+
+        while ((actlen = read(this -> inputFDMap[fileId], buf, bufSize))) {
+          this -> offsetPositionMap[fileId] += actlen;
+          this -> audioProxy -> write(buf, bufSize);
+        }
+        cout << "End stream!" << endl;
+        this -> close(fileId);
+      }
+
+      // Получаем текущее значение временной метки путем деления полного размера файла в байтах на количество уже считаных байт
+      void WAV::close(const string &fileId) {
+        delete this -> wavInfoMap[fileId];
+        this -> wavInfoMap[fileId] = NULL;
+
+        //        //    cout << "in Codec::WAV::flush()" << endl;
+        //        // обнуляем показатели
+        //        this -> playCheck = false;
+        //        this -> seekCheck = false;
+        //        this -> offsetPos = 0;
+        //
+        //        // закрываем файловый дискриптор
+        //        if (this -> input_fd != -1) {
+        //          if (close(this -> input_fd) != 0) {
+        //            cout << "Error in close()" << endl;
+        //          }
+        //        }
+        //        this -> input_fd = -1;
+      }
+
+      float WAV::getSeek(const string &fileId) {
+        if (this -> offsetPositionMap[fileId] == 0) {
+          return 0;
+        }
+        return (100.00 / (this -> audioProxy -> getFileSize(fileId)
+            / this -> offsetPositionMap[fileId]));
+      }
+
+      void WAV::setSeek(const string &fileId, const double &seekVal) {
+        long resultPosition = (this -> audioProxy -> getFileSize(fileId)
+            * (seekVal / 100));
+        /*
+         * If resultPosition it not dividing by 2, than we will give a noise.
+         * So, check variable if it dividing by 2, if not - increment it.
+         */
+        if (resultPosition % 2 != 0) {
+          ++resultPosition;
+        }
+
+        this -> offsetPositionMap[fileId] = lseek(this -> inputFDMap[fileId],
+            resultPosition, SEEK_SET);
+      }
+    }
+  }
 }
 

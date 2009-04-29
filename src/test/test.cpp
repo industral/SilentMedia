@@ -34,7 +34,8 @@ int main() {
   Audio::Audio * audio2 = Audio::Audio::Instance();
   audio2 -> init(); // init Audio system
 
-  if (audio -> open("src/test/music/file.ogg", "file1")) {
+  string fileId = "file1";
+  if (audio -> open("src/test/music/file.ogg", fileId)) {
 
     //  audio -> getInfo("file1");
 
@@ -48,7 +49,9 @@ int main() {
   delete audio;
   audio = NULL;
 
-  if (audio2 -> open("src/test/music/file.ogg", "file2")) {
+  string fileId2 = "file2";
+
+  if (audio2 -> open("src/test/music/file.ogg", fileId2)) {
     audio2 -> play("file2");
   }
 

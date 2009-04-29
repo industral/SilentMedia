@@ -134,5 +134,9 @@ namespace SilentMedia {
       this -> fileIdMap[fileId] = fileName;
     }
 
+    void AudioInfo::removeFileId(const string &fileId) {
+      this -> fileIdMap[fileId].erase();
+    }
+
   }
 }

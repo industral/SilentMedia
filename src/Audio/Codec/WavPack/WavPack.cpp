@@ -1,117 +1,128 @@
-/***************************************************************************
- *   Copyright (C) 2008 by Alex J. Ivasyuv                                 *
- *   alex@siegerstein.org.ua                                               *
- *                                                                         *
- *   This program is free software: you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation, either version 3 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
- ***************************************************************************/
+/*******************************************************************************
+ * Copyright (c) 2009, Alex Ivasyuv                                            *
+ * All rights reserved.                                                        *
+ *                                                                             *
+ * Redistribution and use in source and binary forms, with or without          *
+ * modification, are permitted provided that the following conditions are met: *
+ *                                                                             *
+ * 1. Redistributions of source code must retain the above copyright           *
+ *    notice, this list of conditions and the following disclaimer.            *
+ * 2. Redistributions in binary form must reproduce the above copyright        *
+ *    notice, this list of conditions and the following disclaimer in the      *
+ *    documentation and/or other materials provided with the distribution.     *
+ *                                                                             *
+ * THIS SOFTWARE IS PROVIDED BY Alex Ivasyuv ''AS IS'' AND ANY                 *
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED   *
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE      *
+ * DISCLAIMED. IN NO EVENT SHALL Alex Ivasyuv BE LIABLE FOR ANY DIRECT,        *
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES          *
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;*
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND *
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  *
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF    *
+ * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
+ ******************************************************************************/
 
 #include "WavPack.hpp"
-#include <SML/Audio/Codec/DecodedData.hpp>
 
-SilentMedia::Codec::WavPack::WavPack ( void ) : wpc ( NULL ), pwpc ( NULL ), bufSize ( 4096 ), seekCheck ( false ),
-      playCheck ( false ), fileSize ( -1 ), totalTime ( -1 )
-{
-   this -> ddata = DecodedData::Instance();
-}
+namespace SilentMedia {
+  namespace Audio {
+    namespace Codec {
+      WavPack::WavPack() {
 
-SilentMedia::Codec::WavPack::~WavPack ( void )
-{ }
-
-bool SilentMedia::Codec::WavPack::init ( std::string inputFile ) {
-   this -> dspDev = this -> ddata -> getDSPDev();
-   std::cout << "WavPack: in init()" << std::endl;
-   this -> fileName = inputFile;
-
-   char * error = NULL;
-   this -> wpc = WavpackOpenFileInput ( this -> fileName . c_str(), error, OPEN_WVC, 0 );
-   if ( this -> wpc == NULL ) {
-      std::cout << "Error in error WavpackOpenFileInput(): " << error << std::endl;
-   }
-
-   this -> fileSize = WavpackGetFileSize ( this -> wpc );
-   this -> totalTime = WavpackGetNumSamples ( this -> wpc ) / WavpackGetSampleRate ( this -> wpc );
-
-   this -> ddata -> setAudioParams ( this -> fileSize, this -> totalTime, WavpackGetNumChannels ( this -> wpc ), WavpackGetSampleRate ( this -> wpc ),
-                             WavpackGetAverageBitrate ( this -> wpc, 0 ), WavpackGetBitsPerSample ( this -> wpc ) );
-//    this -> readVorbisComment();
-
-   return 0;
-}
-
-void SilentMedia::Codec::WavPack::play ( void ) {
-   std::cout << "WavPack: in play()" << std::endl;
-   this -> playCheck = true;
-
-   this -> buffer = new int32_t [ this -> bufSize ] ;
-   this -> outputBuf = new int16_t [ this -> bufSize ];
-
-   if ( this -> seekCheck == false ) {
-      char * error = NULL;
-      this -> pwpc = WavpackOpenFileInput ( this -> fileName . c_str(), error, OPEN_WVC, 0 );
-      if ( this -> pwpc == NULL ) {
-         std::cout << "Error in error WavpackOpenFileInput(): " << error << std::endl;
+        // create instance for AudioProxy
+        this -> audioProxy = new AudioProxy();
       }
-   }
 
-   this -> ddata -> setParam();
-   while ( /*int samplesUnpacked =*/ WavpackUnpackSamples ( this -> pwpc, this -> buffer, 1024 ) ) {
-      for ( unsigned int i = 0; i < this -> bufSize; ++i ) {
-         this -> outputBuf [ i ] = this -> buffer [ i ];
+      WavPack::~WavPack() {
+        // release resources
+        delete this -> audioProxy;
+        this -> audioProxy = NULL;
       }
-      write ( this -> dspDev, this -> outputBuf, this -> bufSize );
-   }
-   this -> releaseBuff();
-}
 
-void SilentMedia::Codec::WavPack::releaseBuff ( void ) {
-   delete[] this -> buffer;
-   delete[] this -> outputBuf;
-}
+      bool WavPack::open(const string &fileId) {
+        // get fileName
+        string fileName = this -> audioProxy -> getFileNameByFileId(fileId);
 
-void SilentMedia::Codec::WavPack::setSeekPos ( double seekPos ) {
-   this -> seekCheck = true;
+        if (!Utils::Func::checkFileAvailable(fileName)) {
+          return false;
+        }
 
-   if ( WavpackSeekSample ( this -> pwpc, ( ( WavpackGetNumSamples ( this -> pwpc ) ) * ( seekPos / 100 ) ) ) == false ) {
-      std::cout << "Error in WavpackSeekSample()" << std::endl;
-   }
-}
+        char * error = NULL;
 
-unsigned long int SilentMedia::Codec::WavPack::getCurrSeekPos ( void ) const {
-   if ( WavpackGetNumSamples ( this -> pwpc ) == 0 || ( WavpackGetSampleIndex ( this -> pwpc ) ) == 0 ) {
-      return 0;
-   } else {
-      return ( 100 / ( static_cast < double > ( WavpackGetNumSamples ( this -> pwpc ) ) / WavpackGetSampleIndex ( this -> pwpc ) ) );
+        this -> wavPackContextMap[fileId] = WavpackOpenFileInput(
+            fileName.c_str(), error, OPEN_WVC, 0);
 
-   }
-}
+        if (this -> wavPackContextMap[fileId] == NULL) {
+          cerr << "Error in error WavpackOpenFileInput(): " << error << endl;
+        }
 
-void SilentMedia::Codec::WavPack::flush ( void ) {
-   std::cout << "WavPack: in flush()" << std::endl;
-//    if ( this -> wpc != NULL ) {
-//       WavpackCloseFile ( this -> wpc );
-//    }
-   if ( this -> pwpc != NULL ) {
-      WavpackCloseFile ( this -> pwpc );
-   }
+        long totalTime =
+            WavpackGetNumSamples(this -> wavPackContextMap[fileId])
+                / WavpackGetSampleRate(this -> wavPackContextMap[fileId]);
 
-   if ( this -> playCheck == true ) {
-      this -> releaseBuff();
-   }
-   this -> seekCheck = false;
-}
+        // update audio information
+        this -> audioProxy -> setAudioParams(fileId, fileName,
+            WavpackGetFileSize(this -> wavPackContextMap[fileId]), totalTime,
+            WavpackGetNumChannels(this -> wavPackContextMap[fileId]),
+            WavpackGetSampleRate(this -> wavPackContextMap[fileId]),
+            WavpackGetAverageBitrate(this -> wavPackContextMap[fileId], 0),
+            WavpackGetBitsPerSample(this -> wavPackContextMap[fileId]));
 
-void SilentMedia::Codec::WavPack::finish ( void ) {
-   std::cout << "WavPack: in finish()" << std::endl;
-   WavpackCloseFile ( this -> wpc );
+        //    this -> readVorbisComment();
+
+        return true;
+      }
+
+      void WavPack::play(const string &fileId, bool resume) {
+        // set params if it in first time
+        if (!resume) {
+          // now set parameters to sound system
+          this -> audioProxy -> setSoundSystemParams(fileId);
+        }
+
+        const int bufSize = 4096;
+
+        int32_t *buffer = new int32_t[bufSize];
+        int16_t * outputBuf = new int16_t[bufSize];
+
+        while ( /*int samplesUnpacked =*/WavpackUnpackSamples(
+            this -> wavPackContextMap[fileId], buffer, 1024)) {
+          for (int i = 0; i < bufSize; ++i) {
+            outputBuf[i] = buffer[i];
+          }
+          this -> audioProxy -> write(outputBuf, bufSize);
+        }
+
+        // release resource
+        delete[] buffer;
+        delete[] outputBuf;
+        this -> close(fileId);
+
+      }
+
+      void WavPack::setSeek(const string &fileId, const double &seekVal) {
+        if (WavpackSeekSample(this -> wavPackContextMap[fileId],
+            ((WavpackGetNumSamples(this -> wavPackContextMap[fileId]))
+                * (seekVal / 100))) == false) {
+          cerr << "Error in WavpackSeekSample()" << endl;
+        }
+      }
+
+      float WavPack::getSeek(const string &fileId) {
+        if (WavpackGetSampleIndex(this -> wavPackContextMap[fileId]) == 0) {
+          return 0;
+        } else {
+          return (100 / (static_cast < double > (WavpackGetNumSamples(
+              this -> wavPackContextMap[fileId])) / WavpackGetSampleIndex(
+              this -> wavPackContextMap[fileId])));
+        }
+      }
+
+      void WavPack::close(const string &fileId) {
+        WavpackCloseFile(this -> wavPackContextMap[fileId]);
+      }
+
+    }
+  }
 }

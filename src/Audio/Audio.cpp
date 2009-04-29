@@ -56,8 +56,10 @@ namespace SilentMedia {
       supportedFormats.push_back("flac");
       supportedFormats.push_back("wv");
 
+      codecHashMap["wav"] = new Codec::WAV();
       codecHashMap["ogg"] = new Codec::Vorbis();
       codecHashMap["flac"] = new Codec::FLAC();
+      codecHashMap["wv"] = new Codec::WavPack();
     }
 
     Audio::~Audio() {
@@ -88,7 +90,7 @@ namespace SilentMedia {
     }
 
     //TODO: Need to check if id is unique
-    bool Audio::open(const string &fileName, const string &fileId) {
+    bool Audio::open(const string &fileName, string &fileId) {
       std::cout << "open file name with id: " + fileId << std::endl;
 
       /*
@@ -105,6 +107,14 @@ namespace SilentMedia {
         cerr << "File extension \"" << Utils::Func::getFileExtension(fileName)
             << "\" is unsupported." << endl;
         return false;
+      }
+
+      // check unique if fileId. If not, generate it.
+      if (!this -> _audioInfo -> getFileNameByFileId(fileId).empty()) {
+        srand(time(NULL));
+        stringstream out;
+        out << fileId << rand();
+        fileId = out.str();
       }
 
       // register fileId with fileName in AudioInfo database
@@ -153,6 +163,7 @@ namespace SilentMedia {
       std::cout << "close file name with id: " + fileId << std::endl;
       this -> codecHashMap[Utils::Func::getFileExtension(
           _audioInfo -> getFileNameByFileId(fileId))] -> close(fileId);
+      this -> _audioInfo -> removeFileId(fileId);
     }
 
     float Audio::getSeek(const string &fileId) {
@@ -172,7 +183,6 @@ namespace SilentMedia {
         if (Utils::Func::getFileExtension(fileName).compare(*it)) {
           return true;
         }
-        return false;
       }
       return false;
     }

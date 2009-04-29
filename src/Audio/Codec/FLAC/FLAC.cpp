@@ -129,8 +129,11 @@ namespace SilentMedia {
 
         FLAC__uint64 sample_pos = ((totalSamples * (seekVal / 100)));
 
+        this -> audioProxy -> setCurrentSamples(fileId, sample_pos);
+
         if (!this -> flacDecoderMap[fileId] -> seek_absolute(sample_pos)) {
           cerr << "Error in seek_absolute()" << endl;
+          this -> flacDecoderMap[fileId] -> reset();
         }
       }
 

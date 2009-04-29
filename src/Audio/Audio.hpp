@@ -43,8 +43,10 @@
 /*
  * Include all audio codec.
  */
+#include <libsml/Audio/Codec/WAV/WAV.hpp>
 #include <libsml/Audio/Codec/Vorbis/Vorbis.hpp>
 #include <libsml/Audio/Codec/FLAC/FLAC.hpp>
+#include <libsml/Audio/Codec/WavPack/WavPack.hpp>
 
 // include pthread
 #include <pthread.h>
@@ -80,7 +82,7 @@ namespace SilentMedia {
 
         void finish();
 
-        bool open(const string &fileName, const string &fileId);
+        bool open(const string &fileName, string &fileId);
         void play(const string &fileId, bool resume = false);
         void playInThread(const string &fileId, bool resume = false);
         void playInThread();

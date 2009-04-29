@@ -26,6 +26,7 @@
 #ifndef _SILENTMEDIA_INCLUDE_HPP_
 #define _SILENTMEDIA_INCLUDE_HPP_
 
+// C++ header
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -33,6 +34,12 @@
 #include <list>
 #include <vector>
 #include <fstream>
+
+// C header
+#include <cstdio>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 using namespace std;
 
