@@ -76,6 +76,9 @@ namespace SilentMedia {
         void setTotalSamples(const string &fileId, double totalSamples);
         double getTotalSamples(const string &fileId);
 
+        void setCurrentSamples(const string &fileId, const double &samples);
+        double getCurrentSamples(const string &fileId);
+
         string getFileNameByFileId(const string& fileId);
         void setFileId(const string& fileId, const string& fileName);
 
@@ -99,6 +102,7 @@ namespace SilentMedia {
 
         // Additional information
         map < string, double > totalSamples;
+        map < string, double > currentSamples;
 
         //      multimap < ::FLAC__StreamMetadata_Picture_Type, string > picData;
         map < string, string > vorbisComm; // Vorbis Comment

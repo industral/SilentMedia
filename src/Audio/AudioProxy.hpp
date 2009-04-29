@@ -97,6 +97,9 @@ namespace SilentMedia {
         void setTotalSamples(const string &fileId, double totalSamples);
         double getTotalSamples(const string &fileId);
 
+        void setCurrentSamples(const string &fileId, const double &samples);
+        double getCurrentSamples(const string &fileId);
+
       private:
         AudioInfo * _audioInfo;
         SoundSystem::SoundSystem * _soundSystem;

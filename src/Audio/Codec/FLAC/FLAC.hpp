@@ -49,7 +49,35 @@ using namespace std;
 namespace SilentMedia {
   namespace Audio {
     namespace Codec {
+      class FLAC;
+
+      /**
+       * FLAC Decoder class. Inheritance from ::FLAC::Decoder::File.
+       * @see http://flac.sourceforge.net/api/classFLAC_1_1Decoder_1_1File.html
+       */
+      class FLACDecoder: public ::FLAC::Decoder::File {
+        public:
+          FLACDecoder();
+
+          virtual FLAC__StreamDecoderWriteStatus write_callback(
+              const FLAC__Frame * frame, const FLAC__int32 * const buf[]);
+
+          virtual void metadata_callback(const FLAC__StreamMetadata * block);
+
+          virtual void error_callback(::FLAC__StreamDecoderErrorStatus status);
+
+          void setFileId(const string &fileId);
+
+        private:
+          FLAC * flacObj;
+          string fileId;
+      };
+
+      /**
+       * FLAC class. Use FLACDecoder class.
+       */
       class FLAC: virtual public AbstractCodec {
+          friend class FLACDecoder;
         public:
           FLAC();
           virtual ~FLAC();
@@ -73,9 +101,6 @@ namespace SilentMedia {
           //          inline FLAC__uint64 getCurrSample(void) const {
           //            return this -> curr_sample;
           //          }
-          AudioProxy * getAudioProxy() {
-            return (this -> audioProxy);
-          }
         private:
           // AudioProxy object
           AudioProxy * audioProxy;
@@ -96,8 +121,7 @@ namespace SilentMedia {
           //                };
 
           // private
-          bool templateInitFile(FLAC__StreamDecoder * dec,
-              const string &fileName);
+          bool templateInitFile(const string &fileId, const string &fileName);
           void parseMetaData(const string &fileId);
           //          void readVorbisComment(void);
           //          void getPicture(void);
@@ -105,35 +129,13 @@ namespace SilentMedia {
           //            return this -> totalSamples;
           //          }
 
-          //          DecodedData * ddata;
           std::map < std::string, std::string > vorbisComm;
-          /*
-           Почему не работает FLAC::Decoder::File *encoder= new FLAC::Decoder::File()?
-           Приходится применять FLAC__stream_decoder_new()
-           */
-          //          FLAC__StreamDecoder * decoder; // указатель для инициализации
-          //          FLAC__StreamDecoder * pdecoder; // указатель для воспроизвдения
 
-          map < string, FLAC__StreamDecoder * > decoderMap;
+          map < string, FLACDecoder * > flacDecoderMap;
           map < string, ::FLAC::Metadata::StreamInfo::StreamInfo * >
               streamInfoMap;
 
           map < string, ::FLAC::Metadata::SimpleIterator * > iteratorMap;
-
-          // стражи
-          map < string, bool > playCheckMap;
-          map < string, bool > seekCheckMap;
-
-          /*
-           используем double для totalSamples а не FLAC__uint64 чтобы не использовать потом static_cast,
-           так как переменная используется для деления
-           см. int libssoss::FlacDecode::getCurrSeekPos ( void ) const
-           */
-
-          map < string, double > totalSamples;
-          FLAC__uint64 curr_sample;
-          FLAC__uint64 * position;
-
       };
     }
   }

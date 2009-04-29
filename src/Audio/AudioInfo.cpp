@@ -88,6 +88,15 @@ namespace SilentMedia {
       return (this -> totalSamples[fileId]);
     }
 
+    void AudioInfo::setCurrentSamples(const string &fileId,
+        const double &samples) {
+      this -> currentSamples[fileId] = samples;
+    }
+
+    double AudioInfo::getCurrentSamples(const string &fileId) {
+      return this -> currentSamples[fileId];
+    }
+
     //  void AudioInfo::begin(string id) {
     //    this -> ssystem -> allocateQuery(id);
     //    this -> ssystem -> setAudioParams(this -> channels, this -> sampleRate);

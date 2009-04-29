@@ -102,5 +102,14 @@ namespace SilentMedia {
       return (this -> _audioInfo -> getTotalSamples(fileId));
     }
 
+    void AudioProxy::setCurrentSamples(const string &fileId,
+        const double &samples) {
+      this -> _audioInfo -> setCurrentSamples(fileId, samples);
+    }
+
+    double AudioProxy::getCurrentSamples(const string &fileId) {
+      return (this -> _audioInfo -> getCurrentSamples(fileId));
+    }
+
   }
 }
