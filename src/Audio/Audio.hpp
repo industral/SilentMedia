@@ -48,8 +48,8 @@
 #include <libsml/Audio/Codec/FLAC/FLAC.hpp>
 #include <libsml/Audio/Codec/WavPack/WavPack.hpp>
 
-// include pthread
-#include <pthread.h>
+// include boost thread
+#include <boost/thread/thread.hpp>
 
 namespace SilentMedia {
   namespace Audio {
@@ -69,8 +69,6 @@ namespace SilentMedia {
          */
         ~Audio();
 
-        static Audio * Instance();
-
         /**
          * Initialized audio system with appropriate sound driver.
          * @param[in] driver audio system driver.
@@ -84,8 +82,7 @@ namespace SilentMedia {
 
         bool open(const string &fileName, string &fileId);
         void play(const string &fileId, bool resume = false);
-        void playInThread(const string &fileId, bool resume = false);
-        void playInThread();
+        void playInThread(const string &fileId, const bool &resume = false);
         void pause(const string &fileId);
         void stop(const string &fileId);
         void close(const string &fileId);
@@ -101,22 +98,14 @@ namespace SilentMedia {
         long getBitRate(const string &fileId);
         int getBitsPerSample(const string &fileId);
       private:
-        // self instance variable
-        static Audio * _audio;
-
         SoundSystem::SoundSystem * _soundSystem;
         AudioInfo * _audioInfo;
 
         list < string > supportedFormats;
         map < string, Codec::AbstractCodec * > codecHashMap;
 
-        map < string, pthread_t > threadMap;
+        map < string, boost::thread * > threadMap;
         list < pthread_t > threadList;
-
-        //
-        string lastFileId;
-        bool lastResume;
-        //
 
         bool checkSupportedFormat(const string &fileName);
     };

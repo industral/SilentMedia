@@ -57,8 +57,10 @@ namespace SilentMedia {
           virtual ~Vorbis();
 
           virtual bool open(const string &fileId);
-          virtual void play(const string &fileId, bool resume = false);
           virtual void close(const string &fileId);
+
+          virtual int play(const string &fileId, bool resume = false);
+          virtual void stop(const string &fileId);
 
           virtual float getSeek(const string &fileId);
           virtual void setSeek(const string &fileId, const double &seekVal);
@@ -71,6 +73,8 @@ namespace SilentMedia {
 
           // Vorbis Info map
           map < string, vorbis_info * > vorbisInfoMap;
+
+          map <string, bool> stopMap;
 
           void readVorbisComment(const string &fileId);
       };

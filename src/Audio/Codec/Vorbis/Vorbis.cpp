@@ -78,7 +78,7 @@ namespace SilentMedia {
         //        this -> readVorbisComment(fileId);
       }
 
-      void Vorbis::play(const string &fileId, bool resume) {
+      int Vorbis::play(const string &fileId, bool resume) {
         // set params if it in first time
         if (!resume) {
           // now set parameters to sound system
@@ -92,6 +92,11 @@ namespace SilentMedia {
         int current_section = 0;
 
         while (!eof) {
+          if (this -> stopMap[fileId]) {
+            this -> close(fileId);
+            return 0;
+          }
+
           long ret = ov_read(&this -> vorbisFileMap[fileId], buf, buf_size, 0,
               2, 1, &current_section);
           if (ret == 0) {
@@ -102,7 +107,12 @@ namespace SilentMedia {
             this -> audioProxy -> write(buf, buf_size);
           }
         }
-        ov_clear(&this -> vorbisFileMap[fileId]);
+        this -> close(fileId);
+        return 0;
+      }
+
+      void Vorbis::stop(const string &fileId) {
+        this -> stopMap[fileId] = true;
       }
 
       void Vorbis::close(const string &fileId) {

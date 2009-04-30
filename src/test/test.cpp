@@ -28,10 +28,10 @@
 
 using namespace SilentMedia;
 int main() {
-  Audio::Audio * audio = Audio::Audio::Instance();
+  Audio::Audio * audio = new Audio::Audio();
   audio -> init(); // init Audio system
 
-  Audio::Audio * audio2 = Audio::Audio::Instance();
+  Audio::Audio * audio2 = new Audio::Audio();
   audio2 -> init(); // init Audio system
 
   string fileId = "file1";

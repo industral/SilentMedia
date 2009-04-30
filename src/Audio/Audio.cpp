@@ -25,25 +25,8 @@
 
 #include "Audio.hpp"
 
-class songPref {
-  public:
-    string fileId;
-    bool resume;
-};
-
-// write thread function
-void * playThreadFunc(void * data) {
-  SilentMedia::Audio::Audio * audio =
-      static_cast < SilentMedia::Audio::Audio * > (data);
-  audio -> playInThread();
-  //  pthread_exit(NULL);
-  return NULL;
-}
-
 namespace SilentMedia {
   namespace Audio {
-    Audio * Audio::_audio = NULL;
-
     Audio::Audio() {
       // create SoundSystem instance
       _soundSystem = SoundSystem::SoundSystem::Instance();
@@ -68,13 +51,6 @@ namespace SilentMedia {
 
       delete _audioInfo;
       _audioInfo = NULL;
-    }
-
-    Audio * Audio::Instance() {
-      if (_audio == NULL) {
-        _audio = new Audio();
-      }
-      return _audio;
     }
 
     bool Audio::init() {
@@ -110,7 +86,7 @@ namespace SilentMedia {
       }
 
       // check unique if fileId. If not, generate it.
-      if (!this -> _audioInfo -> getFileNameByFileId(fileId).empty()) {
+      while (!this -> _audioInfo -> getFileNameByFileId(fileId).empty()) {
         srand(time(NULL));
         stringstream out;
         out << fileId << rand();
@@ -128,34 +104,28 @@ namespace SilentMedia {
     }
 
     void Audio::play(const string &fileId, bool resume) {
-      this -> lastFileId = fileId;
-      this -> lastResume = resume;
-
-      pthread_create(&this -> threadMap[fileId], NULL, playThreadFunc, this);
-      //      threadList.push_back(this -> threadMap[fileId]);
+      this -> threadMap[fileId] = new boost::thread(boost::bind(
+          &Audio::playInThread, this, fileId, resume));
     }
 
-    void Audio::playInThread() {
-      this -> playInThread(this -> lastFileId, this -> lastResume);
-    }
-
-    void Audio::playInThread(const string &fileId, bool resume) {
+    void Audio::playInThread(const string &fileId, const bool &resume) {
       std::cout << "play file name with id: " + fileId << std::endl;
       this -> codecHashMap[Utils::Func::getFileExtension(
           _audioInfo -> getFileNameByFileId(fileId))] -> play(fileId, resume);
+      this -> threadMap[fileId] -> join();
     }
 
     void Audio::pause(const string &fileId) {
       std::cout << "pause file name with id: " + fileId << std::endl;
-      pthread_cancel(this -> threadMap[fileId]);
+      //      pthread_cancel(this -> threadMap[fileId]);
     }
 
     void Audio::stop(const string &fileId) {
       if (threadMap[fileId]) {
         cout << "try to stop" << endl;
-        pthread_cancel(this -> threadMap[fileId]);
+        this -> codecHashMap[Utils::Func::getFileExtension(
+            _audioInfo -> getFileNameByFileId(fileId))] -> stop(fileId);
       }
-      this -> close(fileId);
       std::cout << "stop file name with id: " + fileId << std::endl;
     }
 

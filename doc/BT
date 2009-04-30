@@ -1,38 +1,33 @@
-(gdb) bt
-#0  0xb6ee29dd in ?? () from /usr/lib/libvorbis.so.0
-#1  0xb6ed92cb in vorbis_synthesis () from /usr/lib/libvorbis.so.0
-#2  0xb7efd5ab in ?? () from /usr/lib/libvorbisfile.so.3
-#3  0xb7efda50 in ov_read () from /usr/lib/libvorbisfile.so.3
-#4  0xb7f2f37a in SilentMedia::Audio::Codec::Vorbis::play (this=0x9366af8, fileId=@0x9366708, resume=false) at /home/oivasyuv/workspace/SilentMedia/src/Audio/Codec/Vorbis/Vorbis.cpp:104
-#5  0xb7f201b9 in SilentMedia::Audio::Audio::playInThread (this=0x93666c0, fileId=@0x9366708, resume=false) at /home/oivasyuv/workspace/SilentMedia/src/Audio/Audio.cpp:133
-#6  0xb7f20255 in SilentMedia::Audio::Audio::playInThread (this=0x93666c0) at /home/oivasyuv/workspace/SilentMedia/src/Audio/Audio.cpp:127
-#7  0xb7f2027e in playThreadFunc (data=0x93666c0) at /home/oivasyuv/workspace/SilentMedia/src/Audio/Audio.cpp:38
-#8  0xb71864ff in start_thread () from /lib/tls/i686/cmov/libpthread.so.0
-#9  0xb6fdc49e in clone () from /lib/tls/i686/cmov/libc.so.6
 (gdb) bt full
-#0  0xb6ee29dd in ?? () from /usr/lib/libvorbis.so.0
+#0  0xb6fa3c82 in ?? () from /usr/lib/libvorbis.so.0
 No symbol table info available.
-#1  0xb6ed92cb in vorbis_synthesis () from /usr/lib/libvorbis.so.0
+#1  0xb6f9a2cb in vorbis_synthesis () from /usr/lib/libvorbis.so.0
 No symbol table info available.
-#2  0xb7efd5ab in ?? () from /usr/lib/libvorbisfile.so.3
+#2  0xb7fe75ab in ?? () from /usr/lib/libvorbisfile.so.3
 No symbol table info available.
-#3  0xb7efda50 in ov_read () from /usr/lib/libvorbisfile.so.3
+#3  0xb7fe7a50 in ov_read () from /usr/lib/libvorbisfile.so.3
 No symbol table info available.
-#4  0xb7f2f37a in SilentMedia::Audio::Codec::Vorbis::play (this=0x9366af8, fileId=@0x9366708, resume=false) at /home/oivasyuv/workspace/SilentMedia/src/Audio/Codec/Vorbis/Vorbis.cpp:104
+#4  0xb802e1e1 in SilentMedia::Audio::Codec::Vorbis::play (this=0x84edb48, fileId=@0x872a938, resume=false) at /home/oivasyuv/workspace/SilentMedia/src/Audio/Codec/Vorbis/Vorbis.cpp:101
     ret = 128
     buf_size = 128
-    buf = "f\001\226���o�\220�\234԰�=�����Y�����Qڰ�8�\220�\213�\r\000��\016\003q��\005u�\237\a\226��\n���\r\177�&\020*�!\024��\026\027\222��\027\f�(\030@�\215\031\002�\037\033��H\032\r߯\027��&\027��S\027���\024%��\021E��\020\235Ѻ\021\036�P\021\024�\001\016\n�"
+    buf = "@%\001\t-%%\ty%\177\t�%�\t\004'\222\n�(\002\v�*\227\v�-�\f�0\225\r\t4u\016�5\030\01716\227\017�5\234\017\0235v\017v4�\017�3\214\017d2^\017419\017h0\v\017�/5\017�/8\017�/i\017N0\200\017\"1\237\017N2\030\020�3�\020\2145D\021\2347�\021�9�\022�;!\023�<\210\023\022=�\023"
     eof = 0
     current_section = 0
-#5  0xb7f201b9 in SilentMedia::Audio::Audio::playInThread (this=0x93666c0, fileId=@0x9366708, resume=false) at /home/oivasyuv/workspace/SilentMedia/src/Audio/Audio.cpp:133
+#5  0xb801e2ee in SilentMedia::Audio::Audio::playInThread (this=0x84ed640, fileId=@0x872a938, resume=@0x872a93c) at /home/oivasyuv/workspace/SilentMedia/src/Audio/Audio.cpp:114
 No locals.
-#6  0xb7f20255 in SilentMedia::Audio::Audio::playInThread (this=0x93666c0) at /home/oivasyuv/workspace/SilentMedia/src/Audio/Audio.cpp:127
+#6  0xb8021390 in boost::_mfi::mf2<void, SilentMedia::Audio::Audio, std::string const&, bool const&>::operator() (this=0x872a92c, p=0x84ed640, a1=@0x872a938, a2=@0x872a93c)
+    at /usr/include/boost/bind/mem_fn_template.hpp:274
 No locals.
-#7  0xb7f2027e in playThreadFunc (data=0x93666c0) at /home/oivasyuv/workspace/SilentMedia/src/Audio/Audio.cpp:38
-    audio = (SilentMedia::Audio::Audio *) 0x93666c0
-#8  0xb71864ff in start_thread () from /lib/tls/i686/cmov/libpthread.so.0
+#7  0xb8021497 in boost::_bi::list3<boost::_bi::value<SilentMedia::Audio::Audio*>, boost::_bi::value<std::string>, boost::_bi::value<bool> >::operator()<boost::_mfi::mf2<void, SilentMedia::Audio::Audio, std::string const&, bool const&>, boost::_bi::list0> (this=0x872a934, f=@0x872a92c, a=@0xb36ff323) at /usr/include/boost/bind.hpp:371
+No locals.
+#8  0xb80214e9 in boost::_bi::bind_t<void, boost::_mfi::mf2<void, SilentMedia::Audio::Audio, std::string const&, bool const&>, boost::_bi::list3<boost::_bi::value<SilentMedia::Audio::Audio*>, boost::_bi::value<std::string>, boost::_bi::value<bool> > >::operator() (this=0x872a92c) at /usr/include/boost/bind/bind_template.hpp:20
+    a = {<No data fields>}
+#9  0xb8021512 in boost::detail::thread_data<boost::_bi::bind_t<void, boost::_mfi::mf2<void, SilentMedia::Audio::Audio, std::string const&, bool const&>, boost::_bi::list3<boost::_bi::value<SilentMedia::Audio::Audio*>, boost::_bi::value<std::string>, boost::_bi::value<bool> > > >::run (this=0x872a870) at /usr/include/boost/thread/detail/thread.hpp:56
+No locals.
+#10 0xb7f16848 in thread_proxy () from /usr/lib/libboost_thread-mt.so.1.37.0
 No symbol table info available.
-#9  0xb6fdc49e in clone () from /lib/tls/i686/cmov/libc.so.6
+#11 0xb72474ff in start_thread () from /lib/tls/i686/cmov/libpthread.so.0
+No symbol table info available.
+#12 0xb709d49e in clone () from /lib/tls/i686/cmov/libc.so.6
 No symbol table info available.
 (gdb) 
-

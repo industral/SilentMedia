@@ -104,7 +104,7 @@ namespace SilentMedia {
         return true;
       }
 
-      void WAV::play(const string &fileId, bool resume) {
+      int WAV::play(const string &fileId, bool resume) {
         // get fileName
         string fileName = this -> audioProxy -> getFileNameByFileId(fileId);
 
@@ -125,11 +125,25 @@ namespace SilentMedia {
         }
 
         while ((actlen = read(this -> inputFDMap[fileId], buf, bufSize))) {
+
+          if (this -> stopMap[fileId]) {
+            cout << "EXIT" << endl;
+            this -> close(fileId);
+            return 0;
+          }
+
           this -> offsetPositionMap[fileId] += actlen;
           this -> audioProxy -> write(buf, bufSize);
         }
+
         cout << "End stream!" << endl;
         this -> close(fileId);
+        return 0;
+
+      }
+
+      void WAV::stop(const string &fileId) {
+        this -> stopMap[fileId] = true;
       }
 
       // Получаем текущее значение временной метки путем деления полного размера файла в байтах на количество уже считаных байт

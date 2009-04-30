@@ -26,6 +26,10 @@
 #ifndef _SILENTMEDIA_FLAC_HPP_
 #define _SILENTMEDIA_FLAC_HPP_
 
+/**
+ * http://flac.sourceforge.net/api/classFLAC_1_1Decoder_1_1File.html
+ */
+
 // main include
 #include <libsml/include.hpp>
 
@@ -60,8 +64,10 @@ namespace SilentMedia {
           virtual ~FLAC();
 
           virtual bool open(const string &fileId);
-          virtual void play(const string &fileId, bool resume = false);
           virtual void close(const string &fileId);
+
+          virtual int play(const string &fileId, bool resume = false);
+          virtual void stop(const string &fileId);
 
           virtual float getSeek(const string &fileId);
           virtual void setSeek(const string &fileId, const double &seekVal);
@@ -84,6 +90,7 @@ namespace SilentMedia {
 
           //             ::FLAC::Metadata::Picture * picture;
           std::string spdata;
+          map < string, bool > stopMap;
 
           //          template<class T>
           //                class Proxy {

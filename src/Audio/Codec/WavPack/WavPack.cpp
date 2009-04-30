@@ -74,7 +74,7 @@ namespace SilentMedia {
         return true;
       }
 
-      void WavPack::play(const string &fileId, bool resume) {
+      int WavPack::play(const string &fileId, bool resume) {
         // set params if it in first time
         if (!resume) {
           // now set parameters to sound system
@@ -88,6 +88,12 @@ namespace SilentMedia {
 
         while ( /*int samplesUnpacked =*/WavpackUnpackSamples(
             this -> wavPackContextMap[fileId], buffer, 1024)) {
+
+          if (this -> stopMap[fileId]) {
+            this -> close(fileId);
+            return 0;
+          }
+
           for (int i = 0; i < bufSize; ++i) {
             outputBuf[i] = buffer[i];
           }
@@ -97,8 +103,13 @@ namespace SilentMedia {
         // release resource
         delete[] buffer;
         delete[] outputBuf;
-        this -> close(fileId);
 
+        this -> close(fileId);
+        return 0;
+      }
+
+      void WavPack::stop(const string &fileId) {
+        this -> stopMap[fileId] = true;
       }
 
       void WavPack::setSeek(const string &fileId, const double &seekVal) {

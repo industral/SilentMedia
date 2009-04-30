@@ -36,7 +36,6 @@ namespace SilentMedia {
       FLAC::FLAC() {
         // create instance for AudioProxy
         this -> audioProxy = new AudioProxy();
-        //        this -> flacDecoder = new FLACDecoder();
       }
 
       FLAC::~FLAC() {
@@ -55,10 +54,8 @@ namespace SilentMedia {
 
         this -> flacDecoderMap[fileId] = new FLACDecoder();
 
-        //        this -> decoderMap[fileId] = FLAC__stream_decoder_new();
         this -> templateInitFile(fileId, fileName);
 
-        // important for populate structure
         this -> flacDecoderMap[fileId] -> process_single();
 
         this -> parseMetaData(fileId);
@@ -66,29 +63,37 @@ namespace SilentMedia {
         return true;
       }
 
-      void FLAC::play(const string &fileId, bool resume) {
+      int FLAC::play(const string &fileId, bool resume) {
         // set params if it in first time
         if (!resume) {
           // now set parameters to sound system
           this -> audioProxy -> setSoundSystemParams(fileId);
         }
 
-        // обязательно для заполнения стуктуры
-        //        FLAC__stream_decoder_process_single(this -> decoderMap[fileId]);
-        this -> flacDecoderMap[fileId] -> process_single();
-
         this -> flacDecoderMap[fileId] -> setFileId(fileId);
 
         cout << "FLAC in play()" << endl;
 
-        while (this -> flacDecoderMap[fileId] -> process_until_end_of_stream()) {
-          if (this -> flacDecoderMap[fileId] -> get_state()
-              == FLAC__STREAM_DECODER_END_OF_STREAM) {
+        while (1) {
+          if (this -> stopMap[fileId]) {
+            cout << "EXIT" << endl;
             this -> close(fileId);
-            cout << "End of stream." << endl;
+            return 0;
+          } else {
+            this -> flacDecoderMap[fileId] -> process_single();
+            if (this -> flacDecoderMap[fileId] -> get_state()
+                == FLAC__STREAM_DECODER_END_OF_STREAM) {
+              this -> close(fileId);
+              cout << "End of stream." << endl;
+              return 0;
+            }
           }
-          break;
         }
+        return 0;
+      }
+
+      void FLAC::stop(const string &fileId) {
+        this -> stopMap[fileId] = true;
       }
 
       void FLAC::close(const string &fileId) {
@@ -129,12 +134,12 @@ namespace SilentMedia {
 
         FLAC__uint64 sample_pos = ((totalSamples * (seekVal / 100)));
 
-        this -> audioProxy -> setCurrentSamples(fileId, sample_pos);
-
         if (!this -> flacDecoderMap[fileId] -> seek_absolute(sample_pos)) {
           cerr << "Error in seek_absolute()" << endl;
-          this -> flacDecoderMap[fileId] -> reset();
+          this -> flacDecoderMap[fileId] -> flush();
         }
+
+        this -> audioProxy -> setCurrentSamples(fileId, sample_pos);
       }
 
       // --------------------------------------------------------------------
@@ -280,6 +285,7 @@ namespace SilentMedia {
             totalSamples + sample);
 
         this -> flacObj -> audioProxy -> write(outbuf, decoded_size);
+
         return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
       }
 
