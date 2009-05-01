@@ -33,8 +33,9 @@
 // main include
 #include <libsml/include.hpp>
 
-// include Util class
-#include <libsml/Utils/Func/Func.hpp>
+// include boost
+#include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/fstream.hpp>
 
 /*
  * We should include AbstractCodec, AudioProxy.
@@ -74,7 +75,7 @@ namespace SilentMedia {
           // Vorbis Info map
           map < string, vorbis_info * > vorbisInfoMap;
 
-          map <string, bool> stopMap;
+          map < string, bool > stopMap;
 
           void readVorbisComment(const string &fileId);
       };

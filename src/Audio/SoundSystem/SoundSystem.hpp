@@ -37,6 +37,8 @@
 // include available sound systems
 #include <libsml/Audio/SoundSystem/libao/AO.hpp>
 
+using namespace std;
+
 namespace SilentMedia {
   namespace Audio {
     namespace SoundSystem {

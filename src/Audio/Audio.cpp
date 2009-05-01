@@ -34,15 +34,15 @@ namespace SilentMedia {
       _audioInfo = AudioInfo::Instance();
 
       // Create a list of supported file formats
-      supportedFormats.push_back("wav");
-      supportedFormats.push_back("ogg");
-      supportedFormats.push_back("flac");
-      supportedFormats.push_back("wv");
+      supportedFormats.push_back(".wav");
+      supportedFormats.push_back(".ogg");
+      supportedFormats.push_back(".flac");
+      supportedFormats.push_back(".wv");
 
-      codecHashMap["wav"] = new Codec::WAV();
-      codecHashMap["ogg"] = new Codec::Vorbis();
-      codecHashMap["flac"] = new Codec::FLAC();
-      codecHashMap["wv"] = new Codec::WavPack();
+      codecHashMap[".wav"] = new Codec::WAV();
+      codecHashMap[".ogg"] = new Codec::Vorbis();
+      codecHashMap[".flac"] = new Codec::FLAC();
+      codecHashMap[".wv"] = new Codec::WavPack();
     }
 
     Audio::~Audio() {
@@ -80,16 +80,22 @@ namespace SilentMedia {
 
       // check if extension is in supportedFormat list
       if (!checkSupportedFormat(fileName)) {
-        cerr << "File extension \"" << Utils::Func::getFileExtension(fileName)
+        cerr << "File extension \""
+            << boost::filesystem::path(fileName).extension()
             << "\" is unsupported." << endl;
         return false;
       }
 
       // check unique if fileId. If not, generate it.
-      while (!this -> _audioInfo -> getFileNameByFileId(fileId).empty()) {
-        srand(time(NULL));
+      if (!this -> _audioInfo -> getFileNameByFileId(fileId).empty()) {
+        boost::mt19937 rng;
+        rng.seed(static_cast < unsigned > (std::time(0)));
+        boost::uniform_int < > distribution(1, LONG_MAX);
+        boost::variate_generator < boost::mt19937&, boost::uniform_int < > >
+            die(rng, distribution);
+
         stringstream out;
-        out << fileId << rand();
+        out << fileId << die();
         fileId = out.str();
       }
 
@@ -97,7 +103,7 @@ namespace SilentMedia {
       this -> _audioInfo -> setFileId(fileId, fileName);
 
       // call open method in appropriate codec
-      this -> codecHashMap[Utils::Func::getFileExtension(fileName)] -> open(
+      this -> codecHashMap[boost::filesystem::path(fileName).extension()] -> open(
           fileId);
 
       return true;
@@ -110,8 +116,9 @@ namespace SilentMedia {
 
     void Audio::playInThread(const string &fileId, const bool &resume) {
       std::cout << "play file name with id: " + fileId << std::endl;
-      this -> codecHashMap[Utils::Func::getFileExtension(
-          _audioInfo -> getFileNameByFileId(fileId))] -> play(fileId, resume);
+      this -> codecHashMap[boost::filesystem::path(
+          _audioInfo -> getFileNameByFileId(fileId)).extension()] -> play(
+          fileId, resume);
       this -> threadMap[fileId] -> join();
     }
 
@@ -123,34 +130,37 @@ namespace SilentMedia {
     void Audio::stop(const string &fileId) {
       if (threadMap[fileId]) {
         cout << "try to stop" << endl;
-        this -> codecHashMap[Utils::Func::getFileExtension(
-            _audioInfo -> getFileNameByFileId(fileId))] -> stop(fileId);
+        this -> codecHashMap[boost::filesystem::path(
+            _audioInfo -> getFileNameByFileId(fileId)).extension()] -> stop(
+            fileId);
       }
       std::cout << "stop file name with id: " + fileId << std::endl;
     }
 
     void Audio::close(const string &fileId) {
       std::cout << "close file name with id: " + fileId << std::endl;
-      this -> codecHashMap[Utils::Func::getFileExtension(
-          _audioInfo -> getFileNameByFileId(fileId))] -> close(fileId);
+      this -> codecHashMap[boost::filesystem::path(
+          _audioInfo -> getFileNameByFileId(fileId)).extension()] -> close(
+          fileId);
       this -> _audioInfo -> removeFileId(fileId);
     }
 
     float Audio::getSeek(const string &fileId) {
-      return (this -> codecHashMap[Utils::Func::getFileExtension(
-          _audioInfo -> getFileNameByFileId(fileId))] -> getSeek(fileId));
+      return (this -> codecHashMap[boost::filesystem::path(
+          _audioInfo -> getFileNameByFileId(fileId)).extension()] -> getSeek(
+          fileId));
     }
 
     void Audio::setSeek(const string &fileId, const float &seekVal) {
-      this -> codecHashMap[Utils::Func::getFileExtension(
-          _audioInfo -> getFileNameByFileId(fileId))] -> setSeek(fileId,
-          seekVal);
+      this -> codecHashMap[boost::filesystem::path(
+          _audioInfo -> getFileNameByFileId(fileId)).extension()] -> setSeek(
+          fileId, seekVal);
     }
 
     bool Audio::checkSupportedFormat(const string &fileName) {
       list < string >::iterator it;
       for (it = supportedFormats.begin(); it != supportedFormats.end(); ++it) {
-        if (Utils::Func::getFileExtension(fileName).compare(*it)) {
+        if (boost::filesystem::path(fileName).extension().compare(*it)) {
           return true;
         }
       }

@@ -27,7 +27,6 @@
 #define _SILENTMEDIA_ALL_HPP_
 
 #include "include.hpp"
-
-using namespace std;
+#include <libsml/Audio/Audio.hpp>
 
 #endif

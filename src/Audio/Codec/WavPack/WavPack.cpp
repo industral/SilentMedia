@@ -44,7 +44,7 @@ namespace SilentMedia {
         // get fileName
         string fileName = this -> audioProxy -> getFileNameByFileId(fileId);
 
-        if (!Utils::Func::checkFileAvailable(fileName)) {
+        if (!boost::filesystem::exists(fileName)) {
           return false;
         }
 

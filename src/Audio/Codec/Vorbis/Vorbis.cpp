@@ -48,7 +48,8 @@ namespace SilentMedia {
         // get fileName
         string fileName = this -> audioProxy -> getFileNameByFileId(fileId);
 
-        if (!Utils::Func::checkFileAvailable(fileName)) {
+        if (!boost::filesystem::exists(fileName)) {
+          cout << "ERROR: File " << fileName << " not found" << endl;
           return false;
         }
 
@@ -68,7 +69,7 @@ namespace SilentMedia {
 
         // update audio information
         this -> audioProxy -> setAudioParams(fileId, fileName,
-            Utils::Func::getFileSize(fileName), ov_time_total(
+            boost::filesystem::file_size(fileName), ov_time_total(
                 &this -> vorbisFileMap[fileId], -1),
             this -> vorbisInfoMap[fileId] -> channels,
             this -> vorbisInfoMap[fileId] -> rate,

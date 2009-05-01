@@ -29,9 +29,6 @@
 // main include
 #include <libsml/include.hpp>
 
-// Util class
-#include <libsml/Utils/Func/Func.hpp>
-
 /*
  * We should include:
  * SoundSystem, AbstractCodec, AudioInfo.
@@ -47,9 +44,6 @@
 #include <libsml/Audio/Codec/Vorbis/Vorbis.hpp>
 #include <libsml/Audio/Codec/FLAC/FLAC.hpp>
 #include <libsml/Audio/Codec/WavPack/WavPack.hpp>
-
-// include boost thread
-#include <boost/thread/thread.hpp>
 
 namespace SilentMedia {
   namespace Audio {

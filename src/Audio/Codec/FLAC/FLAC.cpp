@@ -48,7 +48,7 @@ namespace SilentMedia {
         // get fileName
         string fileName = this -> audioProxy -> getFileNameByFileId(fileId);
 
-        if (!Utils::Func::checkFileAvailable(fileName)) {
+        if (!boost::filesystem::exists(fileName)) {
           return false;
         }
 
@@ -199,7 +199,7 @@ namespace SilentMedia {
         ::FLAC::Metadata::get_streaminfo(fileName.c_str(),
             *this -> streamInfoMap[fileId]);
 
-        long fileSize = Utils::Func::getFileSize(fileName);
+        long fileSize = boost::filesystem::file_size(fileName);
         // применяем сдесь ф-цию FLAC__stream_decoder_get_total_samples() !
         double totalTime =
             (this -> flacDecoderMap[fileId] -> get_total_samples()

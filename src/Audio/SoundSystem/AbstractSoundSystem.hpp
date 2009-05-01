@@ -28,6 +28,8 @@
 
 #include <libsml/include.hpp>
 
+using namespace std;
+
 namespace SilentMedia {
   namespace Audio {
     namespace SoundSystem {

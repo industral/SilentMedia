@@ -29,9 +29,6 @@
 // main include
 #include <libsml/include.hpp>
 
-// include Util class
-#include <libsml/Utils/Func/Func.hpp>
-
 /*
  * We should include AbstractCodec, AudioProxy.
  */
@@ -63,7 +60,7 @@ namespace SilentMedia {
 
           map < string, WAVInfo * > wavInfoMap;
           map < string, double > offsetPositionMap;
-          map < string, int > inputFDMap;
+          map < string, ifstream * > inputFDMap;
           map < string, bool > stopMap;
       };
     }

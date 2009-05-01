@@ -24,9 +24,9 @@
  ******************************************************************************/
 
 #include <libsml/all.hpp>
-#include <libsml/Audio/Audio.hpp>
 
 using namespace SilentMedia;
+
 int main() {
   Audio::Audio * audio = new Audio::Audio();
   audio -> init(); // init Audio system

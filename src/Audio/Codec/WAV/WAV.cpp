@@ -34,16 +34,13 @@ namespace SilentMedia {
       }
 
       WAV::~WAV() {
-        //        delete wavinfo;
-        //        wavinfo = NULL;
-        //        this -> flush();
       }
 
       bool WAV::open(const string &fileId) {
         // get fileName
         string fileName = this -> audioProxy -> getFileNameByFileId(fileId);
 
-        if (!Utils::Func::checkFileAvailable(fileName)) {
+        if (!boost::filesystem::exists(fileName)) {
           return false;
         }
 
@@ -89,9 +86,6 @@ namespace SilentMedia {
                 (static_cast < double > (this -> wavInfoMap[fileId] -> getChunkSize())
                     / (this -> wavInfoMap[fileId] -> getByteRate()));
 
-        // Общее количество семплов = количество семплов за секунду * общее время звучания песни
-        //        this -> totalSamples = ((wavinfo -> getSampleRate())
-        //            * (this -> totalTime));
         int bitRate = ((this -> wavInfoMap[fileId] -> getByteRate()) * 8);
 
         // update audio information
@@ -117,22 +111,17 @@ namespace SilentMedia {
         const int bufSize = 4096;
         char buf[bufSize];
 
-        int actlen = 0;
+        this -> inputFDMap[fileId] = new ifstream();
+        this -> inputFDMap[fileId] -> open(fileName.c_str(), ifstream::in);
 
-        if ((this -> inputFDMap[fileId] = ::open(fileName.c_str(), O_RDONLY))
-            == -1) {
-          cerr << "Error: Unable to open file: " << fileName << endl;
-        }
-
-        while ((actlen = read(this -> inputFDMap[fileId], buf, bufSize))) {
-
+        while (this -> inputFDMap[fileId] -> read(buf, bufSize)) {
           if (this -> stopMap[fileId]) {
             cout << "EXIT" << endl;
             this -> close(fileId);
             return 0;
           }
 
-          this -> offsetPositionMap[fileId] += actlen;
+          this -> offsetPositionMap[fileId] += bufSize;
           this -> audioProxy -> write(buf, bufSize);
         }
 
@@ -146,24 +135,12 @@ namespace SilentMedia {
         this -> stopMap[fileId] = true;
       }
 
-      // Получаем текущее значение временной метки путем деления полного размера файла в байтах на количество уже считаных байт
       void WAV::close(const string &fileId) {
         delete this -> wavInfoMap[fileId];
         this -> wavInfoMap[fileId] = NULL;
 
-        //        //    cout << "in Codec::WAV::flush()" << endl;
-        //        // обнуляем показатели
-        //        this -> playCheck = false;
-        //        this -> seekCheck = false;
-        //        this -> offsetPos = 0;
-        //
-        //        // закрываем файловый дискриптор
-        //        if (this -> input_fd != -1) {
-        //          if (close(this -> input_fd) != 0) {
-        //            cout << "Error in close()" << endl;
-        //          }
-        //        }
-        //        this -> input_fd = -1;
+        delete this -> inputFDMap[fileId];
+        this -> inputFDMap[fileId] = NULL;
       }
 
       float WAV::getSeek(const string &fileId) {
@@ -185,8 +162,8 @@ namespace SilentMedia {
           ++resultPosition;
         }
 
-        this -> offsetPositionMap[fileId] = lseek(this -> inputFDMap[fileId],
-            resultPosition, SEEK_SET);
+        this -> inputFDMap[fileId] -> seekg(resultPosition);
+        this -> offsetPositionMap[fileId] = resultPosition;
       }
     }
   }

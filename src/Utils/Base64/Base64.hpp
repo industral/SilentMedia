@@ -28,6 +28,8 @@
 
 #include <libsml/include.hpp>
 
+using namespace std;
+
 namespace Utils {
   namespace Base64 {
     string base64_encode(unsigned char const*, unsigned int len);

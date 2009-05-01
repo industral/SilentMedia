@@ -33,9 +33,6 @@
 // main include
 #include <libsml/include.hpp>
 
-// include Util class
-#include <libsml/Utils/Func/Func.hpp>
-
 /*
  * We should include AbstractCodec, AudioProxy.
  */

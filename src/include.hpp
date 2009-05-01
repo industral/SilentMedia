@@ -35,12 +35,19 @@
 #include <vector>
 #include <fstream>
 
+// boost filesystem
+#include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/fstream.hpp>
+
+// boost thread
+#include <boost/thread/thread.hpp>
+
+// boost random
+#include <boost/random.hpp>
+
 // C header
 #include <cstdio>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-
-using namespace std;
+#include <ctime> // time
+#include <climits> // limits
 
 #endif
