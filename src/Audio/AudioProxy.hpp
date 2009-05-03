@@ -100,6 +100,10 @@ namespace SilentMedia {
         void setCurrentSamples(const string &fileId, const double &samples);
         double getCurrentSamples(const string &fileId);
 
+        void setVorbisComment(const string &fileId,
+            const map < string, string > &vorbisComments);
+        map < string, string > getVorbisComments(const string &fileId);
+
       private:
         AudioInfo * _audioInfo;
         SoundSystem::SoundSystem * _soundSystem;

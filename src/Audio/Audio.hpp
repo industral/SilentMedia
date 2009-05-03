@@ -45,6 +45,9 @@
 #include <libsml/Audio/Codec/FLAC/FLAC.hpp>
 #include <libsml/Audio/Codec/WavPack/WavPack.hpp>
 
+typedef boost::filesystem::path PATH;
+#define foreach BOOST_FOREACH
+
 namespace SilentMedia {
   namespace Audio {
     /**
@@ -82,7 +85,7 @@ namespace SilentMedia {
         void close(const string &fileId);
 
         float getSeek(const string &fileId);
-        void setSeek(const string &fileId, const float &seekVal);
+        void setSeek(const string &fileId, const double &seekVal);
 
         // AudioInfo methods
         long getFileSize(const string &fileId);
@@ -91,6 +94,11 @@ namespace SilentMedia {
         long getSampleRate(const string &fileId);
         long getBitRate(const string &fileId);
         int getBitsPerSample(const string &fileId);
+
+        void setVorbisComment(const string &fileId,
+            const map < string, string > &vorbisComments);
+        map < string, string > getVorbisComments(const string &fileId);
+
       private:
         SoundSystem::SoundSystem * _soundSystem;
         AudioInfo * _audioInfo;
@@ -102,6 +110,8 @@ namespace SilentMedia {
         list < pthread_t > threadList;
 
         bool checkSupportedFormat(const string &fileName);
+        string getExtension(const string &fileId);
+        Codec::AbstractCodec * getCodec(const string &fileId);
     };
   }
 }

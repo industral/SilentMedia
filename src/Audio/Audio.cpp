@@ -27,6 +27,11 @@
 
 namespace SilentMedia {
   namespace Audio {
+
+    // --------------------------------------------------------------------
+    // Public methods
+    // --------------------------------------------------------------------
+
     Audio::Audio() {
       // create SoundSystem instance
       _soundSystem = SoundSystem::SoundSystem::Instance();
@@ -80,8 +85,7 @@ namespace SilentMedia {
 
       // check if extension is in supportedFormat list
       if (!checkSupportedFormat(fileName)) {
-        cerr << "File extension \""
-            << boost::filesystem::path(fileName).extension()
+        cerr << "File extension \"" << PATH(fileName).extension()
             << "\" is unsupported." << endl;
         return false;
       }
@@ -103,8 +107,7 @@ namespace SilentMedia {
       this -> _audioInfo -> setFileId(fileId, fileName);
 
       // call open method in appropriate codec
-      this -> codecHashMap[boost::filesystem::path(fileName).extension()] -> open(
-          fileId);
+      this -> getCodec(fileId) -> open(fileId);
 
       return true;
     }
@@ -116,55 +119,34 @@ namespace SilentMedia {
 
     void Audio::playInThread(const string &fileId, const bool &resume) {
       std::cout << "play file name with id: " + fileId << std::endl;
-      this -> codecHashMap[boost::filesystem::path(
-          _audioInfo -> getFileNameByFileId(fileId)).extension()] -> play(
-          fileId, resume);
+      this -> getCodec(fileId) -> play(fileId, resume);
       this -> threadMap[fileId] -> join();
     }
 
     void Audio::pause(const string &fileId) {
       std::cout << "pause file name with id: " + fileId << std::endl;
-      //      pthread_cancel(this -> threadMap[fileId]);
     }
 
     void Audio::stop(const string &fileId) {
       if (threadMap[fileId]) {
         cout << "try to stop" << endl;
-        this -> codecHashMap[boost::filesystem::path(
-            _audioInfo -> getFileNameByFileId(fileId)).extension()] -> stop(
-            fileId);
+        this -> getCodec(fileId) -> stop(fileId);
       }
       std::cout << "stop file name with id: " + fileId << std::endl;
     }
 
     void Audio::close(const string &fileId) {
       std::cout << "close file name with id: " + fileId << std::endl;
-      this -> codecHashMap[boost::filesystem::path(
-          _audioInfo -> getFileNameByFileId(fileId)).extension()] -> close(
-          fileId);
+      this -> getCodec(fileId) -> close(fileId);
       this -> _audioInfo -> removeFileId(fileId);
     }
 
     float Audio::getSeek(const string &fileId) {
-      return (this -> codecHashMap[boost::filesystem::path(
-          _audioInfo -> getFileNameByFileId(fileId)).extension()] -> getSeek(
-          fileId));
+      return (this -> getCodec(fileId) -> getSeek(fileId));
     }
 
-    void Audio::setSeek(const string &fileId, const float &seekVal) {
-      this -> codecHashMap[boost::filesystem::path(
-          _audioInfo -> getFileNameByFileId(fileId)).extension()] -> setSeek(
-          fileId, seekVal);
-    }
-
-    bool Audio::checkSupportedFormat(const string &fileName) {
-      list < string >::iterator it;
-      for (it = supportedFormats.begin(); it != supportedFormats.end(); ++it) {
-        if (boost::filesystem::path(fileName).extension().compare(*it)) {
-          return true;
-        }
-      }
-      return false;
+    void Audio::setSeek(const string &fileId, const double &seekVal) {
+      this -> getCodec(fileId) -> setSeek(fileId, seekVal);
     }
 
     // AudioInfo methods
@@ -186,5 +168,36 @@ namespace SilentMedia {
     int Audio::getBitsPerSample(const string &fileId) {
       return _audioInfo -> getBitsPerSample(fileId);
     }
+
+    void Audio::setVorbisComment(const string &fileId, const map < string,
+        string > &vorbisComments) {
+      this -> _audioInfo -> setVorbisComment(fileId, vorbisComments);
+    }
+
+    map < string, string > Audio::getVorbisComments(const string &fileId) {
+      return this -> _audioInfo -> getVorbisComments(fileId);
+    }
+
+    // --------------------------------------------------------------------
+    // Private methods
+    // --------------------------------------------------------------------
+
+    bool Audio::checkSupportedFormat(const string &fileName) {
+      foreach(string s, supportedFormats)
+{      if (PATH(fileName).extension().compare(s)) {
+        return true;
+      }
+    }
+    return false;
   }
+
+  string Audio::getExtension(const string &fileId) {
+    return (PATH(_audioInfo -> getFileNameByFileId(fileId)).extension());
+  }
+
+  Codec::AbstractCodec * Audio::getCodec(const string &fileId) {
+    return (this -> codecHashMap[this -> getExtension(fileId)]);
+  }
+
+}
 }

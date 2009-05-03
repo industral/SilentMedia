@@ -42,6 +42,9 @@
 // boost thread
 #include <boost/thread/thread.hpp>
 
+// boost foreach
+#include <boost/foreach.hpp>
+
 // boost random
 #include <boost/random.hpp>
 

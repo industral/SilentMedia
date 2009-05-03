@@ -40,7 +40,7 @@ namespace SilentMedia {
       //    cout << "AudioInfo Destructor.. " << endl;
     }
 
-    AudioInfo * AudioInfo::Instance(void) {
+    AudioInfo * AudioInfo::Instance() {
       if (_audioInfo == NULL) {
         _audioInfo = new AudioInfo();
       }
@@ -95,6 +95,15 @@ namespace SilentMedia {
 
     double AudioInfo::getCurrentSamples(const string &fileId) {
       return this -> currentSamples[fileId];
+    }
+
+    void AudioInfo::setVorbisComment(const string &fileId, const map < string,
+        string > &vorbisComments) {
+      this -> vorbisComments[fileId] = vorbisComments;
+    }
+
+    map < string, string > AudioInfo::getVorbisComments(const string &fileId) {
+      return this -> vorbisComments[fileId];
     }
 
     //  void AudioInfo::begin(string id) {

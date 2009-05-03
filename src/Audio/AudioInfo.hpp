@@ -36,7 +36,7 @@ namespace SilentMedia {
       public:
         ~AudioInfo();
 
-        static AudioInfo * Instance(void);
+        static AudioInfo * Instance();
 
         //      void begin(string id);
         //      void end(string id);
@@ -48,10 +48,6 @@ namespace SilentMedia {
         //      void clean(void);
         //          bool setAudioParams ( void );
 
-        map < string, string > getVorbisComment(void) {
-          return (this -> vorbisComm);
-        }
-
         //      multimap < ::FLAC__StreamMetadata_Picture_Type, string > getPicture(
         //          void) {
         //        return (this -> picData);
@@ -61,10 +57,6 @@ namespace SilentMedia {
         //          string > picData) {
         //        this -> picData = picData;
         //      }
-
-        void setVorbisComment(map < string, string > vorbisComm) {
-          this -> vorbisComm = vorbisComm;
-        }
 
         // get func
         long getFileSize(const string &fileId);
@@ -80,6 +72,10 @@ namespace SilentMedia {
 
         void setCurrentSamples(const string &fileId, const double &samples);
         double getCurrentSamples(const string &fileId);
+
+        void setVorbisComment(const string &fileId,
+            const map < string, string > &vorbisComments);
+        map < string, string > getVorbisComments(const string &fileId);
 
         string getFileNameByFileId(const string& fileId);
         void setFileId(const string& fileId, const string& fileName);
@@ -108,7 +104,9 @@ namespace SilentMedia {
         map < string, double > currentSamples;
 
         //      multimap < ::FLAC__StreamMetadata_Picture_Type, string > picData;
-        map < string, string > vorbisComm; // Vorbis Comment
+
+        // Vorbis Comment
+        map < string, map < string, string > > vorbisComments;
 
         map < string, string > vorbisTags;
         map < string, string > coverData;

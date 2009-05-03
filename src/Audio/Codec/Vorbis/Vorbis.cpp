@@ -76,7 +76,9 @@ namespace SilentMedia {
             this -> vorbisInfoMap[fileId] -> bitrate_nominal, 16);
 
         // read vorbis comments
-        //        this -> readVorbisComment(fileId);
+        this -> readVorbisComment(fileId);
+
+        return true;
       }
 
       int Vorbis::play(const string &fileId, bool resume) {
@@ -181,19 +183,22 @@ namespace SilentMedia {
 
         vector < string > vorbisCommList;
 
-        map < string, string > vorbisComm;
-        vorbisComm . clear();
+        map < string, string > vorbisComments;
+        //        vorbisComments.clear();
 
         while (*ptr) {
           string myStr = *ptr;
-          int find = myStr . find_first_of("=");
+          int find = myStr.find_first_of("=");
           if (find) {
-            //          vorbisComm[Utils::Func::toUpper(myStr . substr(0, find))]
-            //              = myStr . substr(find + 1);
+            string key = myStr.substr(0, find);
+            transform(key.begin(), key.end(), key.begin(), ::toupper);
+            string value = myStr.substr(find + 1);
+
+            vorbisComments[key] = value;
           }
           ++ptr;
         }
-        //      this -> ddata -> setVorbisComment(vorbisComm);
+        this -> audioProxy -> setVorbisComment(fileId, vorbisComments);
       }
 
     }

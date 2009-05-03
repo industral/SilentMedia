@@ -111,5 +111,14 @@ namespace SilentMedia {
       return (this -> _audioInfo -> getCurrentSamples(fileId));
     }
 
+    void AudioProxy::setVorbisComment(const string &fileId, const map < string,
+        string > &vorbisComments) {
+      this -> _audioInfo -> setVorbisComment(fileId, vorbisComments);
+    }
+
+    map < string, string > AudioProxy::getVorbisComments(const string &fileId) {
+      return this -> _audioInfo -> getVorbisComments(fileId);
+    }
+
   }
 }

@@ -84,7 +84,7 @@ namespace SilentMedia {
         const int bufSize = 4096;
 
         int32_t *buffer = new int32_t[bufSize];
-        int16_t * outputBuf = new int16_t[bufSize];
+        int16_t *outputBuf = new int16_t[bufSize];
 
         while ( /*int samplesUnpacked =*/WavpackUnpackSamples(
             this -> wavPackContextMap[fileId], buffer, 1024)) {
@@ -113,10 +113,13 @@ namespace SilentMedia {
       }
 
       void WavPack::setSeek(const string &fileId, const double &seekVal) {
-        if (WavpackSeekSample(this -> wavPackContextMap[fileId],
-            ((WavpackGetNumSamples(this -> wavPackContextMap[fileId]))
-                * (seekVal / 100))) == false) {
+        uint32_t sample = ((WavpackGetNumSamples(
+            this -> wavPackContextMap[fileId])) * (seekVal / 100));
+
+        if (WavpackSeekSample(this -> wavPackContextMap[fileId], sample)
+            == false) {
           cerr << "Error in WavpackSeekSample()" << endl;
+          this -> close(fileId);
         }
       }
 
