@@ -104,7 +104,8 @@ namespace SilentMedia {
           // private
           bool templateInitFile(const string &fileId, const string &fileName);
           void parseMetaData(const string &fileId);
-          //          void readVorbisComment(void);
+          void readVorbisComment(const string &fileId);
+
           //          void getPicture(void);
           //          double getTotalSamples(void) const {
           //            return this -> totalSamples;

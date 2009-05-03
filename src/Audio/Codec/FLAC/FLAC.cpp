@@ -116,10 +116,15 @@ namespace SilentMedia {
       }
 
       float FLAC::getSeek(const string &fileId) {
-        FLAC__uint64 totalSamples =
-            this -> flacDecoderMap[fileId] -> get_total_samples();
+        double currentSamples = 0.0;
+        FLAC__uint64 totalSamples = 0;
 
-        double currentSamples = this -> audioProxy -> getCurrentSamples(fileId);
+        // check if object is not deleted, as song stop - it delete
+        if (this -> flacDecoderMap[fileId] != NULL) {
+          totalSamples = this -> flacDecoderMap[fileId] -> get_total_samples();
+
+          currentSamples = this -> audioProxy -> getCurrentSamples(fileId);
+        }
 
         if (currentSamples == 0) {
           return 0;
@@ -200,10 +205,13 @@ namespace SilentMedia {
             *this -> streamInfoMap[fileId]);
 
         long fileSize = boost::filesystem::file_size(fileName);
-        // применяем сдесь ф-цию FLAC__stream_decoder_get_total_samples() !
-        double totalTime =
-            (this -> flacDecoderMap[fileId] -> get_total_samples()
-                / this -> streamInfoMap[fileId] -> get_sample_rate());
+
+        double totalTime = 0.0;
+        // check to avoid float point exception
+        if (this -> streamInfoMap[fileId] -> get_sample_rate() > 0) {
+          totalTime = (this -> flacDecoderMap[fileId] -> get_total_samples()
+              / this -> streamInfoMap[fileId] -> get_sample_rate());
+        }
 
         int size = 0; // переменная для инкремента размера всех найденых блоков
         while (!this -> iteratorMap[fileId] -> is_last()) {
@@ -222,7 +230,7 @@ namespace SilentMedia {
             break;
           case FLAC__METADATA_TYPE_VORBIS_COMMENT:
             //                   cout << "FLAC__METADATA_TYPE_VORBIS_COMMENT" << endl;
-            //            this -> readVorbisComment();
+            this -> readVorbisComment(fileId);
             break;
           case FLAC__METADATA_TYPE_CUESHEET:
             //                   cout << "FLAC__METADATA_TYPE_CUESHEET" << endl;
@@ -261,8 +269,8 @@ namespace SilentMedia {
       FLAC__StreamDecoderWriteStatus FLACDecoder::write_callback(
           const FLAC__Frame * frame, const FLAC__int32 * const buf[]) {
 
-        int decoded_size = frame -> header.blocksize * frame -> header.channels
-            * (frame -> header.bits_per_sample / 8); // 16384, 18432
+        const int decoded_size = frame -> header.blocksize
+            * frame -> header.channels * (frame -> header.bits_per_sample / 8); // 16384, 18432
 
         int samples = frame -> header.blocksize;
         int sample = 0;
@@ -272,11 +280,15 @@ namespace SilentMedia {
         int16_t outbuf[FLAC__MAX_BLOCK_SIZE * FLAC__MAX_CHANNELS
             * sizeof(int32_t)]; // 65535 * 8 * 4
 
+        //        cout << "A: " << decoded_size << " B: " << samples << endl;
+
         for (sample = i = 0; sample < samples; sample++) {
           for (channel = 0; channel < frame -> header.channels; channel++, i++) {
             outbuf[i] = buf[channel][sample];
           }
         }
+
+        //        cout << "Size: " << sizeof(outbuf) << endl;
 
         double totalSamples =
             this -> flacObj -> audioProxy -> getCurrentSamples(this -> fileId);
@@ -321,22 +333,31 @@ namespace SilentMedia {
         this -> fileId = fileId;
       }
 
-    //      void FLAC::readVorbisComment() {
-    //        this -> vorbisComm . clear();
-    //
-    //        ::FLAC::Metadata::VorbisComment * tags =
-    //            new ::FLAC::Metadata::VorbisComment;
-    //        ::FLAC::Metadata::get_tags(this-> fileName . c_str(), tags);
-    //
-    //        for (int i = 0; i != tags -> get_num_comments(); ++i) {
-    //          ::FLAC::Metadata::VorbisComment::Entry entry = tags -> get_comment(i);
-    //          vorbisComm[::Utils::Func::toUpper(entry . get_field_name())]
-    //              = entry . get_field_value();
-    //        }
-    //
-    //        this -> ddata -> setVorbisComment(this -> vorbisComm);
-    //        delete tags;
-    //      }
+      void FLAC::readVorbisComment(const string &fileId) {
+        // get file name
+        string fileName = this -> audioProxy -> getFileNameByFileId(fileId);
+
+        map < string, string > vorbisComments;
+
+        ::FLAC::Metadata::VorbisComment * tags =
+            new ::FLAC::Metadata::VorbisComment;
+        ::FLAC::Metadata::get_tags(fileName.c_str(), tags);
+
+        // using unsigned, avoid warning
+        for (uint i = 0; i < tags -> get_num_comments(); ++i) {
+          ::FLAC::Metadata::VorbisComment::Entry entry = tags -> get_comment(i);
+
+          string key = entry.get_field_name();
+          transform(key.begin(), key.end(), key.begin(), ::toupper);
+
+          vorbisComments[key] = entry.get_field_value();
+        }
+
+        this -> audioProxy -> setVorbisComment(fileId, vorbisComments);
+
+        delete tags;
+        tags = NULL;
+      }
 
     //      void FLAC::getPicture() {
     //        //             this -> picture = new ::FLAC::Metadata::Picture();
@@ -347,26 +368,26 @@ namespace SilentMedia {
     //        //          Proxy < ::FLAC::Metadata::Picture > picture;
     //
     //        //            int count = 0;
-    //        if (::FLAC::Metadata::get_picture(this-> fileName . c_str(), picture,
+    //        if (::FLAC::Metadata::get_picture(this-> fileName.c_str(), picture,
     //			static_cast<::FLAC__StreamMetadata_Picture_Type> (-1), NULL, NULL,
     //			-1, -1, -1, -1) == true) {
     //
-    //          this -> spdata . clear();
+    //          this -> spdata.clear();
     //          //                  picture -> clear();
     //          //                  cout << "MYYYYY COUNT: " << count << endl;
     //
-    //          const FLAC__byte * pdata = picture . get_data();
+    //          const FLAC__byte * pdata = picture.get_data();
     //
-    //          for (int i = 0; i < picture . get_length(); ++i) {
+    //          for (int i = 0; i < picture.get_length(); ++i) {
     //            spdata += pdata[i];
     //          }
     //          cout << "PICTURE!!!" << endl;
-    //          cout << "PICTURE: " << picture . get_data_length() << endl;
-    //          picData . insert(pair<::FLAC__StreamMetadata_Picture_Type,
-    //              string>(picture . get_type(), spdata));
+    //          cout << "PICTURE: " << picture.get_data_length() << endl;
+    //          picData.insert(pair<::FLAC__StreamMetadata_Picture_Type,
+    //              string>(picture.get_type(), spdata));
     //          cout << "FLAC COUNT: " << picData.size() << endl;
     //        }
-    //        //               this -> ddata . setPicture ( picData );
+    //        //               this -> ddata.setPicture ( picData );
     //        //               delete picture; picture = 0;
     //      }
 
@@ -376,7 +397,7 @@ namespace SilentMedia {
     //        // конвертируем данные в coverData нужные set_data() в const FLAC__byte *
     //        const FLAC__byte * data = (const FLAC__byte *) coverData.c_str();
     //
-    //        if (picture -> set_data(data, coverData . size()) == false) {
+    //        if (picture -> set_data(data, coverData.size()) == false) {
     //          cout << "Error to set picture!" << endl;
     //        }
     //
@@ -395,8 +416,8 @@ namespace SilentMedia {
     //
     //        // записываем эти значения в обект picture
     //        picture -> set_mime_type(mime.c_str());
-    //        picture -> set_width(imagick -> size() . width());
-    //        picture -> set_height(imagick -> size() . height());
+    //        picture -> set_width(imagick -> size().width());
+    //        picture -> set_height(imagick -> size().height());
     //        picture -> set_depth(imagick -> depth());
     //
     //        // запись в файл
@@ -408,42 +429,6 @@ namespace SilentMedia {
     //        delete picture;
     //        delete iterator;
     //      }
-
-
-    //
-    //      void FLAC::flush() {
-    //        cout << "FLAC in flush()" << endl;
-    //        /*
-    //         Ставим стражей в исходное положение.
-    //         Возможно следовало как то бы пересоздавать обяек?
-    //         */
-    //        this -> playCheck = false;
-    //        this -> seekCheck = false;
-    //
-    //        this -> setCurrSample(0);
-    //        //          this -> setSeekPos ( 0 );
-    //
-    //        //          if ( ( this -> decoderMap[fileId] ) != NULL ) {
-    //        //             FLAC__stream_decoder_finish ( this -> decoderMap[fileId] );
-    //        //             FLAC__stream_decoder_flush ( this -> decoderMap[fileId] );
-    //        //          }
-    //        //          if ( ( this -> decoderMap[fileId] ) != NULL ) {
-    //        //             FLAC__stream_decoder_finish ( this -> decoderMap[fileId] );
-    //        //             FLAC__stream_decoder_finish ( this -> decoderMap[fileId] );
-    //        //          }
-    //        // FLAC__stream_decoder_flush ( this -> dec );
-    //
-    //        //          FLAC__stream_decoder_delete ( decoderMap[fileId] );
-    //        // delete streamInfo;
-    //        //          delete decoderMap[fileId];
-    //
-    //      }
-
-    //      void FLAC::finish() {
-    //        //          FLAC__stream_decoder_finish ( this -> dec );
-    //        //          FLAC__stream_decoder_flush ( this -> dec );
-    //      }
-
 
     }
   }

@@ -125,6 +125,7 @@ namespace SilentMedia {
 
     void Audio::pause(const string &fileId) {
       std::cout << "pause file name with id: " + fileId << std::endl;
+      this -> getCodec(fileId) -> stop(fileId);
     }
 
     void Audio::stop(const string &fileId) {

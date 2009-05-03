@@ -184,7 +184,6 @@ namespace SilentMedia {
         vector < string > vorbisCommList;
 
         map < string, string > vorbisComments;
-        //        vorbisComments.clear();
 
         while (*ptr) {
           string myStr = *ptr;
