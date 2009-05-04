@@ -20,15 +20,7 @@ http://www.google.com.ua/codesearch/p?hl=ru#aZWG5SnVrM8/libzzub-0.1/src/libzzub/
 
 !Important: wrong sound system model. Need to provide separated object for each track.
 
-- provide stop/pause
+- Add format support get method
+- Call end function
 
-- use config file
-
-- UTF-8 in playlist
-- Track sorting
-- scroll wrong horizontal
-- folder cover
-- album
-- on play - hightlighting song
-- auto next track
 

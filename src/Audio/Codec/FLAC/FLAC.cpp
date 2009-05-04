@@ -134,17 +134,19 @@ namespace SilentMedia {
       }
 
       void FLAC::setSeek(const string &fileId, const double &seekVal) {
+//        cout << "Set seek to: " << seekVal << endl;
+
         FLAC__uint64 totalSamples =
             this -> flacDecoderMap[fileId] -> get_total_samples();
 
         FLAC__uint64 sample_pos = ((totalSamples * (seekVal / 100)));
-
-        if (!this -> flacDecoderMap[fileId] -> seek_absolute(sample_pos)) {
+        this -> flacDecoderMap[fileId] -> flush();
+        if (this -> flacDecoderMap[fileId] -> seek_absolute(sample_pos)) {
+          this -> audioProxy -> setCurrentSamples(fileId, sample_pos);
+        } else {
           cerr << "Error in seek_absolute()" << endl;
           this -> flacDecoderMap[fileId] -> flush();
         }
-
-        this -> audioProxy -> setCurrentSamples(fileId, sample_pos);
       }
 
       // --------------------------------------------------------------------
@@ -281,6 +283,10 @@ namespace SilentMedia {
             * sizeof(int32_t)]; // 65535 * 8 * 4
 
         //        cout << "A: " << decoded_size << " B: " << samples << endl;
+
+        if (this -> get_state() == FLAC__STREAM_DECODER_SEEK_ERROR) {
+          this -> flacObj -> flacDecoderMap[this -> fileId] -> flush();
+        }
 
         for (sample = i = 0; sample < samples; sample++) {
           for (channel = 0; channel < frame -> header.channels; channel++, i++) {
