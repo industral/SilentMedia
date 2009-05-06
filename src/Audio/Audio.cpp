@@ -85,7 +85,7 @@ namespace SilentMedia {
 
       // check if extension is in supportedFormat list
       if (!checkSupportedFormat(fileName)) {
-        cerr << "File extension \"" << PATH(fileName).extension()
+        cerr << "File extension \"" << Path(fileName).extension()
             << "\" is unsupported." << endl;
         return false;
       }
@@ -185,7 +185,7 @@ namespace SilentMedia {
 
     bool Audio::checkSupportedFormat(const string &fileName) {
       foreach(string s, supportedFormats)
-{      if (PATH(fileName).extension().compare(s)) {
+{      if (Path(fileName).extension().compare(s)) {
         return true;
       }
     }
@@ -193,7 +193,7 @@ namespace SilentMedia {
   }
 
   string Audio::getExtension(const string &fileId) {
-    return (PATH(_audioInfo -> getFileNameByFileId(fileId)).extension());
+    return (Path(_audioInfo -> getFileNameByFileId(fileId)).extension());
   }
 
   Codec::AbstractCodec * Audio::getCodec(const string &fileId) {

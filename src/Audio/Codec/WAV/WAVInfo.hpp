@@ -26,11 +26,17 @@
 #ifndef _SILENTMEDIA_WAVINFO_HPP_
 #define _SILENTMEDIA_WAVINFO_HPP_
 
+/**
+ * @see http://ccrma.stanford.edu/courses/422/projects/WaveFormat/
+ * @see http://technology.niagarac.on.ca/courses/ctec1631/WavFileFormat.html
+ * @see http://www.sonicspot.com/guide/wavefiles.html
+ */
 namespace SilentMedia {
   namespace Audio {
     namespace Codec {
       class WAVInfo {
         public:
+          //TODO: write doxygen doc
           string getChunkID() {
             string dest;
             for (int i = 0; i < 4; ++i) {
@@ -104,9 +110,9 @@ namespace SilentMedia {
            byte -         8 bit
            kbit - 10e3
            */
-          //  == RIFF ==
+          /*  RIFF  */
 
-          //  WAVE
+          /*  WAVE  */
           //  Contains the letters "RIFF" in ASCII form
           //  (0x52494646 big-endian form)
           char ChunkID[4];
@@ -115,7 +121,7 @@ namespace SilentMedia {
           //  (0x57415645 big-endian form)
           char Format[4];
 
-          //  fmt
+          /*  fmt  */
           char Subchunk1ID[4];
           int32_t Subchunk1Size;
           //  PCM = 1 (i.e. Linear quantization)
@@ -129,9 +135,9 @@ namespace SilentMedia {
           int16_t BlockAlign;
           int16_t BitsPerSample; // 8 bits = 8, 16 bits = 16, etc.
 
-          //  data
-          char Subchunk2ID[4];
-          int32_t Subchunk2Size; // size of audio data (pcm stream)
+          /*  data  */
+          char Subchunk2ID[4]; // Contains the letters "data"
+          int32_t Subchunk2Size; // NumSamples * NumChannels * BitsPerSample/8
       };
     }
   }

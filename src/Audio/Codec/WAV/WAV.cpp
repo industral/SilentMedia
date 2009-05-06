@@ -114,6 +114,9 @@ namespace SilentMedia {
         this -> inputFDMap[fileId] = new ifstream();
         this -> inputFDMap[fileId] -> open(fileName.c_str(), ifstream::in);
 
+        // make first seek to PCM audio data, skiping technical information
+        this -> inputFDMap[fileId] -> seekg(44);
+
         while (this -> inputFDMap[fileId] -> read(buf, bufSize)) {
           if (this -> stopMap[fileId]) {
             cout << "EXIT" << endl;

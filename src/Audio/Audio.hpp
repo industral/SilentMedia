@@ -45,7 +45,7 @@
 #include <libsml/Audio/Codec/FLAC/FLAC.hpp>
 #include <libsml/Audio/Codec/WavPack/WavPack.hpp>
 
-typedef boost::filesystem::path PATH;
+typedef boost::filesystem::path Path;
 #define foreach BOOST_FOREACH
 
 namespace SilentMedia {

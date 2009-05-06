@@ -44,8 +44,6 @@ namespace SilentMedia {
           virtual FLAC__StreamDecoderWriteStatus write_callback(
               const FLAC__Frame * frame, const FLAC__int32 * const buf[]);
 
-          virtual void metadata_callback(const FLAC__StreamMetadata * block);
-
           virtual void error_callback(::FLAC__StreamDecoderErrorStatus status);
 
           void setFileId(const string &fileId);

@@ -134,7 +134,7 @@ namespace SilentMedia {
       }
 
       void FLAC::setSeek(const string &fileId, const double &seekVal) {
-//        cout << "Set seek to: " << seekVal << endl;
+        //        cout << "Set seek to: " << seekVal << endl;
 
         FLAC__uint64 totalSamples =
             this -> flacDecoderMap[fileId] -> get_total_samples();
@@ -305,9 +305,6 @@ namespace SilentMedia {
         this -> flacObj -> audioProxy -> write(outbuf, decoded_size);
 
         return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
-      }
-
-      void FLACDecoder::metadata_callback(const FLAC__StreamMetadata * block) {
       }
 
       /*
