@@ -23,28 +23,18 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
  ******************************************************************************/
 
-#include "FileLoader.hpp"
+#ifndef _SILENTMEDIA_AUDIO_CONTAINER_FILELOADER_HPP_
+#define _SILENTMEDIA_AUDIO_CONTAINER_FILELOADER_HPP_
 
 namespace SilentMedia {
   namespace Audio {
     namespace Container {
+      class FileLoader {
+          FileLoader();
+          ~FileLoader();
 
-      // --------------------------------------------------------------------
-      // Public methods
-      // --------------------------------------------------------------------
-
-      FileLoader::FileLoader() {
-      }
-
-      FileLoader::~FileLoader() {
-      }
-
-
-
-    // --------------------------------------------------------------------
-    // Private methods
-    // --------------------------------------------------------------------
-
+      };
     }
   }
 }
+#endif

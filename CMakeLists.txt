@@ -6,6 +6,8 @@ set(SilentMedia_src
 
 src/Utils/Base64/Base64.cpp
 
+src/Audio/Container/FileLoader.cpp
+
 src/Audio/Audio.cpp
 src/Audio/AudioInfo.cpp
 src/Audio/AudioProxy.cpp
