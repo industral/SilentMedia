@@ -29,6 +29,12 @@
 // main include
 #include <libsml/include.hpp>
 
+// throw
+#include <libsml/Throw/Throw.hpp>
+
+// FileLoader
+#include <libsml/Audio/Container/FileLoader.hpp>
+
 /*
  * We should include:
  * SoundSystem, AbstractCodec, AudioInfo.

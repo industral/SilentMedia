@@ -31,5 +31,6 @@ add_executable (test1 src/test/test.cpp)
 
 target_link_libraries (test1 sml vorbisfile FLAC++ wavpack ao boost_thread-mt boost_filesystem-mt)
 
-set_target_properties(sml PROPERTIES COMPILE_FLAGS "-pipe -Wall -W -Werror -ggdb")
-set_target_properties(test1 PROPERTIES COMPILE_FLAGS "-pipe -Wall -W -Werror -ggdb")
+#-pipe -Wall -W -Werror -ggdb
+set_target_properties(sml PROPERTIES COMPILE_FLAGS "-pipe -Wall -W -ggdb")
+set_target_properties(test1 PROPERTIES COMPILE_FLAGS "-pipe -Wall -W  -ggdb")

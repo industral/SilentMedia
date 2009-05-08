@@ -74,6 +74,13 @@ namespace SilentMedia {
     bool Audio::open(const string &fileName, string &fileId) {
       std::cout << "open file name with id: " + fileId << std::endl;
 
+//      SilentMedia::Audio::Container::FileLoader * fileLoader =
+//          new SilentMedia::Audio::Container::FileLoader();
+//
+//      fileLoader -> open(fileName);
+//
+//      delete fileLoader;
+
       /*
        * Opening file contains with follow steps:
        * 1. We should check file extension (.ogg, .wav, .flac, .wv)

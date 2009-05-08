@@ -23,57 +23,80 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
  ******************************************************************************/
 
-#include "FileLoader.hpp"
+#ifndef _SILENTMEDIA_THROW_THROW_HPP_
+#define _SILENTMEDIA_THROW_THROW_HPP_
+
+#include <libsml/all.hpp>
+
+using namespace std;
 
 namespace SilentMedia {
-  namespace Audio {
-    namespace Container {
-
-      // --------------------------------------------------------------------
-      // Public methods
-      // --------------------------------------------------------------------
-
-      FileLoader::FileLoader(const string &fileName) :
-        fileName(fileName) {
-      }
-
-      FileLoader::~FileLoader() {
-      }
-
-      // --------------------------------------------------------------------
-      // Private methods
-      // --------------------------------------------------------------------
-
-      void FileLoader::open() {
-        Path path(this -> fileName);
-
-        if (!boost::filesystem::exists(path)) {
-          throw SilentMedia::Throw::FileNotFound(this -> fileName);
-        }
-        if (!boost::filesystem::is_regular_file(path)) {
-          throw SilentMedia::Throw::NotRegularFile(this -> fileName);
+  namespace Throw {
+    class File {
+      public:
+        File() {
         }
 
-        this -> infile.open(this -> fileName.c_str());
-
-        if (!this -> infile.is_open()) {
-          throw SilentMedia::Throw::ErrorOpenFile(this -> fileName);
+        File(const string &message) :
+          message(message) {
         }
 
-      }
-
-      void FileLoader::close() {
-        this -> infile.close();
-
-        if (this -> infile.is_open()) {
-          throw SilentMedia::Throw::ErrorCloseFile(this -> fileName);
+        string getMessage() const {
+          return ("Exception: " + this -> message);
         }
-      }
+      private:
+        string message;
+    };
 
-      ContainerType FileLoader::getFileSignature() {
+    class FileNotFound: public File {
+      public:
+        FileNotFound() :
+          File("File not found") {
+        }
 
-      }
+        FileNotFound(const string &fileName) :
+          File("File not found: " + fileName) {
+        }
+      private:
+    };
 
-    }
+    class NotRegularFile: public File {
+      public:
+        NotRegularFile() :
+          File("Not a file") {
+        }
+
+        NotRegularFile(const string &fileName) :
+          File(fileName + " not a file") {
+        }
+      private:
+    };
+
+    class ErrorOpenFile: public File {
+      public:
+        ErrorOpenFile() :
+          File("Unable to open file") {
+        }
+
+        ErrorOpenFile(const string &fileName) :
+          File("Unable to open file: " + fileName) {
+        }
+      private:
+    };
+
+    class ErrorCloseFile: public File {
+      public:
+        ErrorCloseFile() :
+          File("Unable to close file") {
+        }
+
+        ErrorCloseFile(const string &fileName) :
+          File("Unable to close file: " + fileName) {
+        }
+      private:
+    };
+
   }
 }
+
+#endif

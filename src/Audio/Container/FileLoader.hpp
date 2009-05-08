@@ -26,13 +26,40 @@
 #ifndef _SILENTMEDIA_AUDIO_CONTAINER_FILELOADER_HPP_
 #define _SILENTMEDIA_AUDIO_CONTAINER_FILELOADER_HPP_
 
+#include <libsml/include.hpp>
+#include "Throw/Throw.hpp"
+
+typedef boost::filesystem::path Path;
+
+using namespace std;
+
+namespace SilentMedia {
+  namespace Audio {
+    enum ContainerType {
+      WAV, OGG
+    };
+
+    enum CodecType {
+      FLAC, VORBIS, PCM, WAVPACK
+    };
+  }
+}
+
 namespace SilentMedia {
   namespace Audio {
     namespace Container {
       class FileLoader {
-          FileLoader();
+        public:
+          FileLoader(const string &fileName);
           ~FileLoader();
 
+        private:
+          void open();
+          void close();
+          ContainerType getFileSignature();
+
+          ifstream infile;
+          string fileName;
       };
     }
   }
