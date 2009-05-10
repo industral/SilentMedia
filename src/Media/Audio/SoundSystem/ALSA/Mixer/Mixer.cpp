@@ -23,51 +23,54 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
  ******************************************************************************/
 
-#ifndef _SILENTMEDIA_MEDIA_AUDIO_SOUNDSYSTEM_SOUNDSYSTEM_HPP_
-#define _SILENTMEDIA_MEDIA_AUDIO_SOUNDSYSTEM_SOUNDSYSTEM_HPP_
-
-// main include
-#include <libsml/include.hpp>
-
-/*
- * We should include AbstractSoundSystem
- */
-#include "AbstractSoundSystem.hpp"
-
-// include available sound systems
-#include "libao/AO.hpp"
-#include "ALSA/DSP/DSP.hpp"
-
-using namespace std;
+#include "Mixer.hpp"
 
 namespace SilentMedia {
   namespace Media {
     namespace Audio {
       namespace SoundSystem {
-        class SoundSystem: virtual public AbstractSoundSystem {
-          public:
-            SoundSystem();
-            ~SoundSystem();
+        namespace ALSA {
+          namespace Mixer {
 
-            static SoundSystem * Instance();
+            // --------------------------------------------------------------------
+            // Public methods
+            // --------------------------------------------------------------------
 
-            // Inheritance methods
-            virtual int init(const string &driver);
-            virtual int init();
-            virtual int close();
-            virtual void setAudioParams(const int &channels,
-                const int &sampleRate, const int &bitsPerSample);
-            virtual int write(void *buf, const int &bufSize);
+            Mixer::Mixer() {
+            }
 
-          private:
-            // Singleton variable
-            static SoundSystem * _soundSystem;
+            Mixer::~Mixer() {
+            }
 
-            AbstractSoundSystem * dsp;
-        };
+            bool Mixer::open() {
+//              int retCode = -1;
+
+              snd_mixer_t *mixer_handle;
+              //              snd_ctl_t *ctl_handle;
+              //
+              //              if (snd_ctl_open(&ctl_handle, "default", SND_CTL_NONBLOCK) < 0) {
+              //                cerr << "Error: snd_ctl_open()" << endl;
+              //              }
+
+              if (snd_mixer_open(&mixer_handle, 0) < 0) {
+                cerr << "Error: in snd_mixer_open()" << endl;
+                return false;
+              }
+
+              if (snd_mixer_attach(mixer_handle, "default") < 0) {
+                cerr << "Error: in snd_mixer_attach()" << endl;
+                return false;
+              }
+
+              snd_mixer_load(mixer_handle);
+              cout << snd_mixer_get_count(mixer_handle) << endl;
+
+              return true;
+            }
+
+          }
+        }
       }
     }
   }
 }
-
-#endif

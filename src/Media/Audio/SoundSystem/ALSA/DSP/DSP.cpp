@@ -23,51 +23,57 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
  ******************************************************************************/
 
-#ifndef _SILENTMEDIA_MEDIA_AUDIO_SOUNDSYSTEM_SOUNDSYSTEM_HPP_
-#define _SILENTMEDIA_MEDIA_AUDIO_SOUNDSYSTEM_SOUNDSYSTEM_HPP_
-
-// main include
-#include <libsml/include.hpp>
-
-/*
- * We should include AbstractSoundSystem
- */
-#include "AbstractSoundSystem.hpp"
-
-// include available sound systems
-#include "libao/AO.hpp"
-#include "ALSA/DSP/DSP.hpp"
-
-using namespace std;
+#include "DSP.hpp"
 
 namespace SilentMedia {
   namespace Media {
     namespace Audio {
       namespace SoundSystem {
-        class SoundSystem: virtual public AbstractSoundSystem {
-          public:
-            SoundSystem();
-            ~SoundSystem();
+        namespace ALSA {
+          namespace DSP {
 
-            static SoundSystem * Instance();
+            DSP::DSP() {
+            }
 
-            // Inheritance methods
-            virtual int init(const string &driver);
-            virtual int init();
-            virtual int close();
-            virtual void setAudioParams(const int &channels,
-                const int &sampleRate, const int &bitsPerSample);
-            virtual int write(void *buf, const int &bufSize);
+            DSP::~DSP() {
+            }
 
-          private:
-            // Singleton variable
-            static SoundSystem * _soundSystem;
+            int DSP::init(const string &driver) {
+              int err = -1;
+              if ((err = snd_pcm_open(&this -> handle, driver.c_str(),
+                  SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
+                cout << "Playback open error: " << snd_strerror(err) << endl;
+                exit(EXIT_FAILURE);
+              }
+              return true;
+            }
 
-            AbstractSoundSystem * dsp;
-        };
+            int DSP::init() {
+              this -> init("default");
+            }
+
+            int DSP::close() {
+            }
+
+            void DSP::setAudioParams(const int &channels,
+                const int &sampleRate, const int &bitsPerSample) {
+              int err = -1;
+              if ((err = snd_pcm_set_params(this -> handle, SND_PCM_FORMAT_S16,
+                  SND_PCM_ACCESS_RW_INTERLEAVED, channels, sampleRate, 0,
+                  500000)) < 0) {
+                cout << "Playback open error: " << snd_strerror(err) << endl;
+                exit(EXIT_FAILURE);
+              }
+              //              return true;
+            }
+
+            int DSP::write(void *buf, const int &bufSize) {
+              snd_pcm_writei(this -> handle, buf, bufSize/4);
+            }
+
+          }
+        }
       }
     }
   }
 }
-
-#endif

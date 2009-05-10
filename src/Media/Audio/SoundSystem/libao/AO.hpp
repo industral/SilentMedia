@@ -48,7 +48,7 @@ namespace SilentMedia {
          * Support the follow drivers:
          * OSS, ALSA, ESD, Sun audio system, aRts.
          */
-        class AO: public AbstractSoundSystem {
+        class AO: virtual public AbstractSoundSystem {
           public:
             /*
              * Default constructor.
@@ -104,7 +104,7 @@ namespace SilentMedia {
              * @return > 0 = success. 0 indicates failure. The device should be
              * closed.
              */
-            virtual inline int write(void *buf, const int &bufSize);
+            virtual int write(void *buf, const int &bufSize);
 
           private:
             ao_sample_format format;

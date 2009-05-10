@@ -281,12 +281,10 @@ namespace SilentMedia {
           int samples = frame -> header.blocksize;
           int sample = 0;
           int i = 0;
-          unsigned int channel = 0; // use unsigned to avoid warning from compile
+          uint channel = 0; // use unsigned to avoid warning from compile
 
           int16_t outbuf[FLAC__MAX_BLOCK_SIZE * FLAC__MAX_CHANNELS
               * sizeof(int32_t)]; // 65535 * 8 * 4
-
-          //        cout << "A: " << decoded_size << " B: " << samples << endl;
 
           if (this -> get_state() == FLAC__STREAM_DECODER_SEEK_ERROR) {
             this -> flacObj -> flacDecoderMap[this -> fileId] -> flush();
@@ -298,8 +296,6 @@ namespace SilentMedia {
             }
           }
 
-          //        cout << "Size: " << sizeof(outbuf) << endl;
-
           double
               totalSamples =
                   this -> flacObj -> audioProxy -> getCurrentSamples(
@@ -308,7 +304,7 @@ namespace SilentMedia {
           this -> flacObj -> audioProxy -> setCurrentSamples(this -> fileId,
               totalSamples + sample);
 
-          this -> flacObj -> audioProxy -> write(outbuf, decoded_size);
+          this -> flacObj -> audioProxy -> write(&outbuf, decoded_size);
 
           return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
         }

@@ -32,7 +32,8 @@ namespace SilentMedia {
         SoundSystem * SoundSystem::_soundSystem = NULL;
 
         SoundSystem::SoundSystem() {
-          ao = new AO();
+          //                    this -> dsp = new AO();
+          this -> dsp = new ALSA::DSP::DSP();
         }
 
         SoundSystem::~SoundSystem() {
@@ -46,24 +47,29 @@ namespace SilentMedia {
         }
 
         int SoundSystem::init(const string &driver) {
-          return (this -> ao -> init(driver));
+          //          return (this -> ao -> init(driver));
+          return (this -> dsp -> init(driver));
         }
 
         int SoundSystem::init() {
-          return (this -> ao -> init());
+          //          return (this -> ao -> init());
+          return (this -> dsp -> init());
         }
 
         int SoundSystem::close() {
-          return (this -> ao -> close());
+          //          return (this -> ao -> close());
+          return (this -> dsp -> close());
         }
 
         void SoundSystem::setAudioParams(const int &channels,
             const int &sampleRate, const int &bitsPerSample) {
-          this -> ao -> setAudioParams(channels, sampleRate, bitsPerSample);
+          //          this -> ao -> setAudioParams(channels, sampleRate, bitsPerSample);
+          this -> dsp -> setAudioParams(channels, sampleRate, bitsPerSample);
         }
 
         int SoundSystem::write(void *buf, const int &bufSize) {
-          return (this -> ao -> write(buf, bufSize));
+          //                    return (this -> ao -> write(buf, bufSize));
+          return (this -> dsp -> write(buf, bufSize));
         }
 
       }

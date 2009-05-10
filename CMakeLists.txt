@@ -10,6 +10,9 @@ src/Media/Container/FileLoader.cpp
 
 src/Media/Container/OGG/OGG.cpp
 
+src/Media/Audio/SoundSystem/ALSA/DSP/DSP.cpp
+src/Media/Audio/SoundSystem/ALSA/Mixer/Mixer.cpp
+
 src/Media/Audio/Audio.cpp
 src/Media/Audio/AudioInfo.cpp
 src/Media/Audio/AudioProxy.cpp
@@ -31,9 +34,11 @@ link_directories (${SilentMedia_SOURCE_DIR})
 
 add_executable (test1 src/test/test.cpp)
 add_executable (testLoader src/test/testLoader.cpp)
+add_executable (testMixer src/test/testMixer.cpp)
 
-target_link_libraries (test1 sml vorbisfile FLAC++ wavpack ao boost_thread-mt boost_filesystem-mt)
-target_link_libraries (testLoader sml vorbisfile FLAC++ wavpack ao boost_thread-mt boost_filesystem-mt)
+target_link_libraries (test1 sml vorbisfile FLAC++ wavpack ao boost_thread-mt boost_filesystem-mt -lasound)
+target_link_libraries (testLoader sml vorbisfile FLAC++ wavpack ao boost_thread-mt boost_filesystem-mt -lasound)
+target_link_libraries (testMixer sml vorbisfile FLAC++ wavpack ao boost_thread-mt boost_filesystem-mt -lasound)
 
 #-pipe -Wall -W -Werror -ggdb
 set_target_properties(sml PROPERTIES COMPILE_FLAGS "-pipe -Wall -W -ggdb")

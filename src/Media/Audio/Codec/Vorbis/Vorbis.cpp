@@ -178,7 +178,6 @@ namespace SilentMedia {
         // --------------------------------------------------------------------
 
         void Vorbis::readVorbisComment(const string &fileId) {
-          //    cout << ov_comment ( &vf, -1 ) -> vendor << endl;
           char **ptr =
               ov_comment(&this -> vorbisFileMap[fileId], -1) -> user_comments;
 
