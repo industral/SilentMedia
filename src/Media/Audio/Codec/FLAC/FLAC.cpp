@@ -78,7 +78,7 @@ namespace SilentMedia {
           while (1) {
             if (this -> stopMap[fileId]) {
               cout << "EXIT" << endl;
-              this -> close(fileId);
+              this -> stopMap[fileId] = false;
               return 0;
             } else {
               this -> flacDecoderMap[fileId] -> process_single();

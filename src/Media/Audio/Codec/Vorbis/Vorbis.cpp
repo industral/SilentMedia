@@ -97,7 +97,7 @@ namespace SilentMedia {
 
           while (!eof) {
             if (this -> stopMap[fileId]) {
-              this -> close(fileId);
+              this -> stopMap[fileId] = false;
               return 0;
             }
 

@@ -103,25 +103,26 @@ namespace SilentMedia {
           // get fileName
           string fileName = this -> audioProxy -> getFileNameByFileId(fileId);
 
+          const int bufSize = 4096;
+          char buf[bufSize];
+
           // set params if it in first time
           if (!resume) {
             // now set parameters to sound system
             this -> audioProxy -> setSoundSystemParams(fileId);
+
+            this -> inputFDMap[fileId] = new ifstream();
+            this -> inputFDMap[fileId] -> open(fileName.c_str(), ifstream::in);
+
+            // make first seek to PCM audio data, skipping technical information
+            this -> inputFDMap[fileId] -> seekg(44);
           }
-
-          const int bufSize = 4096;
-          char buf[bufSize];
-
-          this -> inputFDMap[fileId] = new ifstream();
-          this -> inputFDMap[fileId] -> open(fileName.c_str(), ifstream::in);
-
-          // make first seek to PCM audio data, skipping technical information
-          this -> inputFDMap[fileId] -> seekg(44);
 
           while (this -> inputFDMap[fileId] -> read(buf, bufSize)) {
             if (this -> stopMap[fileId]) {
               cout << "EXIT" << endl;
-              this -> close(fileId);
+              this -> stopMap[fileId] = false;
+              //              this -> close(fileId);
               return 0;
             }
 

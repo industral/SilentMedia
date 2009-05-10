@@ -91,7 +91,8 @@ namespace SilentMedia {
               this -> wavPackContextMap[fileId], buffer, 1024)) {
 
             if (this -> stopMap[fileId]) {
-              this -> close(fileId);
+              this -> stopMap[fileId] = false;
+//              this -> close(fileId);
               return 0;
             }
 
