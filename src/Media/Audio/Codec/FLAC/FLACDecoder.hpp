@@ -23,53 +23,40 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
  ******************************************************************************/
 
-#include <libsml/all.hpp>
+#ifndef _SILENTMEDIA_MEDIA_AUDIO_CODEC_FLACDECODER_HPP_
+#define _SILENTMEDIA_MEDIA_AUDIO_CODEC_FLACDECODER_HPP_
 
-using namespace std;
-using namespace SilentMedia;
-using namespace SilentMedia::Media;
+#include "FLAC.hpp"
 
-int main() {
-  Audio::Audio * audio = new Audio::Audio();
-  audio -> init(); // init Audio system
+namespace SilentMedia {
+  namespace Media {
+    namespace Audio {
+      namespace Codec {
+        class FLAC;
 
-  //  Audio::Audio * audio2 = new Audio::Audio();
-  //  audio2 -> init(); // init Audio system
+        /**
+         * FLAC Decoder class. Inheritance from ::FLAC::Decoder::File.
+         * @see http://flac.sourceforge.net/api/classFLAC_1_1Decoder_1_1File.html
+         */
+        class FLACDecoder: public ::FLAC::Decoder::File {
+          public:
+            FLACDecoder();
 
-  string fileId = "file1";
+            virtual FLAC__StreamDecoderWriteStatus write_callback(
+                const FLAC__Frame * frame, const FLAC__int32 * const buf[]);
 
-  try {
-    audio -> open("src/test/music/file.ogg", fileId);
+            virtual void
+                error_callback(::FLAC__StreamDecoderErrorStatus status);
+
+            void setFileId(const string &fileId);
+
+          private:
+            FLAC * flacObj;
+            string fileId;
+        };
+      }
+    }
   }
-  catch (Throw::File e) {
-    cout << e.getMessage() << endl;
-  }
-
-  //  if (audio -> open("src/test/music/file.ogg", fileId)) {
-  //
-  //    //  audio -> getInfo("file1");
-  //
-  //    audio -> play("file1");
-  //    //  audio -> pause("file1");
-  //    //  audio -> write("file1");
-  //    //  audio -> stop("file1");
-  //    //  audio -> close("file1");
-  //  }
-
-  delete audio;
-  audio = NULL;
-
-  //  string fileId2 = "file2";
-  //
-  //  if (audio2 -> open("src/test/music/file.ogg", fileId2)) {
-  //    audio2 -> play("file2");
-  //  }
-
-  //  audio -> finish();
-
-
-  //  delete audio2;
-  //  audio2 = NULL;
-
-  return 0;
 }
+
+#endif

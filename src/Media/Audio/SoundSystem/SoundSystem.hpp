@@ -23,53 +23,50 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
  ******************************************************************************/
 
-#include <libsml/all.hpp>
+#ifndef _SILENTMEDIA_MEDIA_AUDIO_SOUNDSYSTEM_SOUNDSYSTEM_HPP_
+#define _SILENTMEDIA_MEDIA_AUDIO_SOUNDSYSTEM_SOUNDSYSTEM_HPP_
+
+// main include
+#include <libsml/include.hpp>
+
+/*
+ * We should include AbstractSoundSystem
+ */
+#include "AbstractSoundSystem.hpp"
+
+// include available sound systems
+#include "libao/AO.hpp"
 
 using namespace std;
-using namespace SilentMedia;
-using namespace SilentMedia::Media;
 
-int main() {
-  Audio::Audio * audio = new Audio::Audio();
-  audio -> init(); // init Audio system
+namespace SilentMedia {
+  namespace Media {
+    namespace Audio {
+      namespace SoundSystem {
+        class SoundSystem: public AbstractSoundSystem {
+          public:
+            SoundSystem();
+            ~SoundSystem();
 
-  //  Audio::Audio * audio2 = new Audio::Audio();
-  //  audio2 -> init(); // init Audio system
+            static SoundSystem * Instance();
 
-  string fileId = "file1";
+            // Inheritance methods
+            virtual int init(const string &driver);
+            virtual int init();
+            virtual int close();
+            virtual void setAudioParams(const int &channels,
+                const int &sampleRate, const int &bitsPerSample);
+            virtual int write(void *buf, const int &bufSize);
 
-  try {
-    audio -> open("src/test/music/file.ogg", fileId);
+          private:
+            // Singleton variable
+            static SoundSystem * _soundSystem;
+            // libao object
+            AbstractSoundSystem * ao;
+        };
+      }
+    }
   }
-  catch (Throw::File e) {
-    cout << e.getMessage() << endl;
-  }
-
-  //  if (audio -> open("src/test/music/file.ogg", fileId)) {
-  //
-  //    //  audio -> getInfo("file1");
-  //
-  //    audio -> play("file1");
-  //    //  audio -> pause("file1");
-  //    //  audio -> write("file1");
-  //    //  audio -> stop("file1");
-  //    //  audio -> close("file1");
-  //  }
-
-  delete audio;
-  audio = NULL;
-
-  //  string fileId2 = "file2";
-  //
-  //  if (audio2 -> open("src/test/music/file.ogg", fileId2)) {
-  //    audio2 -> play("file2");
-  //  }
-
-  //  audio -> finish();
-
-
-  //  delete audio2;
-  //  audio2 = NULL;
-
-  return 0;
 }
+
+#endif

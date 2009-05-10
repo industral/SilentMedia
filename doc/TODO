@@ -1,8 +1,5 @@
 - FIRST: Need to move WAV to format instead of codec
 - Create Class Audio loader to check formats
-- Change ifndef to namespace!!!
-
-
 
 - Start from writing test
 - Start from AbstractCodec

@@ -23,53 +23,57 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
  ******************************************************************************/
 
-#include <libsml/all.hpp>
+#include "AO.hpp"
 
-using namespace std;
-using namespace SilentMedia;
-using namespace SilentMedia::Media;
+namespace SilentMedia {
+  namespace Media {
+    namespace Audio {
+      namespace SoundSystem {
+        AO::AO() {
+          device = NULL;
+          default_driver = -1;
+          ao_initialize();
+        }
 
-int main() {
-  Audio::Audio * audio = new Audio::Audio();
-  audio -> init(); // init Audio system
+        AO::~AO() {
+          ao_shutdown();
+        }
 
-  //  Audio::Audio * audio2 = new Audio::Audio();
-  //  audio2 -> init(); // init Audio system
+        int AO::init(const string &driver) {
+          if (driver.empty()) {
+            this -> init();
+          } else {
+            this -> default_driver = ao_driver_id(driver.c_str());
+          }
+          return this -> default_driver;
+        }
 
-  string fileId = "file1";
+        int AO::init() {
+          this -> default_driver = ao_default_driver_id();
+          return (this -> default_driver);
+        }
 
-  try {
-    audio -> open("src/test/music/file.ogg", fileId);
+        int AO::close() {
+          return (ao_close(this -> device));
+        }
+
+        void AO::setAudioParams(const int &channels, const int &sampleRate,
+            const int &bitsPerSample) {
+          format.bits = bitsPerSample;
+          format.channels = channels;
+          format.rate = sampleRate;
+          format.byte_format = AO_FMT_LITTLE;
+
+          device = ao_open_live(default_driver, &format, NULL);
+          if (device == NULL) {
+            cerr << "Error to set audio parameters" << endl;
+          }
+        }
+
+        int AO::write(void *buf, const int &bufSize) {
+          return (ao_play(device, (char *) buf, bufSize));
+        }
+      }
+    }
   }
-  catch (Throw::File e) {
-    cout << e.getMessage() << endl;
-  }
-
-  //  if (audio -> open("src/test/music/file.ogg", fileId)) {
-  //
-  //    //  audio -> getInfo("file1");
-  //
-  //    audio -> play("file1");
-  //    //  audio -> pause("file1");
-  //    //  audio -> write("file1");
-  //    //  audio -> stop("file1");
-  //    //  audio -> close("file1");
-  //  }
-
-  delete audio;
-  audio = NULL;
-
-  //  string fileId2 = "file2";
-  //
-  //  if (audio2 -> open("src/test/music/file.ogg", fileId2)) {
-  //    audio2 -> play("file2");
-  //  }
-
-  //  audio -> finish();
-
-
-  //  delete audio2;
-  //  audio2 = NULL;
-
-  return 0;
 }

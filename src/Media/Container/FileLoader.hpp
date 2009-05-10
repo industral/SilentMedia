@@ -23,53 +23,85 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
  ******************************************************************************/
 
-#include <libsml/all.hpp>
+#ifndef _SILENTMEDIA_MEDIA_CONTAINER_FILELOADER_HPP_
+#define _SILENTMEDIA_MEDIA_CONTAINER_FILELOADER_HPP_
+
+#include <libsml/include.hpp>
+#include "../../Throw/Throw.hpp"
+
+typedef boost::filesystem::path Path;
 
 using namespace std;
-using namespace SilentMedia;
-using namespace SilentMedia::Media;
 
-int main() {
-  Audio::Audio * audio = new Audio::Audio();
-  audio -> init(); // init Audio system
+namespace SilentMedia {
+  namespace Media {
+    namespace Container {
 
-  //  Audio::Audio * audio2 = new Audio::Audio();
-  //  audio2 -> init(); // init Audio system
+      enum ContainerType {
+        UNKNOW_CONTAINER, NONE_CONTAINER, RIFF_WAVE, RIFF_AVI, RIFF_UNKNOW, OGG
+      };
 
-  string fileId = "file1";
+      enum CodecType {
+        UNKNOW_CODEC, NONE_CODEC, FLAC, VORBIS, THEORA, WAVPACK
+      };
 
-  try {
-    audio -> open("src/test/music/file.ogg", fileId);
+      class FileLoader {
+        public:
+          /**
+           * Constructor.
+           */
+          FileLoader();
+
+          /**
+           * Desctuctor.
+           */
+          ~FileLoader();
+
+          /**
+           * Open media file.
+           * param[in] fileName path to media file.
+           */
+          void open(const string &fileName);
+
+          /**
+           * Close file.
+           */
+          void close();
+
+          /**
+           * Get file media container.
+           * @return media container type.
+           */
+          ContainerType getContainer();
+
+          /**
+           * Get media codec.
+           * @return media codec type.
+           */
+          CodecType getCodec();
+
+          /**
+           * Get file signature (4 first bytes).
+           * @return file signature.
+           */
+          string getFileSignature();
+        private:
+          /**
+           * Read segment of file.
+           * @param[in] offset file offset in bytes,
+           * @param[in] length size of bytes to read.
+           * @return output string of read bytes.
+           */
+          string readFileSegment(int offset, int length);
+
+          ifstream infile;
+          string fileName;
+
+          ContainerType container;
+          CodecType codec;
+      };
+    }
   }
-  catch (Throw::File e) {
-    cout << e.getMessage() << endl;
-  }
-
-  //  if (audio -> open("src/test/music/file.ogg", fileId)) {
-  //
-  //    //  audio -> getInfo("file1");
-  //
-  //    audio -> play("file1");
-  //    //  audio -> pause("file1");
-  //    //  audio -> write("file1");
-  //    //  audio -> stop("file1");
-  //    //  audio -> close("file1");
-  //  }
-
-  delete audio;
-  audio = NULL;
-
-  //  string fileId2 = "file2";
-  //
-  //  if (audio2 -> open("src/test/music/file.ogg", fileId2)) {
-  //    audio2 -> play("file2");
-  //  }
-
-  //  audio -> finish();
-
-
-  //  delete audio2;
-  //  audio2 = NULL;
-
-  return 0;
 }
+
+#endif

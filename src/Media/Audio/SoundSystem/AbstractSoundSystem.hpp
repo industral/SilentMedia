@@ -23,53 +23,41 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
  ******************************************************************************/
 
-#include <libsml/all.hpp>
+#ifndef _SILENTMEDIA_MEDIA_AUDIO_SOUNDYSTEM_ABSTRACTSOUNDSYSTEM_HPP_
+#define _SILENTMEDIA_MEDIA_AUDIO_SOUNDYSTEM_ABSTRACTSOUNDSYSTEM_HPP_
+
+#include <libsml/include.hpp>
 
 using namespace std;
-using namespace SilentMedia;
-using namespace SilentMedia::Media;
 
-int main() {
-  Audio::Audio * audio = new Audio::Audio();
-  audio -> init(); // init Audio system
+namespace SilentMedia {
+  namespace Media {
+    namespace Audio {
+      namespace SoundSystem {
+        class AbstractSoundSystem {
+          public:
+            /*
+             * Default constructor.
+             */
+            AbstractSoundSystem() {
+            }
 
-  //  Audio::Audio * audio2 = new Audio::Audio();
-  //  audio2 -> init(); // init Audio system
+            virtual ~AbstractSoundSystem() {
+            }
 
-  string fileId = "file1";
+            virtual int init(const string &driver) = 0;
+            virtual int init() = 0;
+            virtual int close() = 0;
+            virtual void setAudioParams(const int &channels,
+                const int &sampleRate, const int &bitsPerSample) = 0;
+            virtual int write(void *buf, const int &bufSize) = 0;
 
-  try {
-    audio -> open("src/test/music/file.ogg", fileId);
+          protected:
+          private:
+        };
+      }
+    }
   }
-  catch (Throw::File e) {
-    cout << e.getMessage() << endl;
-  }
-
-  //  if (audio -> open("src/test/music/file.ogg", fileId)) {
-  //
-  //    //  audio -> getInfo("file1");
-  //
-  //    audio -> play("file1");
-  //    //  audio -> pause("file1");
-  //    //  audio -> write("file1");
-  //    //  audio -> stop("file1");
-  //    //  audio -> close("file1");
-  //  }
-
-  delete audio;
-  audio = NULL;
-
-  //  string fileId2 = "file2";
-  //
-  //  if (audio2 -> open("src/test/music/file.ogg", fileId2)) {
-  //    audio2 -> play("file2");
-  //  }
-
-  //  audio -> finish();
-
-
-  //  delete audio2;
-  //  audio2 = NULL;
-
-  return 0;
 }
+
+#endif

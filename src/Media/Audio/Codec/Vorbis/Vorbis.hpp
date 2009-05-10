@@ -23,53 +23,66 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
  ******************************************************************************/
 
-#include <libsml/all.hpp>
+/*
+ * http://www.xiph.org/vorbis/doc/vorbisfile/index.html
+ */
+
+#ifndef _SILENTMEDIA_MEDIA_AUDIO_CODEC_VORBIS_HPP_
+#define _SILENTMEDIA_MEDIA_AUDIO_CODEC_VORBIS_HPP_
+
+// main include
+#include <libsml/include.hpp>
+
+// include boost
+#include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/fstream.hpp>
+
+/*
+ * We should include AbstractCodec, AudioProxy.
+ */
+#include "../AbstractCodec.hpp"
+#include "../../AudioProxy.hpp"
+
+// Vorbis include
+#include <vorbis/codec.h>
+#include <vorbis/vorbisfile.h>
 
 using namespace std;
-using namespace SilentMedia;
-using namespace SilentMedia::Media;
 
-int main() {
-  Audio::Audio * audio = new Audio::Audio();
-  audio -> init(); // init Audio system
+namespace SilentMedia {
+  namespace Media {
+    namespace Audio {
+      namespace Codec {
+        class Vorbis: virtual public AbstractCodec {
+          public:
+            Vorbis();
+            virtual ~Vorbis();
 
-  //  Audio::Audio * audio2 = new Audio::Audio();
-  //  audio2 -> init(); // init Audio system
+            virtual bool open(const string &fileId);
+            virtual void close(const string &fileId);
 
-  string fileId = "file1";
+            virtual int play(const string &fileId, bool resume = false);
+            virtual void stop(const string &fileId);
 
-  try {
-    audio -> open("src/test/music/file.ogg", fileId);
+            virtual float getSeek(const string &fileId);
+            virtual void setSeek(const string &fileId, const double &seekVal);
+          private:
+            // AudioProxy object
+            AudioProxy * audioProxy;
+
+            // Vorbis File map
+            map < string, OggVorbis_File > vorbisFileMap;
+
+            // Vorbis Info map
+            map < string, vorbis_info * > vorbisInfoMap;
+
+            map < string, bool > stopMap;
+
+            void readVorbisComment(const string &fileId);
+        };
+      }
+    }
   }
-  catch (Throw::File e) {
-    cout << e.getMessage() << endl;
-  }
-
-  //  if (audio -> open("src/test/music/file.ogg", fileId)) {
-  //
-  //    //  audio -> getInfo("file1");
-  //
-  //    audio -> play("file1");
-  //    //  audio -> pause("file1");
-  //    //  audio -> write("file1");
-  //    //  audio -> stop("file1");
-  //    //  audio -> close("file1");
-  //  }
-
-  delete audio;
-  audio = NULL;
-
-  //  string fileId2 = "file2";
-  //
-  //  if (audio2 -> open("src/test/music/file.ogg", fileId2)) {
-  //    audio2 -> play("file2");
-  //  }
-
-  //  audio -> finish();
-
-
-  //  delete audio2;
-  //  audio2 = NULL;
-
-  return 0;
 }
+
+#endif

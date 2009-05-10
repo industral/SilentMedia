@@ -23,53 +23,51 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
  ******************************************************************************/
 
-#include <libsml/all.hpp>
+#ifndef _SILENTMEDIA_MEDIA_AUDIO_CODEC_WAVPACK_HPP_
+#define _SILENTMEDIA_MEDIA_AUDIO_CODEC_WAVPACK_HPP_
 
-using namespace std;
-using namespace SilentMedia;
-using namespace SilentMedia::Media;
+/**
+ * @see http://www.wavpack.com/lib_use.txt
+ */
 
-int main() {
-  Audio::Audio * audio = new Audio::Audio();
-  audio -> init(); // init Audio system
+// main include
+#include <libsml/include.hpp>
 
-  //  Audio::Audio * audio2 = new Audio::Audio();
-  //  audio2 -> init(); // init Audio system
+/*
+ * We should include AbstractCodec, AudioProxy.
+ */
+#include "../AbstractCodec.hpp"
+#include "../../AudioProxy.hpp"
 
-  string fileId = "file1";
+#include <wavpack/wavpack.h>
 
-  try {
-    audio -> open("src/test/music/file.ogg", fileId);
+namespace SilentMedia {
+  namespace Media {
+    namespace Audio {
+      namespace Codec {
+        class WavPack: virtual public AbstractCodec {
+          public:
+            WavPack();
+            virtual ~WavPack();
+
+            virtual bool open(const string &fileId);
+            virtual void close(const string &fileId);
+
+            virtual int play(const string &fileId, bool resume = false);
+            virtual void stop(const string &fileId);
+
+            virtual float getSeek(const string &fileId);
+            virtual void setSeek(const string &fileId, const double &seekVal);
+          private:
+            // AudioProxy object
+            AudioProxy * audioProxy;
+            map < string, WavpackContext * > wavPackContextMap;
+
+            map < string, bool > stopMap;
+        };
+      }
+    }
   }
-  catch (Throw::File e) {
-    cout << e.getMessage() << endl;
-  }
-
-  //  if (audio -> open("src/test/music/file.ogg", fileId)) {
-  //
-  //    //  audio -> getInfo("file1");
-  //
-  //    audio -> play("file1");
-  //    //  audio -> pause("file1");
-  //    //  audio -> write("file1");
-  //    //  audio -> stop("file1");
-  //    //  audio -> close("file1");
-  //  }
-
-  delete audio;
-  audio = NULL;
-
-  //  string fileId2 = "file2";
-  //
-  //  if (audio2 -> open("src/test/music/file.ogg", fileId2)) {
-  //    audio2 -> play("file2");
-  //  }
-
-  //  audio -> finish();
-
-
-  //  delete audio2;
-  //  audio2 = NULL;
-
-  return 0;
 }
+
+#endif
