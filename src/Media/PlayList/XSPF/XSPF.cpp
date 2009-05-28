@@ -23,51 +23,51 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
  ******************************************************************************/
 
-#ifndef _SILENTMEDIA_MEDIA_AUDIO_SOUNDSYSTEM_SOUNDSYSTEM_HPP_
-#define _SILENTMEDIA_MEDIA_AUDIO_SOUNDSYSTEM_SOUNDSYSTEM_HPP_
-
-// main include
-#include <libsml/include.hpp>
-
-/*
- * We should include AbstractSoundSystem
- */
-#include "AbstractSoundSystem.hpp"
-
-// include available sound systems
-#include "libao/AO.hpp"
-#include "ALSA/DSP/DSP.hpp"
-
-using namespace std;
+#include "XSPF.hpp"
 
 namespace SilentMedia {
   namespace Media {
-    namespace Audio {
-      namespace SoundSystem {
-        class SoundSystem: virtual public AbstractSoundSystem {
-          public:
-            SoundSystem();
-            virtual ~SoundSystem();
+    namespace PlayList {
+      namespace XSPF {
 
-            static SoundSystem * Instance();
+        // --------------------------------------------------------------------
+        // Public methods
+        // --------------------------------------------------------------------
 
-            // Inheritance methods
-            virtual int init(const string &driver);
-            virtual int init();
-            virtual int close();
-            virtual void setAudioParams(const int &channels,
-                const int &sampleRate, const int &bitsPerSample);
-            virtual int write(void *buf, const int &bufSize);
+        XSPF::XSPF() :
+          libxspf(new libXSPF) {
+        }
 
-          private:
-            // Singleton variable
-            static SoundSystem * _soundSystem;
+        XSPF::~XSPF() {
+          delete this -> libxspf;
+          this -> libxspf = NULL;
+        }
 
-            AbstractSoundSystem * dsp;
-        };
+        bool XSPF::open(const string &playList) {
+          const int res = reader.parseFile(_PT(playList.c_str()), libxspf);
+
+          if (res != Spiff::SPIFF_READER_SUCCESS) {
+            PORT_PRINTF(_PT("Error %i at line %i: '%s'\n"), res, reader.getErrorLine(), reader.getErrorText());
+          } else {
+            PORT_PRINTF(_PT("Everything fine.\n"));
+          }
+
+          return (res == Spiff::SPIFF_READER_SUCCESS) ? true : false;
+        }
+
+        bool XSPF::close() {
+
+        }
+
+        list < map < string, string > > XSPF::getPlayListMap() {
+
+        }
+
+      // --------------------------------------------------------------------
+      // Private methods
+      // --------------------------------------------------------------------
+
       }
     }
   }
 }
-
-#endif

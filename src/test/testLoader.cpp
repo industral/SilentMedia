@@ -23,51 +23,21 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
  ******************************************************************************/
 
-#ifndef _SILENTMEDIA_MEDIA_AUDIO_SOUNDSYSTEM_SOUNDSYSTEM_HPP_
-#define _SILENTMEDIA_MEDIA_AUDIO_SOUNDSYSTEM_SOUNDSYSTEM_HPP_
+#include <libsml/all.hpp>
 
-// main include
-#include <libsml/include.hpp>
+using namespace SilentMedia;
+using namespace SilentMedia::Media;
 
-/*
- * We should include AbstractSoundSystem
- */
-#include "AbstractSoundSystem.hpp"
+int main() {
+  Container::FileLoader *loader = new Container::FileLoader();
+  loader -> open("src/test/music/file.ogg");
+  cout << loader -> getFileSignature() << endl;
+  loader -> getCodec();
 
-// include available sound systems
-#include "libao/AO.hpp"
-#include "ALSA/DSP/DSP.hpp"
+  loader -> close();
 
-using namespace std;
+  delete loader;
+  loader = NULL;
 
-namespace SilentMedia {
-  namespace Media {
-    namespace Audio {
-      namespace SoundSystem {
-        class SoundSystem: virtual public AbstractSoundSystem {
-          public:
-            SoundSystem();
-            virtual ~SoundSystem();
-
-            static SoundSystem * Instance();
-
-            // Inheritance methods
-            virtual int init(const string &driver);
-            virtual int init();
-            virtual int close();
-            virtual void setAudioParams(const int &channels,
-                const int &sampleRate, const int &bitsPerSample);
-            virtual int write(void *buf, const int &bufSize);
-
-          private:
-            // Singleton variable
-            static SoundSystem * _soundSystem;
-
-            AbstractSoundSystem * dsp;
-        };
-      }
-    }
-  }
+  return 0;
 }
-
-#endif

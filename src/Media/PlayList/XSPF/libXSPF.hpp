@@ -23,47 +23,34 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
  ******************************************************************************/
 
-#ifndef _SILENTMEDIA_MEDIA_AUDIO_SOUNDSYSTEM_SOUNDSYSTEM_HPP_
-#define _SILENTMEDIA_MEDIA_AUDIO_SOUNDSYSTEM_SOUNDSYSTEM_HPP_
+/**
+ * @see http://libspiff.sourceforge.net/
+ */
+
+#ifndef _SILENTMEDIA_MEDIA_PLAYLIST_XSPF_LIBXSPF_HPP_
+#define _SILENTMEDIA_MEDIA_PLAYLIST_XSPF_LIBXSPF_HPP_
 
 // main include
 #include <libsml/include.hpp>
 
-/*
- * We should include AbstractSoundSystem
- */
-#include "AbstractSoundSystem.hpp"
-
-// include available sound systems
-#include "libao/AO.hpp"
-#include "ALSA/DSP/DSP.hpp"
+// include XSPF header
+#include <spiff/Spiff.h>
 
 using namespace std;
 
 namespace SilentMedia {
   namespace Media {
-    namespace Audio {
-      namespace SoundSystem {
-        class SoundSystem: virtual public AbstractSoundSystem {
+    namespace PlayList {
+      namespace XSPF {
+        class libXSPF: virtual public Spiff::SpiffReaderCallback {
           public:
-            SoundSystem();
-            virtual ~SoundSystem();
-
-            static SoundSystem * Instance();
-
-            // Inheritance methods
-            virtual int init(const string &driver);
-            virtual int init();
-            virtual int close();
-            virtual void setAudioParams(const int &channels,
-                const int &sampleRate, const int &bitsPerSample);
-            virtual int write(void *buf, const int &bufSize);
+            libXSPF();
+            ~libXSPF();
 
           private:
-            // Singleton variable
-            static SoundSystem * _soundSystem;
+            virtual void addTrack(Spiff::SpiffTrack * track);
 
-            AbstractSoundSystem * dsp;
+            Spiff::SpiffReader reader;
         };
       }
     }

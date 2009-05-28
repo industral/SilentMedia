@@ -23,51 +23,17 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
  ******************************************************************************/
 
-#ifndef _SILENTMEDIA_MEDIA_AUDIO_SOUNDSYSTEM_SOUNDSYSTEM_HPP_
-#define _SILENTMEDIA_MEDIA_AUDIO_SOUNDSYSTEM_SOUNDSYSTEM_HPP_
+#include <libsml/all.hpp>
+#include <libsml/Media/Audio/SoundSystem/ALSA/Mixer/Mixer.hpp>
 
-// main include
-#include <libsml/include.hpp>
+using namespace SilentMedia::Media::Audio::SoundSystem::ALSA::Mixer;
 
-/*
- * We should include AbstractSoundSystem
- */
-#include "AbstractSoundSystem.hpp"
+int main() {
+  Mixer *mixer = new Mixer();
+  mixer -> open();
 
-// include available sound systems
-#include "libao/AO.hpp"
-#include "ALSA/DSP/DSP.hpp"
+  delete mixer;
+  mixer = NULL;
 
-using namespace std;
-
-namespace SilentMedia {
-  namespace Media {
-    namespace Audio {
-      namespace SoundSystem {
-        class SoundSystem: virtual public AbstractSoundSystem {
-          public:
-            SoundSystem();
-            virtual ~SoundSystem();
-
-            static SoundSystem * Instance();
-
-            // Inheritance methods
-            virtual int init(const string &driver);
-            virtual int init();
-            virtual int close();
-            virtual void setAudioParams(const int &channels,
-                const int &sampleRate, const int &bitsPerSample);
-            virtual int write(void *buf, const int &bufSize);
-
-          private:
-            // Singleton variable
-            static SoundSystem * _soundSystem;
-
-            AbstractSoundSystem * dsp;
-        };
-      }
-    }
-  }
+  return 0;
 }
-
-#endif

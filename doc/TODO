@@ -11,6 +11,12 @@
 - class and interface rename
 - add logger
 
+- add support playlist (XSPF, m3u, pls)
+- add album cover search (location, file, web - via services)
+http://www.allcdcovers.com/api
+
+- add D-bus support
+
 
 Change architecture to drop Singleton from Audio
 

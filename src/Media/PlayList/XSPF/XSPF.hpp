@@ -23,47 +23,40 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
  ******************************************************************************/
 
-#ifndef _SILENTMEDIA_MEDIA_AUDIO_SOUNDSYSTEM_SOUNDSYSTEM_HPP_
-#define _SILENTMEDIA_MEDIA_AUDIO_SOUNDSYSTEM_SOUNDSYSTEM_HPP_
+/**
+ * @see http://xspf.org/
+ * @see http://libspiff.sourceforge.net/
+ * @see http://sourceforge.net/projects/libspiff
+ */
+
+#ifndef _SILENTMEDIA_MEDIA_PLAYLIST_XSPF_XSPF_HPP_
+#define _SILENTMEDIA_MEDIA_PLAYLIST_XSPF_XSPF_HPP_
 
 // main include
 #include <libsml/include.hpp>
 
-/*
- * We should include AbstractSoundSystem
- */
-#include "AbstractSoundSystem.hpp"
+// include Interface
+#include "../AbstractPlayList.hpp"
 
-// include available sound systems
-#include "libao/AO.hpp"
-#include "ALSA/DSP/DSP.hpp"
-
-using namespace std;
+// include libXSPF header
+#include "libXSPF.hpp"
 
 namespace SilentMedia {
   namespace Media {
-    namespace Audio {
-      namespace SoundSystem {
-        class SoundSystem: virtual public AbstractSoundSystem {
+    namespace PlayList {
+      namespace XSPF {
+        class XSPF: virtual public AbstractPlayList {
           public:
-            SoundSystem();
-            virtual ~SoundSystem();
+            XSPF();
+            virtual ~XSPF();
 
-            static SoundSystem * Instance();
-
-            // Inheritance methods
-            virtual int init(const string &driver);
-            virtual int init();
-            virtual int close();
-            virtual void setAudioParams(const int &channels,
-                const int &sampleRate, const int &bitsPerSample);
-            virtual int write(void *buf, const int &bufSize);
+            virtual bool open(const string &playList);
+            virtual bool close();
+            virtual list < map < string, string > > getPlayListMap();
 
           private:
-            // Singleton variable
-            static SoundSystem * _soundSystem;
-
-            AbstractSoundSystem * dsp;
+            libXSPF * libxspf;
+            Spiff::SpiffReader reader;
         };
       }
     }
