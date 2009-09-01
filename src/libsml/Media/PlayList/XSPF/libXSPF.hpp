@@ -23,51 +23,38 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
  ******************************************************************************/
 
-#include "XSPF.hpp"
+/**
+ * @see http://libspiff.sourceforge.net/
+ */
+
+#ifndef _SILENTMEDIA_MEDIA_PLAYLIST_XSPF_LIBXSPF_HPP_
+#define _SILENTMEDIA_MEDIA_PLAYLIST_XSPF_LIBXSPF_HPP_
+
+// main include
+#include <libsml/include.hpp>
+
+// include XSPF header
+#include <xspf/Xspf.h>
+
+using namespace std;
 
 namespace SilentMedia {
   namespace Media {
     namespace PlayList {
       namespace XSPF {
+        class libXSPF: virtual public Xspf::XspfReaderCallback {
+          public:
+            libXSPF();
+            ~libXSPF();
 
-        // --------------------------------------------------------------------
-        // Public methods
-        // --------------------------------------------------------------------
+          private:
+            virtual void addTrack(Xspf::XspfTrack * track);
 
-        XSPF::XSPF() :
-          libxspf(new libXSPF) {
-        }
-
-        XSPF::~XSPF() {
-          delete this -> libxspf;
-          this -> libxspf = NULL;
-        }
-
-        bool XSPF::open(const string &playList) {
-          const int res = reader.parseFile(_PT(playList.c_str()), libxspf);
-
-          if (res != Spiff::SPIFF_READER_SUCCESS) {
-            PORT_PRINTF(_PT("Error %i at line %i: '%s'\n"), res, reader.getErrorLine(), reader.getErrorText());
-          } else {
-            PORT_PRINTF(_PT("Everything fine.\n"));
-          }
-
-          return (res == Spiff::SPIFF_READER_SUCCESS) ? true : false;
-        }
-
-        bool XSPF::close() {
-
-        }
-
-        list < map < string, string > > XSPF::getPlayListMap() {
-
-        }
-
-      // --------------------------------------------------------------------
-      // Private methods
-      // --------------------------------------------------------------------
-
+            Xspf::XspfReader reader;
+        };
       }
     }
   }
 }
+
+#endif

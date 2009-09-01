@@ -24,33 +24,39 @@
  ******************************************************************************/
 
 /**
+ * @see http://xspf.org/
  * @see http://libspiff.sourceforge.net/
+ * @see http://sourceforge.net/projects/libspiff
  */
 
-#ifndef _SILENTMEDIA_MEDIA_PLAYLIST_XSPF_LIBXSPF_HPP_
-#define _SILENTMEDIA_MEDIA_PLAYLIST_XSPF_LIBXSPF_HPP_
+#ifndef _SILENTMEDIA_MEDIA_PLAYLIST_XSPF_XSPF_HPP_
+#define _SILENTMEDIA_MEDIA_PLAYLIST_XSPF_XSPF_HPP_
 
 // main include
 #include <libsml/include.hpp>
 
-// include XSPF header
-#include <spiff/Spiff.h>
+// include Interface
+#include "../AbstractPlayList.hpp"
 
-using namespace std;
+// include libXSPF header
+#include "libXSPF.hpp"
 
 namespace SilentMedia {
   namespace Media {
     namespace PlayList {
       namespace XSPF {
-        class libXSPF: virtual public Spiff::SpiffReaderCallback {
+        class XSPF: virtual public AbstractPlayList {
           public:
-            libXSPF();
-            ~libXSPF();
+            XSPF();
+            virtual ~XSPF();
+
+            virtual bool open(const string &playList);
+            virtual bool close();
+            virtual list < map < string, string > > getPlayListMap();
 
           private:
-            virtual void addTrack(Spiff::SpiffTrack * track);
-
-            Spiff::SpiffReader reader;
+            libXSPF * libxspf;
+            Xspf::XspfReader reader;
         };
       }
     }

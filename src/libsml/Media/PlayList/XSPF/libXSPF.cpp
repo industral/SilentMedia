@@ -23,44 +23,24 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
  ******************************************************************************/
 
-/**
- * @see http://xspf.org/
- * @see http://libspiff.sourceforge.net/
- * @see http://sourceforge.net/projects/libspiff
- */
-
-#ifndef _SILENTMEDIA_MEDIA_PLAYLIST_XSPF_XSPF_HPP_
-#define _SILENTMEDIA_MEDIA_PLAYLIST_XSPF_XSPF_HPP_
-
-// main include
-#include <libsml/include.hpp>
-
-// include Interface
-#include "../AbstractPlayList.hpp"
-
-// include libXSPF header
 #include "libXSPF.hpp"
 
 namespace SilentMedia {
   namespace Media {
     namespace PlayList {
       namespace XSPF {
-        class XSPF: virtual public AbstractPlayList {
-          public:
-            XSPF();
-            virtual ~XSPF();
 
-            virtual bool open(const string &playList);
-            virtual bool close();
-            virtual list < map < string, string > > getPlayListMap();
+        libXSPF::libXSPF() {
+        }
 
-          private:
-            libXSPF * libxspf;
-            Spiff::SpiffReader reader;
-        };
+        libXSPF::~libXSPF() {
+        }
+
+        void libXSPF::addTrack(Xspf::XspfTrack *track) {
+          cout << "In addTrack" << endl;
+        }
+
       }
     }
   }
 }
-
-#endif

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 
 project (SilentMedia)
 
-set (SourcePath libsml/src)
+set (SourcePath src/libsml)
 set(SilentMedia_src
 
     ${SourcePath}/Utils/Base64/Base64.cpp
@@ -39,10 +39,16 @@ set(SilentMedia_LINKED_LIBRARY
     asound
     boost_thread-mt
     boost_filesystem-mt
-    spiff
+    xspf
 )
 
-include_directories (/usr/include /usr/local/include /usr/include/c++/4.4 ${SilentMedia_SOURCE_DIR}/${SourcePath})
+include_directories (
+    /usr/include
+    /usr/local/include
+    /usr/include/c++/4.4
+    ${SilentMedia_SOURCE_DIR}/src
+    ${SilentMedia_SOURCE_DIR}/${SourcePath}
+)
 
 add_library(sml SHARED ${SilentMedia_src})
 set_target_properties(sml PROPERTIES CLEAN_DIRECT_OUTPUT 1)
@@ -56,9 +62,9 @@ target_link_libraries (bin/TestXSPF ${SilentMedia_LINKED_LIBRARY})
 
 ### Tests ###
 
-add_executable (bin/test1 ${SourcePath}/test/test.cpp)
-add_executable (bin/testLoader ${SourcePath}/test/testLoader.cpp)
-add_executable (bin/testMixer ${SourcePath}/test/testMixer.cpp)
+add_executable (bin/test1 ${SourcePath}/Test/test.cpp)
+add_executable (bin/testLoader ${SourcePath}/Test/testLoader.cpp)
+add_executable (bin/testMixer ${SourcePath}/Test/testMixer.cpp)
 
 target_link_libraries (bin/test1 ${SilentMedia_LINKED_LIBRARY})
 target_link_libraries (bin/testLoader ${SilentMedia_LINKED_LIBRARY})

@@ -23,22 +23,50 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
  ******************************************************************************/
 
-#include "libXSPF.hpp"
+#include "XSPF.hpp"
 
 namespace SilentMedia {
   namespace Media {
     namespace PlayList {
       namespace XSPF {
 
-        libXSPF::libXSPF() {
+        // --------------------------------------------------------------------
+        // Public methods
+        // --------------------------------------------------------------------
+
+        XSPF::XSPF() :
+          libxspf(new libXSPF) {
         }
 
-        libXSPF::~libXSPF() {
+        XSPF::~XSPF() {
+          delete this -> libxspf;
+          this -> libxspf = NULL;
         }
 
-        void libXSPF::addTrack(Spiff::SpiffTrack *track) {
-          cout << "In addTrack" << endl;
+        bool XSPF::open(const string &playList) {
+          XML_Char const * const baseUri = _PT("http://d-industrial.com");
+          const int res = reader.parseFile(_PT(playList.c_str()), NULL, baseUri);
+
+          if (res != Xspf::XSPF_READER_SUCCESS) {
+//            PORT_PRINTF(_PT("Error %i at line %i: '%s'\n"), res, reader.getErrorLine(), reader.getErrorText());
+          } else {
+            PORT_PRINTF(_PT("Everything fine.\n"));
+          }
+
+          return (res == Xspf::XSPF_READER_SUCCESS) ? true : false;
         }
+
+        bool XSPF::close() {
+
+        }
+
+        list < map < string, string > > XSPF::getPlayListMap() {
+
+        }
+
+      // --------------------------------------------------------------------
+      // Private methods
+      // --------------------------------------------------------------------
 
       }
     }
