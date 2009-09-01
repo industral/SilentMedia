@@ -40,6 +40,7 @@ set(SilentMedia_LINKED_LIBRARY
     boost_thread-mt
     boost_filesystem-mt
     xspf
+    gtest
 )
 
 include_directories (

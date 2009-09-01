@@ -48,6 +48,11 @@
 // boost random
 #include <boost/random.hpp>
 
+/* libconfig
+ * http://www.hyperrealm.com/libconfig/
+ */
+#include <libconfig.h++>
+
 // C header
 #include <cstdio>
 #include <ctime> // time

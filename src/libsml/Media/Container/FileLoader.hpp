@@ -61,7 +61,7 @@ namespace SilentMedia {
            * Open media file.
            * param[in] fileName path to media file.
            */
-          void open(const string &fileName);
+          bool open(const string &fileName);
 
           /**
            * Close file.

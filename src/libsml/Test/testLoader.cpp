@@ -24,20 +24,92 @@
  ******************************************************************************/
 
 #include <libsml/all.hpp>
+#include <gtest/gtest.h>
 
+using namespace std;
 using namespace SilentMedia;
 using namespace SilentMedia::Media;
 
-int main() {
-  Container::FileLoader *loader = new Container::FileLoader();
-  loader -> open("src/test/music/file.ogg");
-  cout << loader -> getFileSignature() << endl;
-  loader -> getCodec();
+namespace {
 
-  loader -> close();
+  class LoaderTest: public ::testing::Test {
+    protected:
+      LoaderTest() {
+      }
 
-  delete loader;
-  loader = NULL;
+      virtual ~LoaderTest() {
+      }
 
-  return 0;
+      virtual void SetUp() {
+        this -> loader = new Container::FileLoader();
+      }
+
+      virtual void TearDown() {
+        delete this -> loader;
+        this -> loader = NULL;
+      }
+
+      Container::FileLoader * loader;
+  };
+
+  /**
+   * Check to open non-existing file.
+   */
+  TEST_F(LoaderTest, FileNotFound)
+  {
+    const string fakeFilePath = "/etc/bla-bla-bla";
+    EXPECT_THROW(loader -> open(fakeFilePath), ::SilentMedia::Throw::FileNotFound);
+
+    try {
+      loader -> open(fakeFilePath);
+    } catch (::SilentMedia::Throw::FileNotFound theException) {
+      string expectedOutputMessage = "Exception: File not found: " + fakeFilePath;
+      EXPECT_EQ(expectedOutputMessage, theException.getMessage());
+    }
+  }
+
+  /**
+   * Check to open directory instead of file.
+   */
+  TEST_F(LoaderTest, NotRegularFile) {
+    EXPECT_THROW(loader -> open("/etc"), ::SilentMedia::Throw::NotRegularFile);
+  }
+
+  /**
+   * Check to open file with wrong permission.
+   */
+  TEST_F(LoaderTest, ErrorOpenFile) {
+    EXPECT_THROW(loader -> open("/etc/shadow"), ::SilentMedia::Throw::ErrorOpenFile);
+  }
+
+  /**
+   * Check to open regular file.
+   */
+  TEST_F(LoaderTest, TestFileOpen) {
+    const string testFilePath = "/etc/passwd";
+    EXPECT_NO_THROW(loader -> open(testFilePath));
+  }
+
+  TEST_F(LoaderTest, TestAudioContainerAndCodec) {
+    using namespace ::SilentMedia::Media::Container;
+    const string testFilePath = "/data/music/test/file.ogg";
+
+    const ContainerType vorbisContainer = OGG;
+    const CodecType vorbisCodec = VORBIS;
+
+    EXPECT_NO_THROW(loader -> open(testFilePath));
+
+    EXPECT_EQ(vorbisContainer, loader -> getContainer());
+    EXPECT_EQ(vorbisCodec, loader -> getCodec());
+  }
+
+  TEST_F(LoaderTest, TestCloseFile) {
+
+  }
+
+}
+
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }

@@ -39,7 +39,7 @@ namespace SilentMedia {
       FileLoader::~FileLoader() {
       }
 
-      void FileLoader::open(const string &fileName) {
+      bool FileLoader::open(const string &fileName) {
         this -> fileName = fileName;
 
         Path path(fileName);
@@ -57,6 +57,7 @@ namespace SilentMedia {
           throw SilentMedia::Throw::ErrorOpenFile(fileName);
         }
 
+        return true;
       }
 
       void FileLoader::close() {
@@ -70,18 +71,20 @@ namespace SilentMedia {
       ContainerType FileLoader::getContainer() {
         // offset = 0, length = 4
         string signature = this -> readFileSegment(0, 4);
-        if (signature.compare("OggS")) {
+        if (!signature.compare("OggS")) {
           this -> container = OGG;
-        } else if (signature.compare("RIFF")) {
+        } else if (!signature.compare("RIFF")) {
           // RIFF have WAVE and AVI, so clarify it
           string containerDetail = this -> readFileSegment(8, 4);
-          if (containerDetail.compare("WAVE")) {
+          if (!containerDetail.compare("WAVE")) {
             this -> container = RIFF_WAVE;
-          } else if (containerDetail.compare("AVI")) {
+          } else if (!containerDetail.compare("AVI")) {
             this -> container = RIFF_AVI;
           } else {
             this -> container = RIFF_UNKNOW;
           }
+        } else {
+          this -> container = UNKNOW_CONTAINER;
         }
         return this -> container;
       }
@@ -92,11 +95,13 @@ namespace SilentMedia {
         if (this -> container == OGG) {
           // offset = 29, length = 6
           string mediaCodec = this -> readFileSegment(29, 6);
-          if (mediaCodec.compare("vorbis")) {
+          if (!mediaCodec.compare("vorbis")) {
             this -> codec = VORBIS;
-          } else if (mediaCodec.compare("theora")) {
+          } else if (!mediaCodec.compare("theora")) {
             this -> codec = THEORA;
           }
+        } else {
+          this -> codec = UNKNOW_CODEC;
         }
         return this -> codec;
       }
@@ -110,9 +115,8 @@ namespace SilentMedia {
       // --------------------------------------------------------------------
 
       string FileLoader::readFileSegment(int offset, int length) {
-        if (offset > 0) {
-          this -> infile.seekg(offset, ios_base::beg);
-        }
+        // need to be every time set to global start point
+        this -> infile.seekg(offset, ios_base::beg);
 
         char buf[length + 1];
         this -> infile.read(buf, length);
