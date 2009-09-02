@@ -36,8 +36,17 @@ namespace SilentMedia {
         libXSPF::~libXSPF() {
         }
 
-        void libXSPF::addTrack(Xspf::XspfTrack *track) {
-          cout << "In addTrack" << endl;
+        void libXSPF::addTrack(Xspf::XspfTrack * track) {
+          const int trackCount = track -> getLocationCount();
+
+          for (int i = 0; i < trackCount; ++i) {
+            cout << "In addTrack: " << track -> getLocation(i) << endl;
+          }
+
+        }
+
+        void libXSPF::setProps(Xspf::XspfProps * props) {
+          cout << "In setProper: " << endl;
         }
 
       }

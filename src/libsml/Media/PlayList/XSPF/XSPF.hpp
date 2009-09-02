@@ -38,6 +38,8 @@
 // include Interface
 #include "../AbstractPlayList.hpp"
 
+#include "Media/Container/FileLoader.hpp"
+
 // include libXSPF header
 #include "libXSPF.hpp"
 

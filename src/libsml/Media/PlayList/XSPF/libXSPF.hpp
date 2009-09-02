@@ -49,6 +49,7 @@ namespace SilentMedia {
 
           private:
             virtual void addTrack(Xspf::XspfTrack * track);
+            virtual void setProps(Xspf::XspfProps * props);
 
             Xspf::XspfReader reader;
         };

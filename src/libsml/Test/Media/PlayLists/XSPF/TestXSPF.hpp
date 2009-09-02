@@ -32,6 +32,9 @@
 
 #include <Media/PlayList/XSPF/XSPF.hpp>
 
+using namespace std;
+using namespace ::SilentMedia::Media::PlayList::XSPF;
+
 namespace SilentMedia {
   namespace Test {
     namespace Media {
@@ -44,6 +47,8 @@ namespace SilentMedia {
 
               virtual void SetUp();
               virtual void TearDown();
+
+              ::SilentMedia::Media::PlayList::XSPF::XSPF * xspf;
           };
         }
       }

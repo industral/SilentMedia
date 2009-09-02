@@ -25,6 +25,8 @@
 
 #include "XSPF.hpp"
 
+using namespace ::SilentMedia::Media;
+
 namespace SilentMedia {
   namespace Media {
     namespace PlayList {
@@ -44,14 +46,15 @@ namespace SilentMedia {
         }
 
         bool XSPF::open(const string &playList) {
-          XML_Char const * const baseUri = _PT("http://d-industrial.com");
-          const int res = reader.parseFile(_PT(playList.c_str()), NULL, baseUri);
+          // Check file on any throw
+          Container::FileLoader fileLoader;
+          fileLoader.open(playList);
+          fileLoader.close();
 
-          if (res != Xspf::XSPF_READER_SUCCESS) {
-//            PORT_PRINTF(_PT("Error %i at line %i: '%s'\n"), res, reader.getErrorLine(), reader.getErrorText());
-          } else {
-            PORT_PRINTF(_PT("Everything fine.\n"));
-          }
+          Xspf::XspfReaderCallback  * callback = new libXSPF();
+          XML_Char const * const baseUri = _PT("http://d-industrial.com");
+          const int res =
+              reader.parseFile(_PT(playList.c_str()), callback, baseUri);
 
           return (res == Xspf::XSPF_READER_SUCCESS) ? true : false;
         }
@@ -60,7 +63,7 @@ namespace SilentMedia {
 
         }
 
-        list < map < string, string > > XSPF::getPlayListMap() {
+        list<map<string, string> > XSPF::getPlayListMap() {
 
         }
 

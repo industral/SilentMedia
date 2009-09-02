@@ -26,7 +26,6 @@
 #include "TestXSPF.hpp"
 
 using namespace std;
-using namespace SilentMedia::Media::PlayList::XSPF;
 
 namespace SilentMedia {
   namespace Test {
@@ -41,13 +40,22 @@ namespace SilentMedia {
           }
 
           void TestXSPF::SetUp() {
+            this -> xspf = new ::SilentMedia::Media::PlayList::XSPF::XSPF();
           }
 
           void TestXSPF::TearDown() {
+            delete this -> xspf;
+            this -> xspf = NULL;
           }
 
-          TEST_F(TestXSPF, TestOpenFile) {
-            //EXPECT_NO_THROW(loader -> close());
+          TEST_F(TestXSPF, TestOpenFile)
+          {
+            const string fakeFilePath = "__nofile__";
+            const string filePath =
+                "../src/libsml/Test/Media/PlayLists/XSPF/sample.xspf";
+
+            EXPECT_THROW(xspf -> open(fakeFilePath), ::SilentMedia::Throw::FileNotFound);
+            EXPECT_NO_THROW(xspf -> open(filePath));
           }
 
         }

@@ -3,6 +3,7 @@
    <trackList>
       <track>
          <location>file:///data/music/Linkin%20Park/2003%20Meteora/01.%20Linkin%20Park%20%20Foreword.flac</location>
+         <location>file:///fake_path/__nofile__</location>
       </track>
       <track>
          <location>file:///data/music/Linkin%20Park/2003%20Meteora/02.%20Linkin%20Park%20%20Don't%20Stay.flac</location>
