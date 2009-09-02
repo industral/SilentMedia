@@ -56,20 +56,21 @@ set_target_properties(sml PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 
 link_directories (${SilentMedia_SOURCE_DIR})
 
-### Tests ###
+### TEST ###
 
-add_executable (bin/TestXSPF ${SourcePath}/Test/PlayLists/XSPF/TestXSPF.cpp)
+add_executable (bin/TestXSPF ${SourcePath}/Test/Media/PlayLists/XSPF/TestXSPF.cpp)
 target_link_libraries (bin/TestXSPF ${SilentMedia_LINKED_LIBRARY})
 
-### Tests ###
-
 add_executable (bin/test1 ${SourcePath}/Test/test.cpp)
-add_executable (bin/testLoader ${SourcePath}/Test/testLoader.cpp)
-add_executable (bin/testMixer ${SourcePath}/Test/testMixer.cpp)
-
 target_link_libraries (bin/test1 ${SilentMedia_LINKED_LIBRARY})
-target_link_libraries (bin/testLoader ${SilentMedia_LINKED_LIBRARY})
+
+add_executable (bin/TestFileLoader ${SourcePath}/Test/Media/Container/FileLoader/TestFileLoader.cpp)
+target_link_libraries (bin/TestFileLoader ${SilentMedia_LINKED_LIBRARY})
+
+add_executable (bin/testMixer ${SourcePath}/Test/testMixer.cpp)
 target_link_libraries (bin/testMixer ${SilentMedia_LINKED_LIBRARY})
+
+### TEST ###
 
 #-pipe -Wall -W -Werror -ggdb
 set_target_properties(sml PROPERTIES COMPILE_FLAGS "-pipe -Wall -W -ggdb")

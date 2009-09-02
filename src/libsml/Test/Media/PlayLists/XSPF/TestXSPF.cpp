@@ -23,41 +23,40 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
  ******************************************************************************/
 
-#include <string>
-
-#include <Media/PlayList/XSPF/XSPF.hpp>
-
-//#include <boost/test/minimal.hpp>
+#include "TestXSPF.hpp"
 
 using namespace std;
 using namespace SilentMedia::Media::PlayList::XSPF;
 
-//int test_main(int, char *[]) {
-int main() {
-//  const string playListFile = "../src/Test/PlayLists/XSPF/playlist.xspf";
-  const string playListFile = "../src/Test/PlayLists/XSPF/sample.xspf";
+namespace SilentMedia {
+  namespace Test {
+    namespace Media {
+      namespace PlayList {
+        namespace XSPF {
 
-  XSPF * playlist = new XSPF();
-//
-  bool ret = playlist -> open(playListFile);
-  cout << ret << endl;
+          TestXSPF::TestXSPF() {
+          }
 
-//  list < map < string, string > > tackMap = playlist -> getPlayListMap();
-  playlist -> close();
-//
-  delete playlist;
-  playlist = NULL;
+          TestXSPF::~TestXSPF() {
+          }
 
-//    // six ways to detect and report the same error:
-//    BOOST_CHECK( add( 2,2 ) == 4 ); // #1 continues on error
-//    BOOST_REQUIRE( add( 2,2 ) == 4 ); // #2 throws on error
-//    if (add(2, 2) != 4)
-//      BOOST_ERROR( "Ouch..." ); // #3 continues on error
-//    if (add(2, 2) != 4)
-//      BOOST_FAIL( "Ouch..." ); // #4 throws on error
-//    if (add(2, 2) != 4)
-//      throw "Oops..."; // #5 throws on error
-//
-//    return add(2, 2) == 4 ? 0 : 1; // #6 returns error code
-  return 0;
+          void TestXSPF::SetUp() {
+          }
+
+          void TestXSPF::TearDown() {
+          }
+
+          TEST_F(TestXSPF, TestOpenFile) {
+            //EXPECT_NO_THROW(loader -> close());
+          }
+
+        }
+      }
+    }
+  }
+}
+
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }
