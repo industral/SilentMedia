@@ -23,55 +23,28 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
  ******************************************************************************/
 
-#include "XSPF.hpp"
+#ifndef _SILENTMEDIA_MEDIA_PLAYLIST_PLAYLIST_HPP_
+#define _SILENTMEDIA_MEDIA_PLAYLIST_PLAYLIST_HPP_
 
-using namespace ::SilentMedia::Media;
+#include <libsml/Media/PlayList/AbstractPlayList.hpp>
+#include <libsml/Media/PlayList/XSPF/XSPF.hpp>
 
 namespace SilentMedia {
   namespace Media {
     namespace PlayList {
-      namespace XSPF {
+      class PlayList: virtual public AbstractPlayList {
+        public:
+          PlayList();
+          virtual ~PlayList();
 
-        // --------------------------------------------------------------------
-        // Public methods
-        // --------------------------------------------------------------------
-
-        XSPF::XSPF() :
-          libxspf(new libXSPF) {
-        }
-
-        XSPF::~XSPF() {
-          delete this -> libxspf;
-          this -> libxspf = NULL;
-        }
-
-        bool XSPF::open(const string &playList) {
-          // Check file on any throw
-          Container::FileLoader fileLoader;
-          fileLoader.open(playList);
-          fileLoader.close();
-
-          XML_Char const * const baseUri = _PT("http://d-industrial.com");
-          const int res = reader.parseFile(_PT(playList.c_str()), libxspf,
-              baseUri);
-
-          return (res == Xspf::XSPF_READER_SUCCESS) ? true : false;
-        }
-
-        bool XSPF::close() {
-          this -> libxspf -> clear();
-          return true; // TODO: close file
-        }
-
-        list <string> XSPF::getPlayList() const {
-          return (this -> libxspf -> getTrackList());
-        }
-
-      // --------------------------------------------------------------------
-      // Private methods
-      // --------------------------------------------------------------------
-
-      }
+          virtual bool open(const string &playList);
+          virtual bool close();
+          virtual list <string> getPlayList() const;
+        private:
+          XSPF::XSPF * xspf;
+      };
     }
   }
 }
+
+#endif

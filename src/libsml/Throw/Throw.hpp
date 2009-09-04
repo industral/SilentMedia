@@ -26,7 +26,7 @@
 #ifndef _SILENTMEDIA_THROW_THROW_HPP_
 #define _SILENTMEDIA_THROW_THROW_HPP_
 
-#include <libsml/all.hpp>
+#include <libsml/include.hpp>
 
 using namespace std;
 

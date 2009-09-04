@@ -23,55 +23,33 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
  ******************************************************************************/
 
-#include "XSPF.hpp"
-
-using namespace ::SilentMedia::Media;
+#include "PlayList.hpp"
 
 namespace SilentMedia {
   namespace Media {
     namespace PlayList {
-      namespace XSPF {
 
-        // --------------------------------------------------------------------
-        // Public methods
-        // --------------------------------------------------------------------
-
-        XSPF::XSPF() :
-          libxspf(new libXSPF) {
-        }
-
-        XSPF::~XSPF() {
-          delete this -> libxspf;
-          this -> libxspf = NULL;
-        }
-
-        bool XSPF::open(const string &playList) {
-          // Check file on any throw
-          Container::FileLoader fileLoader;
-          fileLoader.open(playList);
-          fileLoader.close();
-
-          XML_Char const * const baseUri = _PT("http://d-industrial.com");
-          const int res = reader.parseFile(_PT(playList.c_str()), libxspf,
-              baseUri);
-
-          return (res == Xspf::XSPF_READER_SUCCESS) ? true : false;
-        }
-
-        bool XSPF::close() {
-          this -> libxspf -> clear();
-          return true; // TODO: close file
-        }
-
-        list <string> XSPF::getPlayList() const {
-          return (this -> libxspf -> getTrackList());
-        }
-
-      // --------------------------------------------------------------------
-      // Private methods
-      // --------------------------------------------------------------------
-
+      PlayList::PlayList() :
+        xspf(new XSPF::XSPF) {
       }
+
+      PlayList::~PlayList() {
+        delete this -> xspf;
+        this -> xspf = NULL;
+      }
+
+      bool PlayList::open(const string &playList) {
+        return (this -> xspf -> open(playList));
+      }
+
+      bool PlayList::close() {
+        return (this -> xspf -> close());
+      }
+
+      list <string> PlayList::getPlayList() const {
+        return (this -> xspf -> getPlayList());
+      }
+
     }
   }
 }

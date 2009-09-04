@@ -36,12 +36,14 @@
 #include <libsml/include.hpp>
 
 // include Interface
-#include "../AbstractPlayList.hpp"
+#include <libsml/Media/PlayList/AbstractPlayList.hpp>
 
-#include "Media/Container/FileLoader.hpp"
+#include <libsml/Media/Container/FileLoader.hpp>
 
 // include libXSPF header
 #include "libXSPF.hpp"
+
+using namespace std;
 
 namespace SilentMedia {
   namespace Media {
@@ -54,10 +56,10 @@ namespace SilentMedia {
 
             virtual bool open(const string &playList);
             virtual bool close();
-            virtual list < map < string, string > > getPlayListMap();
+            virtual list <string> getPlayList() const;
 
           private:
-            libXSPF * libxspf;
+            libXSPF* libxspf;
             Xspf::XspfReader reader;
         };
       }

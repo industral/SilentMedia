@@ -40,13 +40,20 @@ namespace SilentMedia {
           const int trackCount = track -> getLocationCount();
 
           for (int i = 0; i < trackCount; ++i) {
-            cout << "In addTrack: " << track -> getLocation(i) << endl;
+            this -> trackList.push_back((string) track -> getLocation(i));
           }
+        }
 
+        list <string> libXSPF::getTrackList() const {
+          return this -> trackList;
         }
 
         void libXSPF::setProps(Xspf::XspfProps * props) {
-          cout << "In setProper: " << endl;
+          //          cout << "In setProper: " << endl;
+        }
+
+        void libXSPF::clear() {
+          this -> trackList.clear();
         }
 
       }

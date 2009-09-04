@@ -33,7 +33,7 @@
 #include <libsml/Throw/Throw.hpp>
 
 // FileLoader
-#include "../Container/FileLoader.hpp"
+#include <libsml/Media/Container/FileLoader.hpp>
 
 /*
  * We should include:

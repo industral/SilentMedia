@@ -36,8 +36,8 @@
 /*
  * We should include AbstractCodec, AudioProxy.
  */
-#include "../AbstractCodec.hpp"
-#include "../../AudioProxy.hpp"
+#include <libsml/Media/Audio/Codec/AbstractCodec.hpp>
+#include <libsml/Media/Audio/AudioProxy.hpp>
 
 // include FLAC++ header files
 #include <FLAC++/all.h>

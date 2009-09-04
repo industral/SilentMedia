@@ -51,7 +51,7 @@ namespace SilentMedia {
           virtual bool open(const string &playList) = 0;
           virtual bool close() = 0;
 
-          virtual list < map < string, string > > getPlayListMap() = 0;
+          virtual list <string> getPlayList() const = 0;
         private:
         protected:
       };
