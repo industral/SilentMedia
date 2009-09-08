@@ -6,6 +6,7 @@ set (SourcePath src/libsml)
 set(SilentMedia_src
 
     ${SourcePath}/Utils/Base64/Base64.cpp
+    ${SourcePath}/Utils/String/String.cpp
 
     ${SourcePath}/Media/Container/FileLoader.cpp
 

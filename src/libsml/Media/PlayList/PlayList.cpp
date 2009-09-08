@@ -38,8 +38,13 @@ namespace SilentMedia {
         this -> xspf = NULL;
       }
 
-      bool PlayList::open(const string &playList) {
-        return (this -> xspf -> open(playList));
+      bool PlayList::openPlayList(const string &playList) {
+        return (this -> xspf -> openPlayList(playList));
+      }
+
+      bool PlayList::writePlayList(const string &playList,
+          list <TrackInfo> playListData) {
+        return (this -> xspf -> writePlayList(playList, playListData));
       }
 
       bool PlayList::close() {

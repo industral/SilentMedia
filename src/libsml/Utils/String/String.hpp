@@ -23,52 +23,21 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
  ******************************************************************************/
 
-/**
- * @see http://xspf.org/
- * @see http://libspiff.sourceforge.net/
- * @see http://libspiff.sourceforge.net/doc/html/
- * @see http://sourceforge.net/projects/libspiff
- */
+#ifndef SILENTMEDIA_UTIL_STRING_STRING_HPP_
+#define SILENTMEDIA_UTIL_STRING_STRING_HPP_
 
-#ifndef _SILENTMEDIA_MEDIA_PLAYLIST_XSPF_XSPF_HPP_
-#define _SILENTMEDIA_MEDIA_PLAYLIST_XSPF_XSPF_HPP_
-
-// main include
 #include <libsml/include.hpp>
-
-// include Interface
-#include <libsml/Media/PlayList/AbstractPlayList.hpp>
-
-#include <libsml/Media/Container/FileLoader.hpp>
-
-// include libXSPF header
-#include <libsml/Media/PlayList/XSPF/libXSPF.hpp>
-
-// track information bean
-#include <libsml/Media/PlayList/TrackInfo.hpp>
 
 using namespace std;
 
 namespace SilentMedia {
-  namespace Media {
-    namespace PlayList {
-      namespace XSPF {
-        class XSPF: virtual public AbstractPlayList {
-          public:
-            XSPF();
-            virtual ~XSPF();
-
-            virtual bool openPlayList(const string &playList);
-            virtual bool writePlayList(const string &playList, list <TrackInfo> playListData);
-            virtual bool close();
-            virtual list <string> getPlayList() const;
-
-          private:
-            libXSPF* libxspf;
-            Xspf::XspfReader reader;
-        };
-      }
-    }
+  namespace Utils {
+    class String {
+      public:
+        static string toXML(const string &inString);
+        static string fromXML(const string &inString);
+      private:
+    };
   }
 }
 

@@ -23,53 +23,51 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
  ******************************************************************************/
 
-/**
- * @see http://xspf.org/
- * @see http://libspiff.sourceforge.net/
- * @see http://libspiff.sourceforge.net/doc/html/
- * @see http://sourceforge.net/projects/libspiff
- */
-
-#ifndef _SILENTMEDIA_MEDIA_PLAYLIST_XSPF_XSPF_HPP_
-#define _SILENTMEDIA_MEDIA_PLAYLIST_XSPF_XSPF_HPP_
-
-// main include
-#include <libsml/include.hpp>
-
-// include Interface
-#include <libsml/Media/PlayList/AbstractPlayList.hpp>
-
-#include <libsml/Media/Container/FileLoader.hpp>
-
-// include libXSPF header
-#include <libsml/Media/PlayList/XSPF/libXSPF.hpp>
-
-// track information bean
-#include <libsml/Media/PlayList/TrackInfo.hpp>
-
-using namespace std;
+#include "String.hpp"
 
 namespace SilentMedia {
-  namespace Media {
-    namespace PlayList {
-      namespace XSPF {
-        class XSPF: virtual public AbstractPlayList {
-          public:
-            XSPF();
-            virtual ~XSPF();
+  namespace Utils {
+    string String::fromXML(const string &inString) {
 
-            virtual bool openPlayList(const string &playList);
-            virtual bool writePlayList(const string &playList, list <TrackInfo> playListData);
-            virtual bool close();
-            virtual list <string> getPlayList() const;
-
-          private:
-            libXSPF* libxspf;
-            Xspf::XspfReader reader;
-        };
-      }
     }
+
+    string String::toXML(const string &inString) {
+      ostringstream outString;
+
+      for (string::const_iterator iter = inString.begin(); iter
+          != inString.end(); ++iter) {
+        unsigned char c = (unsigned char) *iter;
+
+        switch (c) {
+        case ';':
+          outString << "&amp;";
+          break;
+        case '<':
+          outString << "&lt;";
+          break;
+        case '>':
+          outString << "&gt;";
+          break;
+        case '"':
+          outString << "&quot;";
+          break;
+        case '\'':
+          outString << "&apos;";
+          break;
+        case ' ':
+          outString << "%20";
+          break;
+
+        default:
+          if (c < 32 || c > 127) {
+            outString << "&#" << (unsigned int) c << ";";
+          } else {
+            outString << c;
+          }
+        }
+      }
+      return outString.str();
+    }
+
   }
 }
-
-#endif

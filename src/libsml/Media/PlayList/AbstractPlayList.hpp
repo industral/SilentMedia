@@ -27,6 +27,7 @@
 #define _SILENTMEDIA_MEDIA_PLAYLIST_ABSTRACTPLAYLIST_HPP_
 
 #include <libsml/include.hpp>
+#include "TrackInfo.hpp"
 
 using namespace std;
 
@@ -48,7 +49,10 @@ namespace SilentMedia {
           virtual ~AbstractPlayList() {
           }
 
-          virtual bool open(const string &playList) = 0;
+          virtual bool openPlayList(const string &playList) = 0;
+          virtual bool writePlayList(const string &playList,
+              list <TrackInfo> playListData) = 0;
+
           virtual bool close() = 0;
 
           virtual list <string> getPlayList() const = 0;

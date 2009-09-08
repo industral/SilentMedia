@@ -37,7 +37,10 @@ namespace SilentMedia {
           PlayList();
           virtual ~PlayList();
 
-          virtual bool open(const string &playList);
+          virtual bool openPlayList(const string &playList);
+          virtual bool writePlayList(const string &playList,
+              list <TrackInfo> playListData);
+
           virtual bool close();
           virtual list <string> getPlayList() const;
         private:
