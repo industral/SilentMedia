@@ -28,46 +28,29 @@
 namespace SilentMedia {
   namespace Utils {
     string String::fromXML(const string &inString) {
+      string outString = inString;
 
+      boost::replace_all(outString, "%20", " ");
+      boost::replace_all(outString, "&lt;", "<");
+      boost::replace_all(outString, "&gt;", ">");
+      boost::replace_all(outString, "&quot;", "\"");
+      boost::replace_all(outString, "&apos;", "'");
+      boost::replace_all(outString, "&amp;", "&");
+
+      return outString;
     }
 
     string String::toXML(const string &inString) {
-      ostringstream outString;
+      string outString = inString;
 
-      for (string::const_iterator iter = inString.begin(); iter
-          != inString.end(); ++iter) {
-        unsigned char c = (unsigned char) *iter;
+      boost::replace_all(outString, " ", "%20");
+      boost::replace_all(outString, "<", "&lt;");
+      boost::replace_all(outString, ">", "&gt;");
+      boost::replace_all(outString, "\"", "&quot;");
+      boost::replace_all(outString, "'", "&apos;");
+      boost::replace_all(outString, "&", "&amp;");
 
-        switch (c) {
-        case ';':
-          outString << "&amp;";
-          break;
-        case '<':
-          outString << "&lt;";
-          break;
-        case '>':
-          outString << "&gt;";
-          break;
-        case '"':
-          outString << "&quot;";
-          break;
-        case '\'':
-          outString << "&apos;";
-          break;
-        case ' ':
-          outString << "%20";
-          break;
-
-        default:
-          if (c < 32 || c > 127) {
-            outString << "&#" << (unsigned int) c << ";";
-          } else {
-            outString << c;
-          }
-        }
-      }
-      return outString.str();
+      return outString;
     }
-
   }
 }
