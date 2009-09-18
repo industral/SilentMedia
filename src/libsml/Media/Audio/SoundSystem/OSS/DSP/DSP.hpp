@@ -23,21 +23,23 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
  ******************************************************************************/
 
-#ifndef _SILENTMEDIA_MEDIA_AUDIO_SOUNDSYSTEM_SOUNDSYSTEM_HPP_
-#define _SILENTMEDIA_MEDIA_AUDIO_SOUNDSYSTEM_SOUNDSYSTEM_HPP_
+#ifndef _SILENTMEDIA_MEDIA_AUDIO_SOUNDSYSTEM_OSS_DSP_DSP_HPP_
+#define _SILENTMEDIA_MEDIA_AUDIO_SOUNDSYSTEM_OSS_DSP_DSP_HPP_
 
-// main include
+// include main
 #include <libsml/include.hpp>
 
-/*
- * We should include AbstractSoundSystem
- */
-#include "AbstractSoundSystem.hpp"
+// include inheritable class
+#include <libsml/Media/Audio/SoundSystem/AbstractSoundSystem.hpp>
 
-// include available sound systems
-#include "libao/AO.hpp"
-#include "ALSA/DSP/DSP.hpp"
-#include "OSS/DSP/DSP.hpp"
+// include OSS
+#include "/usr/lib/oss/include/sys/soundcard.h"
+
+// C
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/ioctl.h>
+#include <fcntl.h>
 
 using namespace std;
 
@@ -45,27 +47,25 @@ namespace SilentMedia {
   namespace Media {
     namespace Audio {
       namespace SoundSystem {
-        class SoundSystem: virtual public AbstractSoundSystem {
-          public:
-            SoundSystem();
-            virtual ~SoundSystem();
+        namespace OSS {
+          namespace DSP {
+            class DSP: virtual public AbstractSoundSystem {
+              public:
+                DSP();
+                virtual ~DSP();
 
-            static SoundSystem * Instance();
-
-            // Inheritance methods
-            virtual int init(const string &driver);
-            virtual int init();
-            virtual int close();
-            virtual void setAudioParams(const int &channels,
-                const int &sampleRate, const int &bitsPerSample);
-            virtual int write(void *buf, const int &bufSize);
-
-          private:
-            // Singleton variable
-            static SoundSystem * _soundSystem;
-
-            AbstractSoundSystem * dsp;
-        };
+                virtual int init(const string &driver);
+                virtual int init();
+                virtual int close();
+                virtual void setAudioParams(const int &channels,
+                    const int &sampleRate, const int &bitsPerSample);
+                virtual int write(void *buf, const int &bufSize);
+              private:
+                int dspDev;
+                int input_fd;
+            };
+          }
+        }
       }
     }
   }

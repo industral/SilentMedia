@@ -34,6 +34,7 @@ namespace SilentMedia {
         SoundSystem::SoundSystem() {
           this -> dsp = new AO();
           //          this -> dsp = new ALSA::DSP::DSP();
+          this -> dsp = new OSS::DSP::DSP();
         }
 
         SoundSystem::~SoundSystem() {
