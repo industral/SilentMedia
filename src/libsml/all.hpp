@@ -29,5 +29,6 @@
 #include "include.hpp"
 #include <libsml/Media/Audio/Audio.hpp>
 #include <libsml/Media/PlayList/PlayList.hpp>
+#include <libsml/Media/Audio/SoundSystem/OSS/Mixer/Mixer.hpp>
 
 #endif

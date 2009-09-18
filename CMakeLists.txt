@@ -17,6 +17,7 @@ set(SilentMedia_src
     ${SourcePath}/Media/PlayList/PlayList.cpp
 
     ${SourcePath}/Media/Audio/SoundSystem/OSS/DSP/DSP.cpp
+    ${SourcePath}/Media/Audio/SoundSystem/OSS/Mixer/Mixer.cpp
     
     ${SourcePath}/Media/Audio/SoundSystem/ALSA/DSP/DSP.cpp
     ${SourcePath}/Media/Audio/SoundSystem/ALSA/Mixer/Mixer.cpp

@@ -1,128 +1,145 @@
-/***************************************************************************
- *   Copyright (C) 2008 by Alex J. Ivasyuv                                 *
- *   alex@siegerstein.org.ua                                               *
- *                                                                         *
- *   This program is free software: you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation, either version 3 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
- ***************************************************************************/
+/*******************************************************************************
+ * Copyright (c) 2009, Alex Ivasyuv                                            *
+ * All rights reserved.                                                        *
+ *                                                                             *
+ * Redistribution and use in source and binary forms, with or without          *
+ * modification, are permitted provided that the following conditions are met: *
+ *                                                                             *
+ * 1. Redistributions of source code must retain the above copyright           *
+ *    notice, this list of conditions and the following disclaimer.            *
+ * 2. Redistributions in binary form must reproduce the above copyright        *
+ *    notice, this list of conditions and the following disclaimer in the      *
+ *    documentation and/or other materials provided with the distribution.     *
+ *                                                                             *
+ * THIS SOFTWARE IS PROVIDED BY Alex Ivasyuv ''AS IS'' AND ANY                 *
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED   *
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE      *
+ * DISCLAIMED. IN NO EVENT SHALL Alex Ivasyuv BE LIABLE FOR ANY DIRECT,        *
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES          *
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;*
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND *
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  *
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF    *
+ * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
+ ******************************************************************************/
 
-#ifndef __SS_SILENTMEDIA_OSS_MIXER_HPP_
-#define __SS_SILENTMEDIA_OSS_MIXER_HPP_
+#ifndef _SILENTMEDIA_MEDIA_AUDIO_SOUNDSYSTEM_OSS_MIXER_MIXER_HPP_
+#define _SILENTMEDIA_MEDIA_AUDIO_SOUNDSYSTEM_OSS_MIXER_MIXER_HPP_
+
+// include main
+#include <libsml/include.hpp>
 
 #include "/usr/lib/oss/include/sys/soundcard.h"
-#include <SML/config.hpp>
-#include <SML/Audio/SoundSystem/AbstractSoundSystem.hpp>
+
+// C
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/ioctl.h>
+#include <fcntl.h>
+
+using namespace std;
 
 /// Main Class
 /**
-   Main Class
+ Main Class
  */
 namespace SilentMedia {
-   namespace SoundSystem {
-      namespace OSS {
-         class Mixer : virtual public AbstractSoundSystem {
-            public:
-               Mixer ( void );
-               Mixer ( std::string dev );
-               ~Mixer ( void );
-               
-               static Mixer * Instance ( void );
-               bool init ( std::string dev ) ;
+  namespace Media {
+    namespace Audio {
+      namespace SoundSystem {
+        namespace OSS {
+          namespace Mixer {
+            class Mixer {
+              public:
+                Mixer();
+                Mixer(const string dev);
+                ~Mixer();
 
-               int getUpdateCounter ( void );
+                bool init(const string dev);
 
-               void getParentLabelByNum ( int parentNum, std::string &parentLabel, unsigned int &parentCount );
-               void getParentNumByCtrlNum ( int ctrlNum, unsigned int &parentNum, unsigned int &prevParentNum, unsigned int &nextParentNum );
-               void returnListOfAvaibleControlDev ( std::map < int, std::string > &listOfAvaibleCtrlDev );
-               bool comaSeparatedListOfControls ( std::string &controlList, char param );
+                int getUpdateCounter();
 
-               bool getNumByCtrlName ( std::string param, int &control_num );
-               bool getNameByCtrlNum ( int param, std::string &control_name );
+                void getParentLabelByNum(int parentNum,
+                    string &parentLabel, unsigned int &parentCount);
+                void getParentNumByCtrlNum(int ctrlNum,
+                    unsigned int &parentNum, unsigned int &prevParentNum,
+                    unsigned int &nextParentNum);
+                void returnListOfAvaibleControlDev(
+                    map<int, string> &listOfAvaibleCtrlDev);
+                bool comaSeparatedListOfControls(string &controlList,
+                    char param);
 
-               bool checkRecAvail ( std::string param, int &control_num );
-               bool checkRecAvail ( std::string param );
-               bool checkRecAvail ( int controlNum );
+                bool getNumByCtrlName(string param, int &control_num);
+                bool getNameByCtrlNum(int param, string &control_name);
 
-               bool getDevInfo ( std::string                      param,
-                                 std::string &                    ctrlLabel,
-                                 int &                            ctrlNum,
-                                 unsigned int &                   ctrlParent,
-                                 int &                            numRecDev,
-                                 bool &                           recModeAvail,
-                                 bool &                           recModeStatus,
-                                 short int &                      ctrlMode,
-                                 short int &                      ctlStatus,
-                                 int &                            L,
-                                 int &                            R,
-                                 int &                            M,
-                                 int &                            minCtrlValue,
-                                 int &                            maxCtrlValue,
-                                 bool &                           skipDev,
-                                 std::map < int, std::string > &  enumListVariant,
-                                 std::string &                    currentEnumName,
-                                 int &                            currentEnumNum,
-                                 int &                            ctrlTypeName,
-                                 int &                            ctrlFlag
-                               );
+                bool checkRecAvail(string param, int &control_num);
+                bool checkRecAvail(string param);
+                bool checkRecAvail(int controlNum);
 
-               void getPeak ( int ctrlNum, int &L, int &R );
+                bool getDevInfo(string param, string & ctrlLabel,
+                    int & ctrlNum, unsigned int & ctrlParent, int & numRecDev,
+                    bool & recModeAvail, bool & recModeStatus,
+                    short int & ctrlMode, short int & ctlStatus, int & L,
+                    int & R, int & M, int & minCtrlValue, int & maxCtrlValue,
+                    bool & skipDev,
+                    map<int, string> & enumListVariant,
+                    string & currentEnumName, int & currentEnumNum,
+                    int & ctrlTypeName, int & ctrlFlag);
 
-               bool setDevVol ( int control_num, int L, int R, int M );
-               bool setDevVol ( std::string ctrlName, int L, int R, int M );
-               bool onOffDev ( int control_num, bool ON, bool L, bool R, bool M );
+                void getPeak(int ctrlNum, int &L, int &R);
 
-               bool changeDevState ( int control_num, int state );
-               bool changeDevState ( std::string ctrlName, int state );
-               bool changeDevState ( int ctrlNum, std::map < int, std::string > enumListVariant, std::string state );
-               bool changeDevState ( std::string ctrlName, std::map < int, std::string > enumListVariant, std::string state );
-            private:
-               static Mixer * _mixer;
-         // private methods
-               int findDefaultMixerDev ( void );
-               bool _OSS_NREXT ( void );
-               bool _OSS_SNDCTL_SYSINFO ( void );
-               bool getControlList ( void );
-               bool VAL ( int ctrlNum );
-               bool VR ( int ctrlNum );
-               bool MI ( void );
-               bool EI ( int ctrlNum );
-               bool EXT ( int ctrlNum );
+                bool setDevVol(int control_num, int L, int R, int M);
+                bool setDevVol(string ctrlName, int L, int R, int M);
+                bool onOffDev(int control_num, bool ON, bool L, bool R, bool M);
 
-               oss_sysinfo sysinfo; // SNDCTL_SYSINFO
-               oss_mixerinfo mi;
-               oss_mixext ext; // SNDCTL_MIX_EXTINFO
-               oss_mixer_value vr, val; // SNDCTL_MIX_WRITE SNDCTL_MIX_READ
-               oss_mixer_enuminfo ei; // SNDCTL_MIX_ENUMINFO
-               oss_audioinfo ai; // SNDCTL_AUDIOINFO
+                bool changeDevState(int control_num, int state);
+                bool changeDevState(string ctrlName, int state);
+                bool changeDevState(int ctrlNum,
+                    map<int, string> enumListVariant,
+                    string state);
+                bool changeDevState(string ctrlName, map<int,
+                    string> enumListVariant, string state);
+              private:
+//                static Mixer * _mixer;
+                // private methods
+                int findDefaultMixerDev(void);
+                bool _OSS_NREXT(void);
+                bool _OSS_SNDCTL_SYSINFO(void);
+                bool getControlList(void);
+                bool VAL(int ctrlNum);
+                bool VR(int ctrlNum);
+                bool MI(void);
+                bool EI(int ctrlNum);
+                bool EXT(int ctrlNum);
 
-               int default_mixer_dev;
-               int mixer_fd;
-               int nrext;
+                oss_sysinfo sysinfo; // SNDCTL_SYSINFO
+                oss_mixerinfo mi;
+                oss_mixext ext; // SNDCTL_MIX_EXTINFO
+                oss_mixer_value vr, val; // SNDCTL_MIX_WRITE SNDCTL_MIX_READ
+                oss_mixer_enuminfo ei; // SNDCTL_MIX_ENUMINFO
+                oss_audioinfo ai; // SNDCTL_AUDIOINFO
 
-               std::map < int, int > devNumValR;
-               std::map < int, int > devNumValL;
-               std::map < int, int > devNumValM;
+                int default_mixer_dev;
+                int mixer_fd;
+                int nrext;
 
-               std::string ListOfDevice;
-               std::map < int, std::string > listOfReadableCtrlDev;
-               std::map < int, std::string > listOfWriteableCtrlDev;
-               std::map < int, std::string > listOfAvaibleCtrlDev;
-               std::map < int, std::string > fullCtrlList;
-               std::map < int, int > parentList;
-               std::map < int, std::string > listOfSkipCtrl;
-         };
+                map<int, int> devNumValR;
+                map<int, int> devNumValL;
+                map<int, int> devNumValM;
+
+                string ListOfDevice;
+                map<int, string> listOfReadableCtrlDev;
+                map<int, string> listOfWriteableCtrlDev;
+                map<int, string> listOfAvaibleCtrlDev;
+                map<int, string> fullCtrlList;
+                map<int, int> parentList;
+                map<int, string> listOfSkipCtrl;
+            };
+          }
+        }
       }
-   }
+    }
+  }
 }
 
 #endif
