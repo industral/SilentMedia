@@ -63,20 +63,21 @@ link_directories (${SilentMedia_SOURCE_DIR})
 
 ### TEST ###
 
-add_executable (bin/TestXSPF ${SourcePath}/Test/Media/PlayLists/XSPF/TestXSPF.cpp)
-target_link_libraries (bin/TestXSPF ${SilentMedia_LINKED_LIBRARY})
+#add_executable (bin/TestXSPF ${SourcePath}/Test/Media/PlayLists/XSPF/TestXSPF.cpp)
+#target_link_libraries (bin/TestXSPF ${SilentMedia_LINKED_LIBRARY})
 
-add_executable (bin/test1 ${SourcePath}/Test/test.cpp)
-target_link_libraries (bin/test1 ${SilentMedia_LINKED_LIBRARY})
+#add_executable (bin/test1 ${SourcePath}/Test/test.cpp)
+#target_link_libraries (bin/test1 ${SilentMedia_LINKED_LIBRARY})
 
-add_executable (bin/TestFileLoader ${SourcePath}/Test/Media/Container/FileLoader/TestFileLoader.cpp)
-target_link_libraries (bin/TestFileLoader ${SilentMedia_LINKED_LIBRARY})
+#add_executable (bin/TestFileLoader ${SourcePath}/Test/Media/Container/FileLoader/TestFileLoader.cpp)
+#target_link_libraries (bin/TestFileLoader ${SilentMedia_LINKED_LIBRARY})
 
-add_executable (bin/testMixer ${SourcePath}/Test/testMixer.cpp)
-target_link_libraries (bin/testMixer ${SilentMedia_LINKED_LIBRARY})
+#add_executable (bin/testMixer ${SourcePath}/Test/testMixer.cpp)
+#target_link_libraries (bin/testMixer ${SilentMedia_LINKED_LIBRARY})
 
 ### TEST ###
 
 #-pipe -Wall -W -Werror -ggdb
 set_target_properties(sml PROPERTIES COMPILE_FLAGS "-pipe -Wall -W -ggdb")
-set_target_properties(bin/test1 PROPERTIES COMPILE_FLAGS "-pipe -Wall -W  -ggdb")
+
+ADD_CUSTOM_TARGET(doc COMMAND doxygen ${SilentMedia_SOURCE_DIR}/doc/Doxyfile)

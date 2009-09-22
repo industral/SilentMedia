@@ -39,45 +39,90 @@
 
 using namespace std;
 
-/// Main Class
-/**
- Main Class
- */
 namespace SilentMedia {
   namespace Media {
     namespace Audio {
       namespace SoundSystem {
         namespace OSS {
           namespace Mixer {
+
+            const string REC_NAME = ".rec";
+
             class Mixer {
               public:
+                /**
+                 * Default constructor.
+                 */
                 Mixer();
+
+                /**
+                 * Overload constructor.
+                 * @param dev mixer name ( e.g. "/dev/mixer" ).
+                 * @see Mixer()
+                 */
                 Mixer(const string dev);
+
+                /**
+                 * Default destructor.
+                 */
                 ~Mixer();
 
+                /**
+                 * Mixer initialization. Use this method to initialized mixer
+                 * with default mixer.
+                 * @see init(const string dev)
+                 * @return true in success.
+                 */
+                bool init();
+
+                /**
+                 * Mixer initialization. Use this method to setup prefer mixer.
+                 * @param dev mixer name ( e.g. "/dev/mixer" ).
+                 * @return true in success.
+                 * @code
+                 *   Mixer * ossmix = new Mixer();
+                 *   ossmix -> init("/dev/mixer");
+                 * @endcode
+                 */
                 bool init(const string dev);
+
+                /**
+                 * Get current value of mixer change incrementing.
+                 * @return current number.
+                 */
                 int getUpdateCounter();
 
-                void getParentLabelByNum(int parentNum, string &parentLabel,
-                    unsigned int &parentCount);
-                void getParentNumByCtrlNum(int ctrlNum,
-                    unsigned int &parentNum, unsigned int &prevParentNum,
-                    unsigned int &nextParentNum);
+                /**
+                 * Get a list of available controllers.
+                 * You should use this method to get a list of available controllers
+                 * in system.
+                 * @return list of available controllers in system.
+                 */
                 map<int, string> getListOfCtrl() const;
 
-                bool getNumByCtrlName(string param, int &control_num);
-                bool getNameByCtrlNum(int param, string &control_name);
+                /**
+                 * Get controller number by it name.
+                 * @return controller number in system.
+                 * @code
+                 *   // find controller number by it name
+                 *   string controlName = "vol"; // define searching name
+                 *   int ctrlNumber = ossmix -> getCtrlNumberByName (controlName);
+                 * @endcode
+                 */
+                int getCtrlNumberByName(const string param);
 
-                bool checkRecAvail(string param, int &control_num);
-                bool checkRecAvail(string param);
-                bool checkRecAvail(int controlNum);
+                /**
+                 * Check controller to be able for recording.
+                 * @param ctrlName controller name.
+                 * @return true if record capabilities available.
+                 */
+                bool checkRecAvail(const string ctrlName);
 
-                bool getDevInfo(string param, string & ctrlLabel,
-                    int & ctrlNum, unsigned int & ctrlParent, int & numRecDev,
+                bool getCtrlInfo(const int ctrlNum, string & ctrlLabel, int & numRecDev,
                     bool & recModeAvail, bool & recModeStatus,
-                    short int & ctrlMode, short int & ctlStatus, int & L,
-                    int & R, int & M, int & minCtrlValue, int & maxCtrlValue,
-                    bool & skipDev, map<int, string> & enumListVariant,
+                    bool & stereo, bool & on, int & L, int & R, int & M,
+                    int & minCtrlValue, int & maxCtrlValue,
+                    map<int, string> & enumListVariant,
                     string & currentEnumName, int & currentEnumNum,
                     int & ctrlTypeName, int & ctrlFlag);
 
@@ -105,6 +150,13 @@ namespace SilentMedia {
 
                 bool EI(int ctrlNum);
 
+                /**
+                 * Return a name of record controller, e.g. "vol" => "vol.rec".
+                 * @param ctrlName controller name.
+                 * @return record controller name.
+                 */
+                string getRecCtrlName(const string ctrlName);
+
                 oss_sysinfo sysinfo; // SNDCTL_SYSINFO
                 oss_mixerinfo mi;
                 oss_mixext ext; // SNDCTL_MIX_EXTINFO
@@ -121,13 +173,11 @@ namespace SilentMedia {
                 map<int, int> devNumValL;
                 map<int, int> devNumValM;
 
-                string ListOfDevice;
-                map<int, string> listOfReadableCtrlDev;
-                map<int, string> listOfWriteableCtrlDev;
-                map<int, string> listOfAvaibleCtrlDev;
+                map<int, string> ctrlList;
                 map<int, string> fullCtrlList;
-                map<int, int> parentList;
-                map<int, string> listOfSkipCtrl;
+
+                // store a list (there control numbers) of record controls
+                list<int> recCtrlList;
             };
           }
         }

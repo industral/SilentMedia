@@ -37,9 +37,9 @@ namespace SilentMedia {
             }
 
             DSP::~DSP() {
-//              if (close(this -> dspDev) != 0) {
-//                perror("dsp_fd");
-//              }
+              //              if (close(this -> dspDev) != 0) {
+              //                perror("dsp_fd");
+              //              }
             }
 
             int DSP::init(const string &driver) {
@@ -86,11 +86,12 @@ namespace SilentMedia {
                 //                return false;
               }
 
-              //              if (ioctl(this -> dspDev, SNDCTL_DSP_, &audioBitsPerSample) == -1) {
-              //                perror("SNDCTL_DSP_SPEED");
-              ////                return false;
-              //              }
-              //              return true;
+//              int frag = 8;
+//              ioctl(this -> dspDev, SNDCTL_DSP_SETFRAGMENT, &frag);
+
+              int policy = 3;
+              ioctl(this -> dspDev, SNDCTL_DSP_POLICY, &policy);
+
             }
 
             int DSP::write(void *buf, const int &bufSize) {
