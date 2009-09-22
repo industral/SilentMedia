@@ -37,9 +37,9 @@ namespace SilentMedia {
             }
 
             DSP::~DSP() {
-//              if (this -> close(this -> dspDev) != 0) {
+//              if (close(this -> dspDev) != 0) {
 //                perror("dsp_fd");
-////              }
+//              }
             }
 
             int DSP::init(const string &driver) {
@@ -57,7 +57,7 @@ namespace SilentMedia {
             }
 
             int DSP::close() {
-::close(this -> dspDev);
+              ::close(this -> dspDev);
             }
 
             void DSP::setAudioParams(const int &channels,
@@ -67,33 +67,34 @@ namespace SilentMedia {
               // NOTE: DO NOT set channel as short!
               int audioChannels = channels;
               int audioSampleRate = sampleRate;
-//              int audioBitsPerSample = bitsCPerSample;
+              //              int audioBitsPerSample = bitsCPerSample;
 
               if (ioctl(this -> dspDev, SNDCTL_DSP_SETFMT, &format) == -1) {
                 perror("SNDCTL_DSP_SETFMT");
-//                return false;
+                //                return false;
               }
               //
-              if (ioctl(this -> dspDev, SNDCTL_DSP_CHANNELS, &audioChannels) == -1) {
+              if (ioctl(this -> dspDev, SNDCTL_DSP_CHANNELS, &audioChannels)
+                  == -1) {
                 perror("SNDCTL_DSP_CHANNELS");
-//                return false;
+                //                return false;
               }
 
-              if (ioctl(this -> dspDev, SNDCTL_DSP_SPEED, &audioSampleRate) == -1) {
+              if (ioctl(this -> dspDev, SNDCTL_DSP_SPEED, &audioSampleRate)
+                  == -1) {
                 perror("SNDCTL_DSP_SPEED");
-//                return false;
+                //                return false;
               }
 
-//              if (ioctl(this -> dspDev, SNDCTL_DSP_, &audioBitsPerSample) == -1) {
-//                perror("SNDCTL_DSP_SPEED");
-////                return false;
-//              }
-//              return true;
+              //              if (ioctl(this -> dspDev, SNDCTL_DSP_, &audioBitsPerSample) == -1) {
+              //                perror("SNDCTL_DSP_SPEED");
+              ////                return false;
+              //              }
+              //              return true;
             }
 
             int DSP::write(void *buf, const int &bufSize) {
               ::write(dspDev, buf, bufSize);
-              cout << bufSize << endl;
             }
 
           }

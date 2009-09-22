@@ -56,18 +56,14 @@ namespace SilentMedia {
                 ~Mixer();
 
                 bool init(const string dev);
-
                 int getUpdateCounter();
 
-                void getParentLabelByNum(int parentNum,
-                    string &parentLabel, unsigned int &parentCount);
+                void getParentLabelByNum(int parentNum, string &parentLabel,
+                    unsigned int &parentCount);
                 void getParentNumByCtrlNum(int ctrlNum,
                     unsigned int &parentNum, unsigned int &prevParentNum,
                     unsigned int &nextParentNum);
-                void returnListOfAvaibleControlDev(
-                    map<int, string> &listOfAvaibleCtrlDev);
-                bool comaSeparatedListOfControls(string &controlList,
-                    char param);
+                map<int, string> getListOfCtrl() const;
 
                 bool getNumByCtrlName(string param, int &control_num);
                 bool getNameByCtrlNum(int param, string &control_name);
@@ -81,8 +77,7 @@ namespace SilentMedia {
                     bool & recModeAvail, bool & recModeStatus,
                     short int & ctrlMode, short int & ctlStatus, int & L,
                     int & R, int & M, int & minCtrlValue, int & maxCtrlValue,
-                    bool & skipDev,
-                    map<int, string> & enumListVariant,
+                    bool & skipDev, map<int, string> & enumListVariant,
                     string & currentEnumName, int & currentEnumNum,
                     int & ctrlTypeName, int & ctrlFlag);
 
@@ -95,22 +90,20 @@ namespace SilentMedia {
                 bool changeDevState(int control_num, int state);
                 bool changeDevState(string ctrlName, int state);
                 bool changeDevState(int ctrlNum,
-                    map<int, string> enumListVariant,
-                    string state);
-                bool changeDevState(string ctrlName, map<int,
-                    string> enumListVariant, string state);
+                    map<int, string> enumListVariant, string state);
+                bool changeDevState(string ctrlName,
+                    map<int, string> enumListVariant, string state);
               private:
-//                static Mixer * _mixer;
-                // private methods
-                int findDefaultMixerDev(void);
-                bool _OSS_NREXT(void);
-                bool _OSS_SNDCTL_SYSINFO(void);
-                bool getControlList(void);
+                bool getMixerInfo();
+                bool getSysInfo();
+                int findDefaultMixerDev();
+                bool getNumberOfControls();
+                bool getExtensionInfo(const int ctrlNum);
+                bool getControlList();
                 bool VAL(int ctrlNum);
                 bool VR(int ctrlNum);
-                bool MI(void);
+
                 bool EI(int ctrlNum);
-                bool EXT(int ctrlNum);
 
                 oss_sysinfo sysinfo; // SNDCTL_SYSINFO
                 oss_mixerinfo mi;
@@ -121,7 +114,8 @@ namespace SilentMedia {
 
                 int default_mixer_dev;
                 int mixer_fd;
-                int nrext;
+                // number of controls in system
+                int numberOfControls;
 
                 map<int, int> devNumValR;
                 map<int, int> devNumValL;
