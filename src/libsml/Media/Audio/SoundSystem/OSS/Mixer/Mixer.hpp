@@ -48,6 +48,25 @@ namespace SilentMedia {
 
             const string REC_NAME = ".rec";
 
+            struct ctrlInfo {
+                string ctrlLabel;
+                int numRecDev;
+                bool recModeAvail;
+                bool recModeStatus;
+                bool stereo;
+                bool on;
+                int L;
+                int R;
+                int M;
+                int minCtrlValue;
+                int maxCtrlValue;
+                vector<string> enumListVariant;
+                string currentEnumName;
+                int currentEnumNum;
+                int ctrlTypeName;
+                int ctrlFlag;
+            };
+
             class Mixer {
               public:
                 /**
@@ -118,26 +137,32 @@ namespace SilentMedia {
                  */
                 bool checkRecAvail(const string ctrlName);
 
-                bool getCtrlInfo(const int ctrlNum, string & ctrlLabel, int & numRecDev,
-                    bool & recModeAvail, bool & recModeStatus,
-                    bool & stereo, bool & on, int & L, int & R, int & M,
-                    int & minCtrlValue, int & maxCtrlValue,
-                    map<int, string> & enumListVariant,
-                    string & currentEnumName, int & currentEnumNum,
-                    int & ctrlTypeName, int & ctrlFlag);
+                ctrlInfo getCtrlInfo(const int ctrlNum);
 
                 void getPeak(int ctrlNum, int &L, int &R);
 
-                bool setDevVol(int control_num, int L, int R, int M);
-                bool setDevVol(string ctrlName, int L, int R, int M);
+                /**
+                 * Set volume.
+                 * Set to -1 controller, which channel you whan't to change.
+                 * For mono: L = -1, R = -1, M = some value
+                 * For stereo: L = some value, R = some value, M = -1;
+                 * @code
+                 *   const int ctrlNum = 2; // controller number
+                 *   ssmix -> setDevVol(ctrlNum, -1, 80);
+                 * @endcode
+                 * The above code, set right channel to value 80, and not change
+                 * left channel.
+                 *
+                 * @param ctrlNum[in] controller number.
+                 * @param L[in] left channel value.
+                 * @param R[in] right channel value.
+                 * @param M[in] mono channel value.
+                 */
+                bool setDevVol(const int ctrlNum, const int L, const int R,
+                    const int M);
                 bool onOffDev(int control_num, bool ON, bool L, bool R, bool M);
 
-                bool changeDevState(int control_num, int state);
-                bool changeDevState(string ctrlName, int state);
-                bool changeDevState(int ctrlNum,
-                    map<int, string> enumListVariant, string state);
-                bool changeDevState(string ctrlName,
-                    map<int, string> enumListVariant, string state);
+                bool changeDevState(const int ctrlNum, const int state);
               private:
                 bool getMixerInfo();
                 bool getSysInfo();
@@ -145,7 +170,7 @@ namespace SilentMedia {
                 bool getNumberOfControls();
                 bool getExtensionInfo(const int ctrlNum);
                 bool getControlList();
-                bool VAL(int ctrlNum);
+                bool VAL(const int ctrlNum);
                 bool VR(int ctrlNum);
 
                 bool EI(int ctrlNum);
@@ -178,6 +203,9 @@ namespace SilentMedia {
 
                 // store a list (there control numbers) of record controls
                 list<int> recCtrlList;
+
+                map<int, oss_mixext> extensionInfoMap;
+                map<int, oss_mixer_value> valueInfoMap;
             };
           }
         }

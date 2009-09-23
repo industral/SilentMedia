@@ -109,85 +109,47 @@ namespace SilentMedia {
               return false;
             }
 
-            /// Получить различную информацио о контролере
             /**
-             Возвращает различную информацию об контролере: \n
-             @param ctrlNum - номер контролера в системе \n
-             @param ctrlLabel - имя контрлера \n
-             @param numRecDev -  возвращает номер записываемого устройства ( если оно есть, к прим. номер mic.rec ) \n
-             @param recModeAvail - возвращает возможность записи устройства (  1 - есть, 0 - нету ) \n
-             @param recModeStatus - возвращает состояние контролера ( в режиме записи 0 - нет, 1 - да ) \n
-             @param ctrlMode - тип контролера ( -1 - не поддерживается, 0 - MONO, 1 - STEREO ) \n
-             @param ctlStatus - возвращает состояние контролера ( 0 - выключено, 1 - включено ) \n
-             @param L - уровень громкости левого канала ( для MONO устройств уровень громкости основного канала ) \n
-             @param R - уровень громкости правого канала \n
-             @param skipDev - игнорируемые устройства ( все записываемые, к прим. vol.rec, mic.rec, cd.rec, etc...) 0 - игнор, 1 - не игнор. \n
-             @param enumListVariant - список доступных выриантов для ENUM контролеров ( к прим. Fast, Low, Medium или  48000, 44100, 32000, etc...) \n
-             @param currentEnumName - название текущего варианта из enumListVariant \n
-             @param currentEnumNum - номер текущего варианта из enumListVariant \n
-             @param ctrlTypeName - тип контролера ( MIXT_ENUM, MIXT_MONOSLIDER, MIXT_STEREOSLIDER, MIXT_MONOSLIDER16, MIXT_STEREOPEAK, MIXT_ONOFF, etc.. ) \n
-
-             Принимает номер контролера \n
-
-             \code
-             bool numRecDev = false;
-             bool recModeAvail = false;
-             bool recModeStatus = false;
-             bool ctrlMode = false;
-             bool ctlStatus = false;
-             bool skipDev = false;
-             int L = -1;
-             int R = -1;
-             int currentEnumNum = -1;
-             string currentEnumName;
-             int ctrlTypeName;
-             string ctrlLabel;
-
-             map < int, string > enumListVariant;
-
-             map < int, string > MIX_DEV;
-             ossmix -> getListOfCtrl ( MIX_DEV );
-
-             for ( map < int, string > :: iterator it = MIX_DEV.begin(); it != MIX_DEV.end(); ++it ) {
-             ossmix->getCtrlInfo ( it->second, control_num, numRecDev, recModeAvail,
-             recModeStatus, SRC_MODE, ON, L, R, skipDev,  enumListVariant, currentEnumName, currentEnumNum, ctrlTypeName );
-
-             if ( !skipDev ) {
-             ....
-             }
-             }
-             \endcode
+             * Get a different information about controller.
+             * @param[in] ctrlNum controller number
+             * @param ctrlLabel - имя контрлера \n
+             * @param numRecDev -  возвращает номер записываемого устройства ( если оно есть, к прим. номер mic.rec ) \n
+             * @param recModeAvail - возвращает возможность записи устройства (  1 - есть, 0 - нету ) \n
+             * @param recModeStatus - возвращает состояние контролера ( в режиме записи 0 - нет, 1 - да ) \n
+             * @param ctrlMode - тип контролера ( -1 - не поддерживается, 0 - MONO, 1 - STEREO ) \n
+             * @param ctlStatus - возвращает состояние контролера ( 0 - выключено, 1 - включено ) \n
+             * @param L - уровень громкости левого канала ( для MONO устройств уровень громкости основного канала ) \n
+             * @param R - уровень громкости правого канала \n
+             * @param skipDev - игнорируемые устройства ( все записываемые, к прим. vol.rec, mic.rec, cd.rec, etc...) 0 - игнор, 1 - не игнор. \n
+             * @param enumListVariant - список доступных выриантов для ENUM контролеров ( к прим. Fast, Low, Medium или  48000, 44100, 32000, etc...) \n
+             * @param currentEnumName - название текущего варианта из enumListVariant \n
+             * @param currentEnumNum - номер текущего варианта из enumListVariant \n
+             * @param ctrlTypeName - тип контролера ( MIXT_ENUM, MIXT_MONOSLIDER, MIXT_STEREOSLIDER, MIXT_MONOSLIDER16, MIXT_STEREOPEAK, MIXT_ONOFF, etc.. ) \n
+             *
+             *
+             *            map < int, string > enumListVariant;
+             *
+             *            map < int, string > MIX_DEV;
+             *           ossmix -> getListOfCtrl ( MIX_DEV );
+             *
+             *            for ( map < int, string > :: iterator it = MIX_DEV.begin(); it != MIX_DEV.end(); ++it ) {
+             *           ossmix->getCtrlInfo ( it->second, control_num, numRecDev, recModeAvail,
+             *          recModeStatus, SRC_MODE, ON, L, R, skipDev,  enumListVariant, currentEnumName, currentEnumNum, ctrlTypeName );
+             *
+             *            if ( !skipDev ) {
+             *           ....
+             *          }
+             *         }
+             *        \endcode
              */
-            bool Mixer::getCtrlInfo(const int ctrlNum, string & ctrlLabel,
-                int & numRecDev, bool & recModeAvail, bool & recModeStatus,
-                bool & stereo, bool & on, int & L, int & R, int & M,
-                int & minCtrlValue, int & maxCtrlValue,
-                map<int, string> & enumListVariant, string & currentEnumName,
-                int & currentEnumNum, int & ctrlTypeName, int & ctrlFlag) {
-
-              /*
-               * Set numRecDev to 0 instead of -1, as there present controllers
-               * that hasn't record capabilities. They will has -1.
-               */
-              numRecDev = 0;
-              recModeAvail = false;
-              recModeStatus = false;
-              stereo = false;
-              on = false;
-              L = -1;
-              R = -1;
-              M = -1;
-              minCtrlValue = -1;
-              maxCtrlValue = -1;
-              ctrlFlag = -1;
-              ctrlTypeName = -1;
-              enumListVariant.clear();
+            ctrlInfo Mixer::getCtrlInfo(const int ctrlNum) {
+              ctrlInfo ctrlInfoObj;
 
               // get controller name
               const string ctrlName = this -> ctrlList[ctrlNum];
 
               // get controller name, without it class (up to dot)
-              ctrlLabel = ctrlName.substr(ctrlName.find(".") + 1,
+              ctrlInfoObj.ctrlLabel = ctrlName.substr(ctrlName.find(".") + 1,
                   ctrlName.size());
 
               /* Check if controller has record capabilities */
@@ -202,11 +164,12 @@ namespace SilentMedia {
                   != this -> recCtrlList.end(); ++it) {
                 const int foundRecCtrlNumber = *it;
                 if (foundRecCtrlNumber == recCtrlNumber) {
-                  recModeAvail = true;
+                  ctrlInfoObj.numRecDev = foundRecCtrlNumber;
+                  ctrlInfoObj.recModeAvail = true;
 
                   VAL(foundRecCtrlNumber);
-                  (val.value & 0xff) ? recModeStatus = true : recModeStatus
-                      = false;
+                  (val.value & 0xff) ? ctrlInfoObj.recModeStatus = true
+                      : ctrlInfoObj.recModeStatus = false;
                 }
               }
 
@@ -215,80 +178,86 @@ namespace SilentMedia {
               this -> getExtensionInfo(ctrlNum);
 
               // set on/off based on value
-              val.value ? on = true : on = false;
+              val.value ? ctrlInfoObj.on = true : ctrlInfoObj.on = false;
 
-              minCtrlValue = ext.minvalue;
-              maxCtrlValue = ext.maxvalue;
-              ctrlFlag = ext.flags;
-              ctrlTypeName = ext.type;
+              ctrlInfoObj.minCtrlValue = ext.minvalue;
+              ctrlInfoObj.maxCtrlValue = ext.maxvalue;
+              ctrlInfoObj.ctrlFlag = ext.flags;
+              ctrlInfoObj.ctrlTypeName = ext.type;
 
               // MIXT_STEREOSLIDER: Stereo volume slider with 8 bit precision
               if (ext.type == MIXT_STEREOSLIDER) {
-                stereo = true;
-                L = (val.value & 0xff);
-                R = ((val.value >> 8) & 0xff);
+                ctrlInfoObj.stereo = true;
+                ctrlInfoObj.L = (val.value & 0xff);
+                ctrlInfoObj.R = ((val.value >> 8) & 0xff);
                 // MIXT_STEREOSLIDER16: Stereo volume slider with 16 bit precision
               } else if (ext.type == MIXT_STEREOSLIDER16) {
-                stereo = true;
-                L = (val.value & 0xffff);
-                R = ((val.value >> 16) & 0xffff);
+                ctrlInfoObj.stereo = true;
+                ctrlInfoObj.L = (val.value & 0xffff);
+                ctrlInfoObj.R = ((val.value >> 16) & 0xffff);
                 // dB
                 if (ext.flags & MIXF_CENTIBEL) {
-                  minCtrlValue = ext.minvalue / 10;
-                  maxCtrlValue = ext.maxvalue / 10;
-                  L = L / 10 + L % 10;
-                  R = R / 10 + R % 10;
+                  ctrlInfoObj.minCtrlValue = ext.minvalue / 10;
+                  ctrlInfoObj.maxCtrlValue = ext.maxvalue / 10;
+                  ctrlInfoObj.L = ctrlInfoObj.L / 10 + ctrlInfoObj.L % 10;
+                  ctrlInfoObj.R = ctrlInfoObj.R / 10 + ctrlInfoObj.R % 10;
                 }
                 // MIXT_MONOSLIDER16: Mono volume slider with 16 bit value field
               } else if (ext.type == MIXT_MONOSLIDER16) {
-                M = (val.value & 0xffff);
+                ctrlInfoObj.M = (val.value & 0xffff);
                 // dB
                 if (ext.flags & MIXF_CENTIBEL) {
-                  minCtrlValue = ext.minvalue / 10;
-                  maxCtrlValue = ext.maxvalue / 10;
-                  M = M / 10;
+                  ctrlInfoObj.minCtrlValue = ext.minvalue / 10;
+                  ctrlInfoObj.maxCtrlValue = ext.maxvalue / 10;
+                  ctrlInfoObj.M = ctrlInfoObj.M / 10;
                 }
                 // show input/output level
                 // MIXT_STEREOVU:   Mixer control type
                 // MIXT_STEREOPEAK: Stereo peak meter control
               } else if ((ext.type == MIXT_STEREOVU) || (ext.type
                   == MIXT_STEREOPEAK)) {
-                L = (val.value & 0xff);
-                R = ((val.value >> 8) & 0xff);
+                ctrlInfoObj.L = (val.value & 0xff);
+                ctrlInfoObj.R = ((val.value >> 8) & 0xff);
                 // MIXT_ENUM: Enumerated mixer control
               } else if (ext.type == MIXT_ENUM) {
                 EI(ctrlNum);
 
-                enumListVariant.clear();
-                for (int i = 0; i < ei.nvalues; i++) {
+                ctrlInfoObj.enumListVariant.resize(ei.nvalues);
+                for (int i = 0; i < ei.nvalues; ++i) {
                   if (ext.enum_present[i / 8] & (1 << (i % 8))) {
-                    enumListVariant[i] = ei.strings + ei.strindex[i];
+                    ctrlInfoObj.enumListVariant[i] = (ei.strings
+                        + ei.strindex[i]);
                   }
                 }
-                currentEnumNum = val.value & 0xff; // Номер текущего елемента
-                currentEnumName = enumListVariant[currentEnumNum]; //  Имя текущего элемента
+
+                ctrlInfoObj.currentEnumNum = val.value & 0xff; // Номер текущего елемента
+                ctrlInfoObj.currentEnumName
+                    = ctrlInfoObj.enumListVariant[ctrlInfoObj.currentEnumNum]; //  Имя текущего элемента
+
+                //                cout << "C: " << ctrlInfoObj.currentEnumName << endl;
+
                 // MIXT_MONOSLIDER: 8 bit mono volume slider
                 // MIXT_MONOVU:     Undefined control
               } else if ((ext.type == MIXT_MONOSLIDER) || (ext.type
                   == MIXT_MONOVU)) {
-                M = (val.value & 0xff);
+                ctrlInfoObj.M = (val.value & 0xff);
                 // MIXT_SLIDER:   Mono volume slider with expanded range
                 // MIXT_VALUE:    General purpose decimal value mixer control
                 // MIXT_HEXVALUE: Hexadecimal mixer value control
               } else if ((ext.type == MIXT_SLIDER) || (ext.type == MIXT_VALUE)
                   || (ext.type == MIXT_HEXVALUE)) {
-                M = val.value;
+                ctrlInfoObj.M = val.value;
                 // MIXT_ONOFF: Hexadecimal mixer value control
               } else if (ext.type == MIXT_ONOFF) {
                 if (val.value) {
-                  currentEnumName = "ON";
-                  currentEnumNum = 1;
+                  ctrlInfoObj.currentEnumName = "ON";
+                  ctrlInfoObj.currentEnumNum = 1;
                 } else {
-                  currentEnumName = "OFF";
-                  currentEnumNum = 0;
+                  ctrlInfoObj.currentEnumName = "OFF";
+                  ctrlInfoObj.currentEnumNum = 0;
                 }
               }
-              return true;
+              return ctrlInfoObj;
             }
 
             void Mixer::getPeak(int ctrlNum, int &L, int &R) {
@@ -297,96 +266,68 @@ namespace SilentMedia {
               R = ((val.value >> 8) & 0xff);
             }
 
-            /// Установка значения громкости
-            /**
-             Принимает номер контролера, значения левого и правого каналов. \n
-             Для моно устройств R = -1. \n
-             Канал значения которого мы не хочем менять, ставим в -1 \n
+            bool Mixer::setDevVol(const int ctrlNum, const int L, const int R,
+                const int M) {
+              int value = this -> valueInfoMap[ctrlNum].value;
+              int type = this -> extensionInfoMap[ctrlNum].type;
 
-             \code
-             int ctrlNum = 2; // номер нужного нам контролера
-             ssmix -> SS_DevSetParam ( ctrlNum, -1, 80 );
-             \endcode
-
-             приведет к установке правого канала в значение громкости 80, а левый оставит на прежнем уровне. \n
-
-             @param ctrlNum - номер контролера
-             @param L - значение громкости левого канала
-             @param R - значение громкости правого канала
-
-             */
-            //TODO: [Performance] Create a map for each structures and get values from there.
-            bool Mixer::setDevVol(int ctrlNum, int L, int R, int M) {
               vr.dev = this -> default_mixer_dev;
               vr.ctrl = ctrlNum;
-              vr.timestamp = ext.timestamp;
+              vr.timestamp = this -> extensionInfoMap[ctrlNum].timestamp;
 
-              VAL(ctrlNum);
-              getExtensionInfo(ctrlNum);
-
-              // Установка левого канала, правый не трогаем
+              // set left channel, don't touch right channel
               if (R == -1 && L && M == -1) {
-                if ((ext.type == MIXT_STEREOSLIDER) || (ext.type
-                    == MIXT_MONOSLIDER) || (ext.type == MIXT_MONOVU)
-                    || (ext.type == MIXT_VALUE) || (ext.type == MIXT_SLIDER)
-                    || (ext.type == MIXT_HEXVALUE) || (ext.type
+                if ((type == MIXT_STEREOSLIDER) || (type == MIXT_MONOSLIDER)
+                    || (type == MIXT_MONOVU) || (type == MIXT_VALUE) || (type
+                    == MIXT_SLIDER) || (type == MIXT_HEXVALUE) || (type
                     == MIXT_HEXVALUE)) {
-                  vr.value = ((L & 0x00ff) | ((((val.value >> 8) & 0xff)
-                      & 0x00ff) << 8));
-                } else if ((ext.type == MIXT_STEREOSLIDER16) || (ext.type
+                  vr.value = ((L & 0x00ff) | ((((value >> 8) & 0xff) & 0x00ff)
+                      << 8));
+                } else if ((type == MIXT_STEREOSLIDER16) || (type
                     == MIXT_MONOSLIDER16)) {
-                  vr.value = ((L * 10 & 0x00ff)
-                      | ((((val.value >> 16) & 0xffff) & 0x00ff) << 16));
+                  vr.value = ((L * 10 & 0x00ff) | ((((value >> 16) & 0xffff)
+                      & 0x00ff) << 16));
                 }
 
-                // Установка правого канала, левый не трогаем
+                // set right channel, don't touch left channel
               } else if (L == -1 && R && M == -1) {
-                if ((ext.type == MIXT_STEREOSLIDER) || (ext.type
-                    == MIXT_MONOSLIDER) || (ext.type == MIXT_MONOVU)
-                    || (ext.type == MIXT_VALUE) || (ext.type == MIXT_SLIDER)
-                    || (ext.type == MIXT_HEXVALUE) || (ext.type
+                if ((type == MIXT_STEREOSLIDER) || (type == MIXT_MONOSLIDER)
+                    || (type == MIXT_MONOVU) || (type == MIXT_VALUE) || (type
+                    == MIXT_SLIDER) || (type == MIXT_HEXVALUE) || (type
                     == MIXT_HEXVALUE)) {
-                  vr.value
-                      = (((val.value & 0xff) & 0xff) | ((R & 0x00ff) << 8));
-                } else if (ext.type == MIXT_STEREOSLIDER16) {
-                  // vr.value = ( ( L*10 & 0x00ff ) | ( ( ( ( val.value >> 16) & 0xffff ) & 0x00ff ) << 16 ) );
-                  vr.value = (((val.value & 0xff) & 0xff) | ((R * 10 & 0x00ff)
+                  vr.value = (((value & 0xff) & 0xff) | ((R & 0x00ff) << 8));
+                } else if (type == MIXT_STEREOSLIDER16) {
+                  vr.value = (((value & 0xff) & 0xff) | ((R * 10 & 0x00ff)
                       << 16));
                 }
 
-                // Установка левого и правого каналов
+                // set right & left channel both
               } else if (L && R && M == -1) {
-                if ((ext.type == MIXT_STEREOSLIDER) || (ext.type
-                    == MIXT_MONOSLIDER) || (ext.type == MIXT_MONOVU)
-                    || (ext.type == MIXT_VALUE) || (ext.type == MIXT_SLIDER)
-                    || (ext.type == MIXT_HEXVALUE) || (ext.type
+                if ((type == MIXT_STEREOSLIDER) || (type == MIXT_MONOSLIDER)
+                    || (type == MIXT_MONOVU) || (type == MIXT_VALUE) || (type
+                    == MIXT_SLIDER) || (type == MIXT_HEXVALUE) || (type
                     == MIXT_HEXVALUE)) {
                   vr.value = ((L & 0x00ff) | (R & 0x00ff) << 8);
-                } else if (ext.type == MIXT_STEREOSLIDER16) {
-                  vr.value = (((val.value & 0xff) & 0xff) | ((R * 10 & 0x00ff)
+                } else if (type == MIXT_STEREOSLIDER16) {
+                  vr.value = (((value & 0xff) & 0xff) | ((R * 10 & 0x00ff)
                       << 16));
                 }
-                // Установка моно канала
+                // set mono channel
               } else if (M && L == -1 && R == -1) {
-                if ((ext.type == MIXT_MONOSLIDER) || (ext.type == MIXT_MONOVU)) {
+                if ((type == MIXT_MONOSLIDER) || (type == MIXT_MONOVU)) {
                   vr.value = ((M & 0xff) & 0xff);
-                } else if (ext.type == MIXT_MONOSLIDER16) {
+                } else if (type == MIXT_MONOSLIDER16) {
                   vr.value = (M * 10 & 0x00ff);
                 }
               }
 
-              if (ioctl(mixer_fd, SNDCTL_MIX_WRITE, &vr) == -1) {
-                //                if (SILENTMEDIA_DEBUG == true) {
-                //                  return (_debug("SNDCTL_MIX_WRITE"));
-                //                }
-              }
-              return true;
-            }
+              // don't forget to update map!
+              this -> valueInfoMap[ctrlNum].value = vr.value;
 
-            bool Mixer::setDevVol(string ctrlName, int L, int R, int M) {
-              int ctrlNum = -1;
-              ctrlNum = getCtrlNumberByName(ctrlName);
-              setDevVol(ctrlNum, L, R, M);
+              if (ioctl(mixer_fd, SNDCTL_MIX_WRITE, &vr) == -1) {
+                cerr << "Error in SNDCTL_MIX_WRITE" << endl;
+                return false;
+              }
               return true;
             }
 
@@ -484,37 +425,11 @@ namespace SilentMedia {
              @see Mixer::getCtrlInfo() \n
              список map < int, string > enumListVariant
              */
-            bool Mixer::changeDevState(int ctrlNum, int state) {
+            bool Mixer::changeDevState(const int ctrlNum, const int state) {
               vr.value = state;
-              VR(ctrlNum);
-              return true;
-            }
-
-            bool Mixer::changeDevState(string ctrlName, int state) {
-              int ctrlNum = -1;
-              ctrlNum = getCtrlNumberByName(ctrlName);
-              changeDevState(ctrlNum, state);
-              return true;
-            }
-
-            bool Mixer::changeDevState(int ctrlNum,
-                map<int, string> enumListVariant, string state) {
-              for (map<int, string>::iterator it = enumListVariant.begin(); it
-                  != enumListVariant.end(); ++it) {
-                if (it -> second == state) {
-                  vr.value = it -> first;
-                  VR(ctrlNum);
-                  return true;
-                }
+              if (VR(ctrlNum) == false) {
+                return false;
               }
-              return false;
-            }
-
-            bool Mixer::changeDevState(string ctrlName,
-                map<int, string> enumListVariant, string state) {
-              int ctrlNum = -1;
-              ctrlNum = getCtrlNumberByName(ctrlName);
-              changeDevState(ctrlNum, enumListVariant, state);
               return true;
             }
 
@@ -605,13 +520,23 @@ namespace SilentMedia {
                 if (this -> getExtensionInfo(i) == false) {
                   return false;
                 } else {
+                  // create map for ext info
+                  this -> extensionInfoMap[i] = this -> ext;
+
                   const string ctrlName = ext.extname;
                   if (ext.type != MIXT_DEVROOT && ext.type != MIXT_GROUP
                       && ext.type != MIXT_MARKER) {
                     this -> fullCtrlList[i] = ctrlName;
-                    //TODO: move "rec"
+
+                    // create map for values
+                    if (this -> VAL(i) == false) {
+                      return false;
+                    } else {
+                      this -> valueInfoMap[i] = this -> val;
+                    }
+
                     // add to map only "real" controllers
-                    if (ctrlName.find("rec") == string::npos) {
+                    if (ctrlName.find(REC_NAME) == string::npos) {
                       this -> ctrlList[i] = ctrlName;
                     } else {
                       this -> recCtrlList.push_back(i);
@@ -622,7 +547,7 @@ namespace SilentMedia {
               return true;
             }
 
-            bool Mixer::VAL(int ctrlNum) {
+            bool Mixer::VAL(const int ctrlNum) {
               val.dev = this -> default_mixer_dev;
               val.ctrl = ctrlNum;
               val.timestamp = ext.timestamp;
@@ -637,7 +562,7 @@ namespace SilentMedia {
             bool Mixer::VR(int ctrlNum) {
               vr.dev = this -> default_mixer_dev;
               vr.ctrl = ctrlNum;
-              vr.timestamp = ext.timestamp;
+              vr.timestamp = this -> extensionInfoMap[ctrlNum].timestamp;
               if (ioctl(mixer_fd, SNDCTL_MIX_WRITE, &vr) == -1) {
                 cerr << "Error in VR" << endl;
                 return false;
