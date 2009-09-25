@@ -23,8 +23,8 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
  ******************************************************************************/
 
-#ifndef _SILENTMEDIA_MEDIA_AUDIO_SOUNDYSTEM_ABSTRACTSOUNDSYSTEM_HPP_
-#define _SILENTMEDIA_MEDIA_AUDIO_SOUNDYSTEM_ABSTRACTSOUNDSYSTEM_HPP_
+#ifndef _SILENTMEDIA_MEDIA_AUDIO_SOUNDYSTEM_ABSTRACTDSP_HPP_
+#define _SILENTMEDIA_MEDIA_AUDIO_SOUNDYSTEM_ABSTRACTDSP_HPP_
 
 #include <libsml/include.hpp>
 
@@ -34,19 +34,18 @@ namespace SilentMedia {
   namespace Media {
     namespace Audio {
       namespace SoundSystem {
-        class AbstractSoundSystem {
+        class AbstractDSP {
           public:
             /*
              * Default constructor.
              */
-            AbstractSoundSystem() {
+            AbstractDSP() {
             }
 
-            virtual ~AbstractSoundSystem() {
+            virtual ~AbstractDSP() {
             }
 
             virtual int init(const string &driver) = 0;
-            virtual int init() = 0;
             virtual int close() = 0;
             virtual void setAudioParams(const int &channels,
                 const int &sampleRate, const int &bitsPerSample) = 0;

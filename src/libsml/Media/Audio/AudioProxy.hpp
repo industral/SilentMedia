@@ -62,7 +62,8 @@ namespace SilentMedia {
            * This method update information in AudioInfo.
            * This method should call every time when we get information about
            * track.
-           * @params[in] fileName name of track that playback.
+           * @param[in] fileId id of track that playback.
+           * @param[in] fileName name of track that playback.
            * @param[in] fileSize size of file in bytes.
            * @param[in] totalTime total time of track.
            * @param[in] channels channels in audio (1/2).

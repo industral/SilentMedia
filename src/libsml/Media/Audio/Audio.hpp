@@ -57,12 +57,14 @@ typedef boost::filesystem::path Path;
 namespace SilentMedia {
   namespace Media {
     namespace Audio {
+
       /**
        * Main audio class. Should start programming from here. Provide main
        * interface to write music, control it and fetch information about it.
        */
       class Audio {
         public:
+
           /**
            * Constructor.
            */
@@ -75,12 +77,17 @@ namespace SilentMedia {
 
           /**
            * Initialized audio system with appropriate sound driver.
-           * @param[in] driver audio system driver.
+           * @param[in] soundDriver sound system driver to use:
+           * "ALSA", "OSS", "AO".
+           * AO - use libao libary, which can itself determine sound driver in
+           * system.
+           * @param[in] driver/audio device in system.
+           * for "ALSA" it can be "default",
+           * for "OSS" it can be "/dev/dsp",
+           * for "AO" @see http://www.xiph.org/ao/doc/drivers.html
            * @return true in success, false in error.
-           * @see http://www.xiph.org/ao/doc/drivers.html
            */
-          bool init(const string &driver);
-          bool init();
+          bool init(const string soundDriver, const string driver = "");
 
           void finish();
 
@@ -102,19 +109,19 @@ namespace SilentMedia {
           long getBitRate(const string &fileId);
           int getBitsPerSample(const string &fileId);
 
-          void setVorbisComment(const string &fileId, const map < string,
-              string > &vorbisComments);
-          map < string, string > getVorbisComments(const string &fileId);
+          void setVorbisComment(const string &fileId,
+              const map<string, string> &vorbisComments);
+          map<string, string> getVorbisComments(const string &fileId);
 
         private:
           SoundSystem::SoundSystem * _soundSystem;
           AudioInfo * _audioInfo;
 
-          list < string > supportedFormats;
-          map < string, Codec::AbstractCodec * > codecHashMap;
+          list<string> supportedFormats;
+          map<string, Codec::AbstractCodec *> codecHashMap;
 
-          map < string, boost::thread * > threadMap;
-          list < pthread_t > threadList;
+          map<string, boost::thread *> threadMap;
+          list<pthread_t> threadList;
 
           bool checkSupportedFormat(const string &fileName);
           string getExtension(const string &fileId);

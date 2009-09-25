@@ -30,7 +30,7 @@
 #include <libsml/include.hpp>
 
 // include inheritable class
-#include <libsml/Media/Audio/SoundSystem/AbstractSoundSystem.hpp>
+#include <libsml/Media/Audio/SoundSystem/AbstractDSP.hpp>
 
 // include OSS
 #include "/usr/lib/oss/include/sys/soundcard.h"
@@ -49,13 +49,12 @@ namespace SilentMedia {
       namespace SoundSystem {
         namespace OSS {
           namespace DSP {
-            class DSP: virtual public AbstractSoundSystem {
+            class DSP: virtual public AbstractDSP {
               public:
                 DSP();
                 virtual ~DSP();
 
                 virtual int init(const string &driver);
-                virtual int init();
                 virtual int close();
                 virtual void setAudioParams(const int &channels,
                     const int &sampleRate, const int &bitsPerSample);

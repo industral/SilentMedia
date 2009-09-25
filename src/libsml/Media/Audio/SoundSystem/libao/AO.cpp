@@ -41,16 +41,11 @@ namespace SilentMedia {
 
         int AO::init(const string &driver) {
           if (driver.empty()) {
-            this -> init();
+            this -> default_driver = ao_default_driver_id();
           } else {
             this -> default_driver = ao_driver_id(driver.c_str());
           }
           return this -> default_driver;
-        }
-
-        int AO::init() {
-          this -> default_driver = ao_default_driver_id();
-          return (this -> default_driver);
         }
 
         int AO::close() {

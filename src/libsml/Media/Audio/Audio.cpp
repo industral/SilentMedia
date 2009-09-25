@@ -59,12 +59,8 @@ namespace SilentMedia {
         _audioInfo = NULL;
       }
 
-      bool Audio::init() {
-        return (_soundSystem -> init());
-      }
-
-      bool Audio::init(const string &driver) {
-        return (_soundSystem -> init(driver));
+      bool Audio::init(const string soundDriver, const string driver) {
+        return (_soundSystem -> init(soundDriver, driver));
       }
 
       void Audio::finish() {

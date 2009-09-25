@@ -32,9 +32,6 @@ namespace SilentMedia {
         SoundSystem * SoundSystem::_soundSystem = NULL;
 
         SoundSystem::SoundSystem() {
-          this -> dsp = new AO();
-          //          this -> dsp = new ALSA::DSP::DSP();
-          this -> dsp = new OSS::DSP::DSP();
         }
 
         SoundSystem::~SoundSystem() {
@@ -47,12 +44,17 @@ namespace SilentMedia {
           return _soundSystem;
         }
 
-        int SoundSystem::init(const string &driver) {
+        int SoundSystem::init(const string &soundDriver, const string &driver) {
+          if (soundDriver.compare("ALSA") == 0) {
+            this -> dsp = new ALSA::DSP::DSP();
+          } else if (soundDriver.compare("OSS") == 0) {
+            this -> dsp = new OSS::DSP::DSP();
+          } else if (soundDriver.compare("AO") == 0) {
+            this -> dsp = new AO();
+          } else {
+            return false;
+          }
           return (this -> dsp -> init(driver));
-        }
-
-        int SoundSystem::init() {
-          return (this -> dsp -> init());
         }
 
         int SoundSystem::close() {

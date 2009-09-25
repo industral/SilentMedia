@@ -23,7 +23,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
  ******************************************************************************/
 
-#include <libsml/all.hpp>
+#include <libsml/include.hpp>
 
 using namespace std;
 

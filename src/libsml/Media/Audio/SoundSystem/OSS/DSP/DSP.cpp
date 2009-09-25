@@ -43,17 +43,16 @@ namespace SilentMedia {
             }
 
             int DSP::init(const string &driver) {
-              this -> dspDev = open(driver . c_str(), O_WRONLY);
-              //              if (this -> dspDev == -1) {
-              //                return (_debug(dspDev_));
-              //              }
+              string defaultDev = "/dev/dsp";
+
+              if (!driver.empty()) {
+                defaultDev = driver;
+              }
+
+              //TODO: open check.
+              this -> dspDev = open(defaultDev.c_str(), O_WRONLY);
 
               return true;
-            }
-
-            //TODO: move constants
-            int DSP::init() {
-              this -> init("/dev/dsp");
             }
 
             int DSP::close() {
@@ -86,8 +85,8 @@ namespace SilentMedia {
                 //                return false;
               }
 
-//              int frag = 8;
-//              ioctl(this -> dspDev, SNDCTL_DSP_SETFRAGMENT, &frag);
+              //              int frag = 8;
+              //              ioctl(this -> dspDev, SNDCTL_DSP_SETFRAGMENT, &frag);
 
               int policy = 3;
               ioctl(this -> dspDev, SNDCTL_DSP_POLICY, &policy);

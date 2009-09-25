@@ -34,7 +34,7 @@
 #include <libsml/include.hpp>
 
 // include inheritable class
-#include <libsml/Media/Audio/SoundSystem/AbstractSoundSystem.hpp>
+#include <libsml/Media/Audio/SoundSystem/AbstractDSP.hpp>
 
 // include libao header files
 #include <ao/ao.h>
@@ -48,7 +48,7 @@ namespace SilentMedia {
          * Support the follow drivers:
          * OSS, ALSA, ESD, Sun audio system, aRts.
          */
-        class AO: virtual public AbstractSoundSystem {
+        class AO: virtual public AbstractDSP {
           public:
             /*
              * Default constructor.
@@ -73,25 +73,19 @@ namespace SilentMedia {
              */
             virtual int init(const string& driver);
 
-            /**
-             * Initialized audio system with default audio driver.
-             * @see AO::init(const string&)
-             */
-            virtual int init();
-
             virtual int close();
 
             /**
              * Initialized audio system with follow audio parameters:
              * @param[in] channels count of channels.
              * @param[in] sampleRate sample rate.
-             * @param[in] bit per sample.
+             * @param[in] bitsPerSample bit per sample.
              *
              * This method should be call to set audio system in appropriate status.
              * Otherwise, there are will be noise or wrong interpretation of music.
              *
              * @code
-             * audio -> setAudioParams(2, 44100, 16);
+             *   audio -> setAudioParams(2, 44100, 16);
              * @endcode
              */
             virtual void setAudioParams(const int &channels,

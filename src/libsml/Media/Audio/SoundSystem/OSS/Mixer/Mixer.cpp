@@ -85,11 +85,11 @@ namespace SilentMedia {
               return this -> ctrlList;
             }
 
-            int Mixer::getCtrlNumberByName(const string controlName) {
+            int Mixer::getCtrlNumberByName(const string ctrlName) {
               int ctrlNum = -1;
               for (map<int, string>::iterator it = this -> fullCtrlList.begin(); it
                   != this -> fullCtrlList.end(); ++it) {
-                if (it -> second == controlName) {
+                if (it -> second == ctrlName) {
                   ctrlNum = it -> first;
                   return ctrlNum;
                 }
@@ -109,39 +109,6 @@ namespace SilentMedia {
               return false;
             }
 
-            /**
-             * Get a different information about controller.
-             * @param[in] ctrlNum controller number
-             * @param ctrlLabel - имя контрлера \n
-             * @param numRecDev -  возвращает номер записываемого устройства ( если оно есть, к прим. номер mic.rec ) \n
-             * @param recModeAvail - возвращает возможность записи устройства (  1 - есть, 0 - нету ) \n
-             * @param recModeStatus - возвращает состояние контролера ( в режиме записи 0 - нет, 1 - да ) \n
-             * @param ctrlMode - тип контролера ( -1 - не поддерживается, 0 - MONO, 1 - STEREO ) \n
-             * @param ctlStatus - возвращает состояние контролера ( 0 - выключено, 1 - включено ) \n
-             * @param L - уровень громкости левого канала ( для MONO устройств уровень громкости основного канала ) \n
-             * @param R - уровень громкости правого канала \n
-             * @param skipDev - игнорируемые устройства ( все записываемые, к прим. vol.rec, mic.rec, cd.rec, etc...) 0 - игнор, 1 - не игнор. \n
-             * @param enumListVariant - список доступных выриантов для ENUM контролеров ( к прим. Fast, Low, Medium или  48000, 44100, 32000, etc...) \n
-             * @param currentEnumName - название текущего варианта из enumListVariant \n
-             * @param currentEnumNum - номер текущего варианта из enumListVariant \n
-             * @param ctrlTypeName - тип контролера ( MIXT_ENUM, MIXT_MONOSLIDER, MIXT_STEREOSLIDER, MIXT_MONOSLIDER16, MIXT_STEREOPEAK, MIXT_ONOFF, etc.. ) \n
-             *
-             *
-             *            map < int, string > enumListVariant;
-             *
-             *            map < int, string > MIX_DEV;
-             *           ossmix -> getListOfCtrl ( MIX_DEV );
-             *
-             *            for ( map < int, string > :: iterator it = MIX_DEV.begin(); it != MIX_DEV.end(); ++it ) {
-             *           ossmix->getCtrlInfo ( it->second, control_num, numRecDev, recModeAvail,
-             *          recModeStatus, SRC_MODE, ON, L, R, skipDev,  enumListVariant, currentEnumName, currentEnumNum, ctrlTypeName );
-             *
-             *            if ( !skipDev ) {
-             *           ....
-             *          }
-             *         }
-             *        \endcode
-             */
             ctrlInfo Mixer::getCtrlInfo(const int ctrlNum) {
               ctrlInfo ctrlInfoObj;
 
@@ -153,23 +120,31 @@ namespace SilentMedia {
                   ctrlName.size());
 
               /* Check if controller has record capabilities */
-              // get record controller name
-              const string recCtrlName = this -> getRecCtrlName(ctrlName);
 
-              // get record controller number
-              const int recCtrlNumber =
-                  this -> getCtrlNumberByName(recCtrlName);
+              ctrlInfoObj.numRecDev = -1;
+              ctrlInfoObj.recModeAvail = false;
+              ctrlInfoObj.recModeStatus = false;
 
-              for (list<int>::iterator it = this -> recCtrlList.begin(); it
-                  != this -> recCtrlList.end(); ++it) {
-                const int foundRecCtrlNumber = *it;
-                if (foundRecCtrlNumber == recCtrlNumber) {
-                  ctrlInfoObj.numRecDev = foundRecCtrlNumber;
-                  ctrlInfoObj.recModeAvail = true;
+              if (this -> checkRecAvail(ctrlInfoObj.ctrlLabel)) {
+                // get record controller name
+                const string recCtrlName = this -> getRecCtrlName(ctrlName);
 
-                  VAL(foundRecCtrlNumber);
-                  (val.value & 0xff) ? ctrlInfoObj.recModeStatus = true
-                      : ctrlInfoObj.recModeStatus = false;
+                // get record controller number
+                const int recCtrlNumber = this -> getCtrlNumberByName(
+                    recCtrlName);
+
+                for (list<int>::iterator it = this -> recCtrlList.begin(); it
+                    != this -> recCtrlList.end(); ++it) {
+
+                  const int foundRecCtrlNumber = *it;
+                  if (foundRecCtrlNumber == recCtrlNumber) {
+                    ctrlInfoObj.numRecDev = foundRecCtrlNumber;
+                    ctrlInfoObj.recModeAvail = true;
+
+                    VAL(foundRecCtrlNumber);
+                    (val.value & 0xff) ? ctrlInfoObj.recModeStatus = true
+                        : ctrlInfoObj.recModeStatus = false;
+                  }
                 }
               }
 
@@ -184,6 +159,11 @@ namespace SilentMedia {
               ctrlInfoObj.maxCtrlValue = ext.maxvalue;
               ctrlInfoObj.ctrlFlag = ext.flags;
               ctrlInfoObj.ctrlTypeName = ext.type;
+
+              ctrlInfoObj.stereo = false;
+              ctrlInfoObj.L = -1;
+              ctrlInfoObj.R = -1;
+              ctrlInfoObj.M = -1;
 
               // MIXT_STEREOSLIDER: Stereo volume slider with 8 bit precision
               if (ext.type == MIXT_STEREOSLIDER) {
@@ -222,7 +202,6 @@ namespace SilentMedia {
               } else if (ext.type == MIXT_ENUM) {
                 EI(ctrlNum);
 
-                ctrlInfoObj.enumListVariant.resize(ei.nvalues);
                 for (int i = 0; i < ei.nvalues; ++i) {
                   if (ext.enum_present[i / 8] & (1 << (i % 8))) {
                     ctrlInfoObj.enumListVariant[i] = (ei.strings
@@ -233,9 +212,6 @@ namespace SilentMedia {
                 ctrlInfoObj.currentEnumNum = val.value & 0xff; // Номер текущего елемента
                 ctrlInfoObj.currentEnumName
                     = ctrlInfoObj.enumListVariant[ctrlInfoObj.currentEnumNum]; //  Имя текущего элемента
-
-                //                cout << "C: " << ctrlInfoObj.currentEnumName << endl;
-
                 // MIXT_MONOSLIDER: 8 bit mono volume slider
                 // MIXT_MONOVU:     Undefined control
               } else if ((ext.type == MIXT_MONOSLIDER) || (ext.type
@@ -331,27 +307,8 @@ namespace SilentMedia {
               return true;
             }
 
-            /// Включение/выключение устройства
-            /**
-             @param ctrlNum  номер контролера
-             @param ON 1 - включить, 0 - выключить
-             @param L,R  1 - применить действие к данному каналу
-
-             \code
-             int ctrlNum = 2;
-             // Выключить левый канал
-             ssmix -> SS_DevSetParam ( ctrlNum, 0, 1, 0 );
-             // Выключить правый канал
-             ssmix -> SS_DevSetParam ( ctrlNum, 0, 0, 1 );
-             // Выключить оба канала
-             ssmix -> SS_DevSetParam ( ctrlNum, 0, 1, 1 );
-             // Включить оба канала
-             ssmix -> SS_DevSetParam ( ctrlNum, 1, 1, 1 );
-             \endcode
-
-             Заметьте, что при влючении каналов, восстанавливаются предедущие сохраненные значения громкостей \n
-             */
-            bool Mixer::onOffDev(int ctrlNum, bool ON, bool L, bool R, bool M) {
+            bool Mixer::toggleCtrl(const int ctrlNum, const bool status,
+                const bool L, const bool R, const bool M) {
               // Параметры для взятия значения текущего значения громкости контролера
               VAL(ctrlNum);
 
@@ -364,7 +321,7 @@ namespace SilentMedia {
                Если выключаем контролер, предварительно записываем текущие значения
                громкости, и ставим громкость в 0
                */
-              if (!ON) {
+              if (!status) {
                 // Если выключам левый канал
                 if (L & !R) {
                   devNumValL[ctrlNum] = (val.value & 0xff);
@@ -384,7 +341,7 @@ namespace SilentMedia {
                   vr.value = (0);
                 }
                 // Если ON = 1 то восстанавливаем значение громкостей каналов
-              } else if (ON) {
+              } else if (status) {
                 // Если включам левый канал
                 if (L & !R) {
                   vr.value = (((devNumValL[ctrlNum]) & 0x00ff) | ((((val.value
@@ -408,23 +365,6 @@ namespace SilentMedia {
               return true;
             }
 
-            /// Меняем значение/состояния контролеров ( ON/OFF, ENUM )
-            /**
-             @param ctrlNum номер меняемого контролера
-             @param state состояние на которое меняем ( 0, 1 - для ON/OFF, 0 - ... - для ENUM )
-
-             на пример
-
-             \code
-             int ctrlNum = 38; // номер нужного контролера
-             ssmix -> changeDevState ( ctrlNum, 5 )
-             \endcode
-
-             выставит vmix0-src в Production. \n
-             Возможные значения можно получить через
-             @see Mixer::getCtrlInfo() \n
-             список map < int, string > enumListVariant
-             */
             bool Mixer::changeDevState(const int ctrlNum, const int state) {
               vr.value = state;
               if (VR(ctrlNum) == false) {
@@ -437,10 +377,6 @@ namespace SilentMedia {
             //  Private methods
             // ---------------------------------------------------------------------------
 
-            /**
-             * Get mixer information.
-             * @return true in success.
-             */
             bool Mixer::getMixerInfo() {
               mi.dev = this -> default_mixer_dev;
               if (ioctl(mixer_fd, SNDCTL_MIXERINFO, &mi) == -1) {
@@ -450,10 +386,6 @@ namespace SilentMedia {
               return true;
             }
 
-            /**
-             * Get system information.
-             * @return true in success.
-             */
             bool Mixer::getSysInfo() {
               if (ioctl(mixer_fd, SNDCTL_SYSINFO, &sysinfo) == -1) {
                 cerr << "Error in SNDCTL_SYSINFO" << endl;
@@ -462,11 +394,6 @@ namespace SilentMedia {
               return true;
             }
 
-            /**
-             * Find default mixer in system. Need, if more that one sound card.
-             * present in system.
-             * @return Number of mixers by default.
-             */
             int Mixer::findDefaultMixerDev() {
               int best_pri = -2;
               for (int i = 0; i < sysinfo.nummixers; i++) {
@@ -481,10 +408,6 @@ namespace SilentMedia {
               return this -> default_mixer_dev;
             }
 
-            /**
-             * Get number of mixer extension descriptor records.
-             * @return true in success.
-             */
             bool Mixer::getNumberOfControls() {
               numberOfControls = this -> default_mixer_dev;
               if (ioctl(mixer_fd, SNDCTL_MIX_NREXT, &numberOfControls) == -1) {
@@ -495,10 +418,6 @@ namespace SilentMedia {
               return true;
             }
 
-            /**
-             * Get a mixer extension descriptor.
-             * @return true in success.
-             */
             bool Mixer::getExtensionInfo(const int ctrlNum) {
               ext.dev = this -> default_mixer_dev;
               ext.ctrl = ctrlNum;
@@ -509,12 +428,6 @@ namespace SilentMedia {
               return true;
             }
 
-            /**
-             * Prepare a map of available controls.
-             * controller number => controller name.
-             * @see void Mixer::getListOfCtrl.
-             * @return true in success.
-             */
             bool Mixer::getControlList() {
               for (int i = 1; i < numberOfControls; ++i) {
                 if (this -> getExtensionInfo(i) == false) {

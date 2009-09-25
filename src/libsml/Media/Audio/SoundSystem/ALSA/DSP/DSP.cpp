@@ -39,17 +39,19 @@ namespace SilentMedia {
             }
 
             int DSP::init(const string &driver) {
+              string defaultDev = "default";
+
+              if (!driver.empty()) {
+                defaultDev = driver;
+              }
+
               int err = -1;
-              if ((err = snd_pcm_open(&this -> handle, driver.c_str(),
+              if ((err = snd_pcm_open(&this -> handle, defaultDev.c_str(),
                   SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
                 cout << "Playback open error: " << snd_strerror(err) << endl;
                 exit(EXIT_FAILURE);
               }
               return true;
-            }
-
-            int DSP::init() {
-              this -> init("default");
             }
 
             int DSP::close() {
