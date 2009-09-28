@@ -16,8 +16,8 @@ set(SilentMedia_src
     ${SourcePath}/Media/PlayList/XSPF/libXSPF.cpp
     ${SourcePath}/Media/PlayList/PlayList.cpp
 
-    ${SourcePath}/Media/Audio/SoundSystem/OSS/DSP/DSP.cpp
-    ${SourcePath}/Media/Audio/SoundSystem/OSS/Mixer/Mixer.cpp
+    #${SourcePath}/Media/Audio/SoundSystem/OSS/DSP/DSP.cpp
+    #${SourcePath}/Media/Audio/SoundSystem/OSS/Mixer/Mixer.cpp
     
     ${SourcePath}/Media/Audio/SoundSystem/ALSA/DSP/DSP.cpp
     ${SourcePath}/Media/Audio/SoundSystem/ALSA/Mixer/Mixer.cpp
@@ -58,7 +58,6 @@ include_directories (
 
 add_library(sml SHARED ${SilentMedia_src})
 set_target_properties(sml PROPERTIES CLEAN_DIRECT_OUTPUT 1)
-
 link_directories (${SilentMedia_SOURCE_DIR})
 
 ### TEST ###

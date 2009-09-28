@@ -47,9 +47,15 @@ namespace SilentMedia {
         int SoundSystem::init(const string &soundDriver, const string &driver) {
           if (soundDriver.compare("ALSA") == 0) {
             this -> dsp = new ALSA::DSP::DSP();
-          } else if (soundDriver.compare("OSS") == 0) {
+          }
+
+#ifdef OSS
+          else if (soundDriver.compare("OSS") == 0) {
             this -> dsp = new OSS::DSP::DSP();
-          } else if (soundDriver.compare("AO") == 0) {
+          }
+#endif
+
+          else if (soundDriver.compare("AO") == 0) {
             this -> dsp = new AO();
           } else {
             return false;

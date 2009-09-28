@@ -32,7 +32,10 @@
 // include available sound systems
 #include "libao/AO.hpp"
 #include "ALSA/DSP/DSP.hpp"
+
+#ifdef OSS
 #include "OSS/DSP/DSP.hpp"
+#endif
 
 using namespace std;
 
