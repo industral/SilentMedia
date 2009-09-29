@@ -73,7 +73,7 @@ namespace SilentMedia {
              */
             virtual int init(const string& driver);
 
-            virtual int close();
+            virtual bool close();
 
             /**
              * Initialized audio system with follow audio parameters:
@@ -88,7 +88,7 @@ namespace SilentMedia {
              *   audio -> setAudioParams(2, 44100, 16);
              * @endcode
              */
-            virtual void setAudioParams(const int &channels,
+            virtual bool setAudioParams(const int &channels,
                 const int &sampleRate, const int &bitsPerSample);
 
             /**
@@ -98,7 +98,7 @@ namespace SilentMedia {
              * @return > 0 = success. 0 indicates failure. The device should be
              * closed.
              */
-            virtual int write(void *buf, const int &bufSize);
+            virtual long write(void *buf, const int &bufSize);
 
           private:
             ao_sample_format format;

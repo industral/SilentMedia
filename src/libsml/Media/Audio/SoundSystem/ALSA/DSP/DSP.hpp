@@ -49,10 +49,10 @@ namespace SilentMedia {
                 virtual ~DSP();
 
                 virtual int init(const string &driver);
-                virtual int close();
-                virtual void setAudioParams(const int &channels,
+                virtual bool close();
+                virtual bool setAudioParams(const int &channels,
                     const int &sampleRate, const int &bitsPerSample);
-                virtual int write(void *buf, const int &bufSize);
+                virtual long write(void *buf, const int &bufSize);
               private:
                 snd_pcm_t * handle;
             };

@@ -54,11 +54,11 @@ namespace SilentMedia {
                 DSP();
                 virtual ~DSP();
 
-                virtual int init(const string &driver);
+                virtual bool init(const string &driver);
                 virtual int close();
-                virtual void setAudioParams(const int &channels,
+                virtual bool setAudioParams(const int &channels,
                     const int &sampleRate, const int &bitsPerSample);
-                virtual int write(void *buf, const int &bufSize);
+                virtual long write(void *buf, const int &bufSize);
               private:
                 int dspDev;
                 int input_fd;

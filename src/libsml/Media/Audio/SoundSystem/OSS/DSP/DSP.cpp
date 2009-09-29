@@ -55,11 +55,11 @@ namespace SilentMedia {
               return true;
             }
 
-            int DSP::close() {
-              ::close(this -> dspDev);
+            bool DSP::close() {
+              return (::close(this -> dspDev));
             }
 
-            void DSP::setAudioParams(const int &channels,
+            bool DSP::setAudioParams(const int &channels,
                 const int &sampleRate, const int &bitsPerSample) {
               int format = AFMT_S16_NE; // bit per sample
 
@@ -70,31 +70,25 @@ namespace SilentMedia {
 
               if (ioctl(this -> dspDev, SNDCTL_DSP_SETFMT, &format) == -1) {
                 perror("SNDCTL_DSP_SETFMT");
-                //                return false;
+                return false;
               }
               //
               if (ioctl(this -> dspDev, SNDCTL_DSP_CHANNELS, &audioChannels)
                   == -1) {
                 perror("SNDCTL_DSP_CHANNELS");
-                //                return false;
+                return false;
               }
 
               if (ioctl(this -> dspDev, SNDCTL_DSP_SPEED, &audioSampleRate)
                   == -1) {
                 perror("SNDCTL_DSP_SPEED");
-                //                return false;
+                return false;
               }
-
-              //              int frag = 8;
-              //              ioctl(this -> dspDev, SNDCTL_DSP_SETFRAGMENT, &frag);
-
-              int policy = 3;
-              ioctl(this -> dspDev, SNDCTL_DSP_POLICY, &policy);
-
+              return true;
             }
 
-            int DSP::write(void *buf, const int &bufSize) {
-              ::write(dspDev, buf, bufSize);
+            long DSP::write(void *buf, const int &bufSize) {
+              return (::write(dspDev, buf, bufSize));
             }
 
           }

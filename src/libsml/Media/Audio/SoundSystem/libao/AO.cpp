@@ -48,11 +48,11 @@ namespace SilentMedia {
           return this -> default_driver;
         }
 
-        int AO::close() {
+        bool AO::close() {
           return (ao_close(this -> device));
         }
 
-        void AO::setAudioParams(const int &channels, const int &sampleRate,
+        bool AO::setAudioParams(const int &channels, const int &sampleRate,
             const int &bitsPerSample) {
           format.bits = bitsPerSample;
           format.channels = channels;
@@ -62,10 +62,12 @@ namespace SilentMedia {
           device = ao_open_live(default_driver, &format, NULL);
           if (device == NULL) {
             cerr << "Error to set audio parameters" << endl;
+            return false;
           }
+          return true;
         }
 
-        int AO::write(void *buf, const int &bufSize) {
+        long AO::write(void *buf, const int &bufSize) {
           return (ao_play(device, (char *) buf, bufSize));
         }
       }

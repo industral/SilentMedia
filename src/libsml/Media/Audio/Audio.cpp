@@ -98,7 +98,7 @@ namespace SilentMedia {
         if (!this -> _audioInfo -> getFileNameByFileId(fileId).empty()) {
           boost::mt19937 rng;
           rng.seed(static_cast < unsigned > (std::time(0)));
-          boost::uniform_int < > distribution(1, LONG_MAX);
+          boost::uniform_int < > distribution(1, INT_MAX);
           boost::variate_generator < boost::mt19937&, boost::uniform_int < > >
               die(rng, distribution);
 

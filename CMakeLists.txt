@@ -1,9 +1,17 @@
 cmake_minimum_required(VERSION 2.6)
 
-project (SilentMedia)
+PROJECT (SilentMedia)
 
-set (SourcePath src/libsml)
-set(SilentMedia_src
+SET(SourcePath src/libsml)
+
+IF (DEFINED OSS)
+SET(OSS_src
+    ${SourcePath}/Media/Audio/SoundSystem/OSS/DSP/DSP.cpp
+    ${SourcePath}/Media/Audio/SoundSystem/OSS/Mixer/Mixer.cpp
+)
+ENDIF(DEFINED OSS)
+
+SET(SilentMedia_src
 
     ${SourcePath}/Utils/Base64/Base64.cpp
     ${SourcePath}/Utils/String/String.cpp
@@ -16,8 +24,7 @@ set(SilentMedia_src
     ${SourcePath}/Media/PlayList/XSPF/libXSPF.cpp
     ${SourcePath}/Media/PlayList/PlayList.cpp
 
-    #${SourcePath}/Media/Audio/SoundSystem/OSS/DSP/DSP.cpp
-    #${SourcePath}/Media/Audio/SoundSystem/OSS/Mixer/Mixer.cpp
+    ${OSS_src}
     
     ${SourcePath}/Media/Audio/SoundSystem/ALSA/DSP/DSP.cpp
     ${SourcePath}/Media/Audio/SoundSystem/ALSA/Mixer/Mixer.cpp
@@ -35,7 +42,7 @@ set(SilentMedia_src
     ${SourcePath}/Media/Audio/Codec/FLAC/FLAC.cpp
 )
 
-set(SilentMedia_LINKED_LIBRARY
+SET(SilentMedia_LINKED_LIBRARY
     sml
     vorbisfile
     FLAC++
@@ -48,7 +55,7 @@ set(SilentMedia_LINKED_LIBRARY
     gtest
 )
 
-include_directories (
+INCLUDE_DIRECTORIES(
     /usr/include
     /usr/local/include
     /usr/include/c++/4.4
@@ -56,27 +63,29 @@ include_directories (
     ${SilentMedia_SOURCE_DIR}/${SourcePath}
 )
 
-add_library(sml SHARED ${SilentMedia_src})
-set_target_properties(sml PROPERTIES CLEAN_DIRECT_OUTPUT 1)
-link_directories (${SilentMedia_SOURCE_DIR})
+ADD_LIBRARY(sml SHARED ${SilentMedia_src})
+SET_TARGET_PROPERTIES(sml PROPERTIES CLEAN_DIRECT_OUTPUT 1)
+LINK_DIRECTORIES(${SilentMedia_SOURCE_DIR})
 
 ### TEST ###
 
-#add_executable (bin/TestXSPF ${SourcePath}/Test/Media/PlayLists/XSPF/TestXSPF.cpp)
-#target_link_libraries (bin/TestXSPF ${SilentMedia_LINKED_LIBRARY})
+IF (DEFINED TEST)
+  ADD_EXECUTABLE (bin/TestXSPF ${SourcePath}/Test/Media/PlayLists/XSPF/TestXSPF.cpp)
+  TARGET_LINK_LIBRARIES (bin/TestXSPF ${SilentMedia_LINKED_LIBRARY})
 
-#add_executable (bin/test1 ${SourcePath}/Test/test.cpp)
-#target_link_libraries (bin/test1 ${SilentMedia_LINKED_LIBRARY})
+  ADD_EXECUTABLE (bin/test1 ${SourcePath}/Test/test.cpp)
+  TARGET_LINK_LIBRARIES (bin/test1 ${SilentMedia_LINKED_LIBRARY})
 
-#add_executable (bin/TestFileLoader ${SourcePath}/Test/Media/Container/FileLoader/TestFileLoader.cpp)
-#target_link_libraries (bin/TestFileLoader ${SilentMedia_LINKED_LIBRARY})
+  ADD_EXECUTABLE (bin/TestFileLoader ${SourcePath}/Test/Media/Container/FileLoader/TestFileLoader.cpp)
+  TARGET_LINK_LIBRARIES (bin/TestFileLoader ${SilentMedia_LINKED_LIBRARY})
 
-#add_executable (bin/testMixer ${SourcePath}/Test/testMixer.cpp)
-#target_link_libraries (bin/testMixer ${SilentMedia_LINKED_LIBRARY})
+  ADD_EXECUTABLE (bin/testMixer ${SourcePath}/Test/testMixer.cpp)
+  TARGET_LINK_LIBRARIES (bin/testMixer ${SilentMedia_LINKED_LIBRARY})
+ENDIF (DEFINED TEST)
 
 ### TEST ###
 
-#-pipe -Wall -W -Werror -ggdb
-set_target_properties(sml PROPERTIES COMPILE_FLAGS "-pipe -Wall -W -ggdb")
+#-Werror
+SET_TARGET_PROPERTIES(sml PROPERTIES COMPILE_FLAGS "-pipe -Wall -W -ggdb")
 
 ADD_CUSTOM_TARGET(doc COMMAND doxygen ${SilentMedia_SOURCE_DIR}/doc/Doxyfile)

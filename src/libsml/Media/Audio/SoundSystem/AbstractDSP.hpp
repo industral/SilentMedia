@@ -46,10 +46,10 @@ namespace SilentMedia {
             }
 
             virtual int init(const string &driver) = 0;
-            virtual int close() = 0;
-            virtual void setAudioParams(const int &channels,
+            virtual bool close() = 0;
+            virtual bool setAudioParams(const int &channels,
                 const int &sampleRate, const int &bitsPerSample) = 0;
-            virtual int write(void *buf, const int &bufSize) = 0;
+            virtual long write(void *buf, const int &bufSize) = 0;
 
           protected:
           private:

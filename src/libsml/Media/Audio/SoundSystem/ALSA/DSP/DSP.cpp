@@ -54,23 +54,37 @@ namespace SilentMedia {
               return true;
             }
 
-            int DSP::close() {
+            bool DSP::close() {
+              return true; // TODO:fix
             }
 
-            void DSP::setAudioParams(const int &channels,
+            bool DSP::setAudioParams(const int &channels,
                 const int &sampleRate, const int &bitsPerSample) {
-              int err = -1;
-              if ((err = snd_pcm_set_params(this -> handle, SND_PCM_FORMAT_S16,
+              _snd_pcm_format format;
+
+              if (bitsPerSample == 8) {
+                format = SND_PCM_FORMAT_S8;
+              } else if (bitsPerSample == 16) {
+                format = SND_PCM_FORMAT_S16;
+              } else if (bitsPerSample == 24) {
+                format = SND_PCM_FORMAT_S24;
+              } else if (bitsPerSample == 32) {
+                format = SND_PCM_FORMAT_S32;
+              }
+
+              int err = NULL;
+
+              if ((err = snd_pcm_set_params(this -> handle, format,
                   SND_PCM_ACCESS_RW_INTERLEAVED, channels, sampleRate, 0,
                   500000)) < 0) {
-                cout << "Playback open error: " << snd_strerror(err) << endl;
-                exit(EXIT_FAILURE);
+                cerr << "Playback open error: " << snd_strerror(err) << endl;
+                return false;
               }
-              //              return true;
+              return true;
             }
 
-            int DSP::write(void *buf, const int &bufSize) {
-              snd_pcm_writei(this -> handle, buf, bufSize/4);
+            long DSP::write(void *buf, const int &bufSize) {
+              return (snd_pcm_writei(this -> handle, buf, bufSize / 4));
             }
 
           }
