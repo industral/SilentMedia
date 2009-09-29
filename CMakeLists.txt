@@ -95,7 +95,7 @@ IF(Test STREQUAL "true")
 
   ADD_EXECUTABLE (bin/testMixer ${SourcePath}/Test/testMixer.cpp)
   TARGET_LINK_LIBRARIES (bin/testMixer ${SilentMedia_LINKED_LIBRARY})
-ENDIF (Test EQUAL "true")
+ENDIF (Test STREQUAL "true")
 
 ### TEST ###
 
