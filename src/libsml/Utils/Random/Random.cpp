@@ -23,11 +23,21 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.           *
  ******************************************************************************/
 
-#ifndef _SILENTMEDIA_UTIL_INCLUDE_HPP_
-#define _SILENTMEDIA_UTIL_INCLUDE_HPP_
+#include "Random.hpp"
 
-#include <libsml/Utils/Base64/Base64.hpp>
-#include <libsml/Utils/String/String.hpp>
-#include <libsml/Utils/Random/Random.hpp>
+namespace SilentMedia {
+  namespace Utils {
+    string Random::getRandomId(const string inString) {
+      boost::mt19937 rng;
+      rng.seed(static_cast <unsigned> (std::time(0)));
+      boost::uniform_int <> distribution(1, INT_MAX);
+      boost::variate_generator <boost::mt19937&, boost::uniform_int <> > die(
+          rng, distribution);
 
-#endif
+      stringstream out;
+      out << inString << die();
+
+      return out.str();
+    }
+  }
+}

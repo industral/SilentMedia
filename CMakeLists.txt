@@ -15,6 +15,7 @@ SET(SilentMedia_src
 
     ${SourcePath}/Utils/Base64/Base64.cpp
     ${SourcePath}/Utils/String/String.cpp
+    ${SourcePath}/Utils/Random/Random.cpp
 
     ${SourcePath}/Media/Container/FileLoader.cpp
 

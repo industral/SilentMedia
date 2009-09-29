@@ -96,15 +96,7 @@ namespace SilentMedia {
 
         // check unique if fileId. If not, generate it.
         if (!this -> _audioInfo -> getFileNameByFileId(fileId).empty()) {
-          boost::mt19937 rng;
-          rng.seed(static_cast < unsigned > (std::time(0)));
-          boost::uniform_int < > distribution(1, INT_MAX);
-          boost::variate_generator < boost::mt19937&, boost::uniform_int < > >
-              die(rng, distribution);
-
-          stringstream out;
-          out << fileId << die();
-          fileId = out.str();
+          fileId = SilentMedia::Utils::Random::getRandomId(fileId);
         }
 
         // register fileId with fileName in AudioInfo database
@@ -174,12 +166,12 @@ namespace SilentMedia {
         return _audioInfo -> getBitsPerSample(fileId);
       }
 
-      void Audio::setVorbisComment(const string &fileId, const map < string,
-          string > &vorbisComments) {
+      void Audio::setVorbisComment(const string &fileId, const map <string,
+          string> &vorbisComments) {
         this -> _audioInfo -> setVorbisComment(fileId, vorbisComments);
       }
 
-      map < string, string > Audio::getVorbisComments(const string &fileId) {
+      map <string, string> Audio::getVorbisComments(const string &fileId) {
         return this -> _audioInfo -> getVorbisComments(fileId);
       }
 
