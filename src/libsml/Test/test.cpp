@@ -31,7 +31,7 @@ using namespace SilentMedia::Media;
 
 int main() {
   Audio::Audio * audio = new Audio::Audio();
-  audio -> init(); // init Audio system
+  audio -> init("ALSA", ""); // init Audio system
 
   //  Audio::Audio * audio2 = new Audio::Audio();
   //  audio2 -> init(); // init Audio system

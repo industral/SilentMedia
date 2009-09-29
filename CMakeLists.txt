@@ -63,13 +63,27 @@ INCLUDE_DIRECTORIES(
     ${SilentMedia_SOURCE_DIR}/${SourcePath}
 )
 
-ADD_LIBRARY(sml SHARED ${SilentMedia_src})
-SET_TARGET_PROPERTIES(sml PROPERTIES CLEAN_DIRECT_OUTPUT 1)
-LINK_DIRECTORIES(${SilentMedia_SOURCE_DIR})
+IF(LibraryType STREQUAL "static")
+  ADD_LIBRARY(sml-static STATIC ${SilentMedia_src})
+  # rename library from libsml-static.a => libsml.a
+  SET_TARGET_PROPERTIES(sml-static PROPERTIES OUTPUT_NAME "sml")
+  SET_TARGET_PROPERTIES(sml-static PROPERTIES CLEAN_DIRECT_OUTPUT 1)
+ELSEIF(LibraryType STREQUAL "shared")
+  ADD_LIBRARY(sml SHARED ${SilentMedia_src})
+  
+  # change compile optimization/debug flags # -Werror -pedantic
+  IF(BuildType STREQUAL "Debug")
+    SET_TARGET_PROPERTIES(sml PROPERTIES COMPILE_FLAGS "-pipe -Wall -W -ggdb")
+  ELSEIF(BuildType STREQUAL "Release")
+    SET_TARGET_PROPERTIES(sml PROPERTIES COMPILE_FLAGS "-pipe -Wall -W -O3 -fomit-frame-pointer")
+  ENDIF()
+  
+  SET_TARGET_PROPERTIES(sml PROPERTIES CLEAN_DIRECT_OUTPUT 1)
+ENDIF()
 
 ### TEST ###
 
-IF (DEFINED TEST)
+IF(Test STREQUAL "true")
   ADD_EXECUTABLE (bin/TestXSPF ${SourcePath}/Test/Media/PlayLists/XSPF/TestXSPF.cpp)
   TARGET_LINK_LIBRARIES (bin/TestXSPF ${SilentMedia_LINKED_LIBRARY})
 
@@ -81,11 +95,8 @@ IF (DEFINED TEST)
 
   ADD_EXECUTABLE (bin/testMixer ${SourcePath}/Test/testMixer.cpp)
   TARGET_LINK_LIBRARIES (bin/testMixer ${SilentMedia_LINKED_LIBRARY})
-ENDIF (DEFINED TEST)
+ENDIF (Test EQUAL "true")
 
 ### TEST ###
-
-#-Werror
-SET_TARGET_PROPERTIES(sml PROPERTIES COMPILE_FLAGS "-pipe -Wall -W -ggdb")
 
 ADD_CUSTOM_TARGET(doc COMMAND doxygen ${SilentMedia_SOURCE_DIR}/doc/Doxyfile)

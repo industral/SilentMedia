@@ -3,18 +3,22 @@ http://www.hyperrealm.com/libconfig/
 libxspf-1.2 (uriparser cpptest)
 googleTest
 
-
-
-
-
 libflac++-dev
 libvorbis-dev
 libao-dev
 libasound2-dev
 libwavpack-dev
 
+for developing:
+cmake -D BuildType=Debug -D LibraryType=shared .
+
+for release:
+cmake -D BuildType=Release -D LibraryType=static .
 
 
+cmake -D Test=true .
+cmake -D OSS=1 .
+cmake -U OSS .
 
 http://bazaar.launchpad.net/~industral/silentmedia/devel/files
 
