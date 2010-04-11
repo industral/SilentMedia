@@ -39,10 +39,10 @@ namespace SilentMedia {
             }
 
             int DSP::init(const string &driver) {
-              string defaultDev = "default";
+              string defaultDevice = defaultDev;
 
               if (!driver.empty()) {
-                defaultDev = driver;
+                defaultDevice = driver;
               }
 
               int err = -1;
@@ -61,6 +61,8 @@ namespace SilentMedia {
             bool DSP::setAudioParams(const int &channels,
                 const int &sampleRate, const int &bitsPerSample) {
               _snd_pcm_format format;
+
+              cout << "SET AUDIO PARAMS: " << endl;
 
               if (bitsPerSample == 8) {
                 format = SND_PCM_FORMAT_S8;
@@ -86,6 +88,10 @@ namespace SilentMedia {
             long DSP::write(void *buf, const int &bufSize) {
               return (snd_pcm_writei(this -> handle, buf, bufSize / 4));
             }
+
+//            list <string> getAvailableDriverList() {
+//
+//            }
 
           }
         }

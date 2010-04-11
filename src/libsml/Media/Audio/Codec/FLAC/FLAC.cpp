@@ -143,8 +143,10 @@ namespace SilentMedia {
 
           FLAC__uint64 sample_pos = ((totalSamples * (seekVal / 100)));
           this -> flacDecoderMap[fileId] -> flush();
+          this -> audioProxy -> setCurrentSamples(fileId, sample_pos);
+
           if (this -> flacDecoderMap[fileId] -> seek_absolute(sample_pos)) {
-            this -> audioProxy -> setCurrentSamples(fileId, sample_pos);
+
           } else {
             cerr << "Error in seek_absolute()" << endl;
             this -> flacDecoderMap[fileId] -> flush();
@@ -283,15 +285,14 @@ namespace SilentMedia {
           int i = 0;
           uint channel = 0; // use unsigned to avoid warning from compile
 
-          int16_t outbuf[FLAC__MAX_BLOCK_SIZE * FLAC__MAX_CHANNELS
-              * sizeof(int32_t)]; // 65535 * 8 * 4
+          int16_t outbuf[decoded_size];
 
           if (this -> get_state() == FLAC__STREAM_DECODER_SEEK_ERROR) {
             this -> flacObj -> flacDecoderMap[this -> fileId] -> flush();
           }
 
-          for (sample = i = 0; sample < samples; sample++) {
-            for (channel = 0; channel < frame -> header.channels; channel++, i++) {
+          for (sample = i = 0; sample < samples; ++sample) {
+            for (channel = 0; channel < frame -> header.channels; ++channel, ++i) {
               outbuf[i] = buf[channel][sample];
             }
           }
@@ -304,6 +305,7 @@ namespace SilentMedia {
           this -> flacObj -> audioProxy -> setCurrentSamples(this -> fileId,
               totalSamples + sample);
 
+          cout << "D: " << sizeof(outbuf) << " : " << decoded_size << endl;
           this -> flacObj -> audioProxy -> write(&outbuf, decoded_size);
 
           return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;

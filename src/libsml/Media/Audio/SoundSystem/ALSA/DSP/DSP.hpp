@@ -43,6 +43,8 @@ namespace SilentMedia {
       namespace SoundSystem {
         namespace ALSA {
           namespace DSP {
+            static const string defaultDev = "default";
+
             class DSP: virtual public AbstractDSP {
               public:
                 DSP();

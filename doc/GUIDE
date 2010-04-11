@@ -1,13 +1,19 @@
-Software:
-http://www.hyperrealm.com/libconfig/
-libxspf-1.2 (uriparser cpptest)
-googleTest
+Required software:
 
+libconfig >= 1.4.3: http://www.hyperrealm.com/libconfig/
+cpptest >=1.1.0: http://cpptest.sourceforge.net/
+uriparser >= 0.7.5:  http://uriparser.sourceforge.net/
+libxspf >=1.2: http://sourceforge.net/projects/libspiff/files/
+
+googletest >= 1.4.0
+
+libboost (>= 1.40)
 libflac++-dev
 libvorbis-dev
 libao-dev
 libasound2-dev
 libwavpack-dev
+
 
 for developing:
 cmake -D BuildType=Debug -D LibraryType=shared .
@@ -24,8 +30,9 @@ http://bazaar.launchpad.net/~industral/silentmedia/devel/files
 
 cmake -G"Eclipse CDT4 - Unix Makefiles" -D CMAKE_BUILD_TYPE=Debug .
 
-sudo ln -s ~/workspace/SilentMedia/src /usr/include/libsml
-sudo ln -s ~/workspace/SilentMedia/libsml.so /usr/lib
+sudo ln -s /data/siegerstein/silentmedia/src/libsml /usr/include
+sudo ln -s /data/siegerstein/silentmedia/libsml.so /usr/lib
+sudo ldconfig
 
 Audio * audio = new Audio();
 

@@ -160,8 +160,8 @@ namespace SilentMedia {
           long resultPosition = (this -> audioProxy -> getFileSize(fileId)
               * (seekVal / 100));
           /*
-           * If resultPosition it not dividing by 2, than we will give a noise.
-           * So, check variable if it dividing by 2, if not - increment it.
+           * If resultPosition isn't divisible by 2, than we will get a noise.
+           * So, check variable if it divisible by 2, if not - increment it.
            */
           if (resultPosition % 2 != 0) {
             ++resultPosition;
