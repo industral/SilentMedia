@@ -29,6 +29,8 @@ namespace SilentMedia {
   namespace Media {
     namespace Audio {
 
+      static LoggerPtr logger(Logger::getLogger("SilentMedia::Media::Audio"));
+
       // --------------------------------------------------------------------
       // Public methods
       // --------------------------------------------------------------------
@@ -64,12 +66,12 @@ namespace SilentMedia {
       }
 
       void Audio::finish() {
-        std::cout << "close audio system" << std::endl;
+        LOG4CXX_DEBUG(logger, "Close audio system");
       }
 
       //TODO: Need to check if id is unique
       bool Audio::open(const string &fileName, string &fileId) {
-        std::cout << "open file name with id: " + fileId << std::endl;
+        LOG4CXX_DEBUG(logger, "Open filename: " << fileName << " with id: " << fileId);
 
         //      SilentMedia::Audio::Container::FileLoader * fileLoader =
         //          new SilentMedia::Audio::Container::FileLoader();
@@ -89,8 +91,7 @@ namespace SilentMedia {
 
         // check if extension is in supportedFormat list
         if (!checkSupportedFormat(fileName)) {
-          cerr << "File extension \"" << Path(fileName).extension()
-              << "\" is unsupported." << endl;
+          LOG4CXX_WARN(logger, "File extension \"" << Path(fileName).extension() << "\" is unsupported.");
           return false;
         }
 
@@ -109,31 +110,30 @@ namespace SilentMedia {
       }
 
       void Audio::play(const string &fileId, bool resume) {
-        this -> threadMap[fileId] = new boost::thread(boost::bind(
-            &Audio::playInThread, this, fileId, resume));
+        this -> threadMap[fileId] = new boost::thread(boost::bind(&Audio::playInThread, this, fileId, resume));
       }
 
       void Audio::playInThread(const string &fileId, const bool &resume) {
-        std::cout << "play file name with id: " + fileId << std::endl;
+        LOG4CXX_DEBUG(logger, "Playing file name with id: " << fileId);
         this -> getCodec(fileId) -> play(fileId, resume);
         this -> threadMap[fileId] -> join();
       }
 
       void Audio::pause(const string &fileId) {
-        std::cout << "pause file name with id: " + fileId << std::endl;
+        LOG4CXX_DEBUG(logger, "Pause file name with id " << fileId);
         this -> getCodec(fileId) -> stop(fileId);
       }
 
       void Audio::stop(const string &fileId) {
         if (threadMap[fileId]) {
-          cout << "try to stop" << endl;
+          LOG4CXX_DEBUG(logger, "Trying to stop");
           this -> getCodec(fileId) -> stop(fileId);
         }
-        std::cout << "stop file name with id: " + fileId << std::endl;
+        LOG4CXX_DEBUG(logger, "Stopped file name with id: " << fileId);
       }
 
       void Audio::close(const string &fileId) {
-        std::cout << "close file name with id: " + fileId << std::endl;
+        LOG4CXX_DEBUG(logger, "Close file name with id: " << fileId);
         this -> getCodec(fileId) -> close(fileId);
         this -> _audioInfo -> removeFileId(fileId);
       }
@@ -166,12 +166,11 @@ namespace SilentMedia {
         return _audioInfo -> getBitsPerSample(fileId);
       }
 
-      void Audio::setVorbisComment(const string &fileId, const map <string,
-          string> &vorbisComments) {
+      void Audio::setVorbisComment(const string &fileId, const map<string, string> &vorbisComments) {
         this -> _audioInfo -> setVorbisComment(fileId, vorbisComments);
       }
 
-      map <string, string> Audio::getVorbisComments(const string &fileId) {
+      map<string, string> Audio::getVorbisComments(const string &fileId) {
         return this -> _audioInfo -> getVorbisComments(fileId);
       }
 
@@ -181,21 +180,22 @@ namespace SilentMedia {
 
       bool Audio::checkSupportedFormat(const string &fileName) {
         foreach(string s, supportedFormats)
-{        if (Path(fileName).extension().compare(s)) {
-          return true;
-        }
+              {
+                if (Path(fileName).extension().compare(s)) {
+                  return true;
+                }
+              }
+        return false;
       }
-      return false;
-    }
 
-    string Audio::getExtension(const string &fileId) {
-      return (Path(_audioInfo -> getFileNameByFileId(fileId)).extension());
-    }
+      string Audio::getExtension(const string &fileId) {
+        return (Path(_audioInfo -> getFileNameByFileId(fileId)).extension());
+      }
 
-    Codec::AbstractCodec * Audio::getCodec(const string &fileId) {
-      return (this -> codecHashMap[this -> getExtension(fileId)]);
-    }
+      Codec::AbstractCodec * Audio::getCodec(const string &fileId) {
+        return (this -> codecHashMap[this -> getExtension(fileId)]);
+      }
 
+    }
   }
-}
 }

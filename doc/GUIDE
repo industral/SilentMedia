@@ -13,7 +13,7 @@ libvorbis-dev
 libao-dev
 libasound2-dev
 libwavpack-dev
-
+liblog4cxx (>= 0.1) http://logging.apache.org/log4cxx/
 
 for developing:
 cmake -D BuildType=Debug -D LibraryType=shared .

@@ -109,8 +109,7 @@ namespace SilentMedia {
           long getBitRate(const string &fileId);
           int getBitsPerSample(const string &fileId);
 
-          void setVorbisComment(const string &fileId,
-              const map<string, string> &vorbisComments);
+          void setVorbisComment(const string &fileId, const map<string, string> &vorbisComments);
           map<string, string> getVorbisComments(const string &fileId);
 
         private:

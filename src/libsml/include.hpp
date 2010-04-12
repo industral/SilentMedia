@@ -61,7 +61,12 @@
 #include <ctime> // time
 #include <climits> // limits
 
+// include log4cxx
+#include <log4cxx/logger.h>
+
 // include Utils
 #include <libsml/Utils/include.hpp>
+
+using namespace log4cxx;
 
 #endif

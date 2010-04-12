@@ -305,7 +305,6 @@ namespace SilentMedia {
           this -> flacObj -> audioProxy -> setCurrentSamples(this -> fileId,
               totalSamples + sample);
 
-          cout << "D: " << sizeof(outbuf) << " : " << decoded_size << endl;
           this -> flacObj -> audioProxy -> write(&outbuf, decoded_size);
 
           return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;

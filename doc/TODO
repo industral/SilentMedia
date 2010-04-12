@@ -31,5 +31,5 @@ http://www.google.com.ua/codesearch/p?hl=ru#aZWG5SnVrM8/libzzub-0.1/src/libzzub/
 
 - Add format support get method
 - Call end function
-
+- rewrite with logger
 
