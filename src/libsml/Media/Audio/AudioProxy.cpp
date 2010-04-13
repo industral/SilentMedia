@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, Alex Ivasyuv                                            *
+ * Copyright (c) 2009-2010, Alex Ivasyuv                                       *
  * All rights reserved.                                                        *
  *                                                                             *
  * Redistribution and use in source and binary forms, with or without          *
@@ -28,6 +28,7 @@
 namespace SilentMedia {
   namespace Media {
     namespace Audio {
+
       AudioProxy::AudioProxy() {
         // create SoundSystem instance
         _soundSystem = SoundSystem::SoundSystem::Instance();
@@ -48,18 +49,16 @@ namespace SilentMedia {
         return (_soundSystem -> write(buf, bufSize));
       }
 
-      void AudioProxy::setAudioParams(const string& fileId,
-          const string& fileName, long fileSize, double totalTime,
+      void AudioProxy::setAudioParams(const string& fileId, const string& fileName, long fileSize, double totalTime,
           int channels, int sampleRate, double bitRate, int bitsPerSample) {
         // update information in AudioInfo
-        _audioInfo -> setAudioParams(fileId, fileName, fileSize, totalTime,
-            channels, sampleRate, bitRate, bitsPerSample);
+        _audioInfo -> setAudioParams(fileId, fileName, fileSize, totalTime, channels, sampleRate, bitRate,
+            bitsPerSample);
       }
 
       void AudioProxy::setSoundSystemParams(const string &fileId) {
         // set audio parameters for audio in SoundSystem
-        _soundSystem -> setAudioParams(_audioInfo -> getChannels(fileId),
-            _audioInfo -> getSampleRate(fileId),
+        _soundSystem -> setAudioParams(_audioInfo -> getChannels(fileId), _audioInfo -> getSampleRate(fileId),
             _audioInfo -> getBitsPerSample(fileId));
       }
 
@@ -95,8 +94,7 @@ namespace SilentMedia {
       // Additional AudioInfo methods
       // --------------------------------------------------------------------
 
-      void AudioProxy::setTotalSamples(const string &fileId,
-          double totalSamples) {
+      void AudioProxy::setTotalSamples(const string &fileId, double totalSamples) {
         this -> _audioInfo -> setTotalSamples(fileId, totalSamples);
       }
 
@@ -104,8 +102,7 @@ namespace SilentMedia {
         return (this -> _audioInfo -> getTotalSamples(fileId));
       }
 
-      void AudioProxy::setCurrentSamples(const string &fileId,
-          const double &samples) {
+      void AudioProxy::setCurrentSamples(const string &fileId, const double &samples) {
         this -> _audioInfo -> setCurrentSamples(fileId, samples);
       }
 
@@ -113,13 +110,20 @@ namespace SilentMedia {
         return (this -> _audioInfo -> getCurrentSamples(fileId));
       }
 
-      void AudioProxy::setVorbisComment(const string &fileId, const map <
-          string, string > &vorbisComments) {
+      void AudioProxy::setVorbisComment(const string &fileId, const map <string, string> &vorbisComments) {
         this -> _audioInfo -> setVorbisComment(fileId, vorbisComments);
       }
 
-      map < string, string > AudioProxy::getVorbisComments(const string &fileId) {
+      map <string, string> AudioProxy::getVorbisComments(const string &fileId) {
         return this -> _audioInfo -> getVorbisComments(fileId);
+      }
+
+      ::PlayStatus AudioProxy::getPlayStatus(const string & fileId) {
+        return this -> _audioInfo -> getPlayStatus(fileId);
+      }
+
+      void AudioProxy::setPlayStatus(const string & fileId, const ::PlayStatus & playStatus) {
+        this -> _audioInfo -> setPlayStatus(fileId, playStatus);
       }
 
     }

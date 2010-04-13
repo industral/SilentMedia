@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, Alex Ivasyuv                                            *
+ * Copyright (c) 2009-2010, Alex Ivasyuv                                       *
  * All rights reserved.                                                        *
  *                                                                             *
  * Redistribution and use in source and binary forms, with or without          *
@@ -29,6 +29,8 @@ namespace SilentMedia {
   namespace Media {
     namespace Audio {
       namespace Codec {
+
+        static LoggerPtr logger(Logger::getLogger("SilentMedia::Media::Audio::Codec::FLAC"));
 
         // --------------------------------------------------------------------
         // FLAC: Public methods
@@ -73,19 +75,20 @@ namespace SilentMedia {
 
           this -> flacDecoderMap[fileId] -> setFileId(fileId);
 
-          cout << "FLAC in play()" << endl;
+          LOG4CXX_DEBUG(logger, "Playing track...");
+          this -> audioProxy -> setPlayStatus(fileId, Play);
 
-          while (1) {
+          while (true) {
             if (this -> stopMap[fileId]) {
-              cout << "EXIT" << endl;
-              this -> stopMap[fileId] = false;
+              LOG4CXX_DEBUG(logger, "Stopping track with id: " << fileId << " is already stopped. Exit...");
+              this -> audioProxy -> setPlayStatus(fileId, Stop);
               return 0;
             } else {
               this -> flacDecoderMap[fileId] -> process_single();
-              if (this -> flacDecoderMap[fileId] -> get_state()
-                  == FLAC__STREAM_DECODER_END_OF_STREAM) {
+              if (this -> flacDecoderMap[fileId] -> get_state() == FLAC__STREAM_DECODER_END_OF_STREAM) {
                 this -> close(fileId);
-                cout << "End of stream." << endl;
+                LOG4CXX_DEBUG(logger, "End of stream.");
+                this -> audioProxy -> setPlayStatus(fileId, Stop);
                 return 0;
               }
             }
@@ -122,8 +125,7 @@ namespace SilentMedia {
 
           // check if object is not deleted, as song stop - it delete
           if (this -> flacDecoderMap[fileId] != NULL) {
-            totalSamples
-                = this -> flacDecoderMap[fileId] -> get_total_samples();
+            totalSamples = this -> flacDecoderMap[fileId] -> get_total_samples();
 
             currentSamples = this -> audioProxy -> getCurrentSamples(fileId);
           }
@@ -136,10 +138,9 @@ namespace SilentMedia {
         }
 
         void FLAC::setSeek(const string &fileId, const double &seekVal) {
-          //        cout << "Set seek to: " << seekVal << endl;
+          LOG4CXX_DEBUG(logger, "Set seek to: " << seekVal);
 
-          FLAC__uint64 totalSamples =
-              this -> flacDecoderMap[fileId] -> get_total_samples();
+          FLAC__uint64 totalSamples = this -> flacDecoderMap[fileId] -> get_total_samples();
 
           FLAC__uint64 sample_pos = ((totalSamples * (seekVal / 100)));
           this -> flacDecoderMap[fileId] -> flush();
@@ -148,7 +149,7 @@ namespace SilentMedia {
           if (this -> flacDecoderMap[fileId] -> seek_absolute(sample_pos)) {
 
           } else {
-            cerr << "Error in seek_absolute()" << endl;
+            LOG4CXX_ERROR(logger, "Failure to seek");
             this -> flacDecoderMap[fileId] -> flush();
           }
         }
@@ -157,41 +158,38 @@ namespace SilentMedia {
         // FLAC: Private methods
         // --------------------------------------------------------------------
 
-        bool FLAC::templateInitFile(const string &fileId,
-            const string &fileName) {
+        bool FLAC::templateInitFile(const string &fileId, const string &fileName) {
 
-          FLAC__StreamDecoderInitStatus retCode =
-              this -> flacDecoderMap[fileId] -> init(fileName.c_str());
+          FLAC__StreamDecoderInitStatus retCode = this -> flacDecoderMap[fileId] -> init(fileName.c_str());
 
           switch (retCode) {
           case FLAC__STREAM_DECODER_INIT_STATUS_OK:
             break;
           case FLAC__STREAM_DECODER_INIT_STATUS_UNSUPPORTED_CONTAINER:
-            cerr << "Error in init(): "
-                << "The library was not compiled with support for the given container format"
-                << endl;
+            LOG4CXX_ERROR(logger, "The library was not compiled with support for the given container format")
+            ;
             return false;
             break;
           case FLAC__STREAM_DECODER_INIT_STATUS_INVALID_CALLBACKS:
-            cerr << "Error in init(): "
-                << "A required callback was not supplied" << endl;
+            LOG4CXX_ERROR(logger, "A required callback was not supplied")
+            ;
             return false;
             break;
           case FLAC__STREAM_DECODER_INIT_STATUS_MEMORY_ALLOCATION_ERROR:
-            cerr << "Error in init(): "
-                << "An error occurred allocating memory" << endl;
+            LOG4CXX_ERROR(logger, "An error occurred allocating memory")
+            ;
             return false;
             break;
           case FLAC__STREAM_DECODER_INIT_STATUS_ERROR_OPENING_FILE:
-            cerr << "Error in init(): "
-                << "fopen() failed in FLAC__stream_decoder_init_file() or FLAC__stream_decoder_init_ogg_file()"
-                << endl;
+            LOG4CXX_ERROR(logger, "fopen() failed in FLAC__stream_decoder_init_file() or"
+                "FLAC__stream_decoder_init_ogg_file()")
+            ;
             return false;
             break;
           case FLAC__STREAM_DECODER_INIT_STATUS_ALREADY_INITIALIZED:
-            cerr << "Error in init(): "
-                << "FLAC__stream_decoder_init_*() was called when the decoder was already initialized, usually because FLAC__stream_decoder_finish() was not called."
-                << endl;
+            LOG4CXX_ERROR(logger, "FLAC__stream_decoder_init_*() was called when the decoder was already initialized,"
+                "usually because FLAC__stream_decoder_finish() was not called.")
+            ;
             return false;
             break;
           }
@@ -205,11 +203,9 @@ namespace SilentMedia {
           this -> iteratorMap[fileId] = new ::FLAC::Metadata::SimpleIterator;
           this -> iteratorMap[fileId] -> init(fileName.c_str(), true, true);
 
-          this -> streamInfoMap[fileId]
-              = new ::FLAC::Metadata::StreamInfo::StreamInfo;
+          this -> streamInfoMap[fileId] = new ::FLAC::Metadata::StreamInfo::StreamInfo;
 
-          ::FLAC::Metadata::get_streaminfo(fileName.c_str(),
-              *this -> streamInfoMap[fileId]);
+          ::FLAC::Metadata::get_streaminfo(fileName.c_str(), *this -> streamInfoMap[fileId]);
 
           long fileSize = boost::filesystem::file_size(fileName);
 
@@ -259,10 +255,9 @@ namespace SilentMedia {
           // get the average bitrate
           double avrBitrate = streamSize / totalTime * 8;
 
-          this -> audioProxy -> setAudioParams(fileId, fileName, fileSize,
-              totalTime, this -> streamInfoMap[fileId] -> get_channels(),
-              this -> streamInfoMap[fileId] -> get_sample_rate(), avrBitrate,
-              this -> streamInfoMap[fileId] -> get_bits_per_sample());
+          this -> audioProxy -> setAudioParams(fileId, fileName, fileSize, totalTime,
+              this -> streamInfoMap[fileId] -> get_channels(), this -> streamInfoMap[fileId] -> get_sample_rate(),
+              avrBitrate, this -> streamInfoMap[fileId] -> get_bits_per_sample());
         }
 
         // --------------------------------------------------------------------
@@ -273,11 +268,10 @@ namespace SilentMedia {
           this -> flacObj = new FLAC();
         }
 
-        FLAC__StreamDecoderWriteStatus FLACDecoder::write_callback(
-            const FLAC__Frame * frame, const FLAC__int32 * const buf[]) {
+        FLAC__StreamDecoderWriteStatus FLACDecoder::write_callback(const FLAC__Frame * frame,
+            const FLAC__int32 * const buf[]) {
 
-          const int decoded_size = frame -> header.blocksize
-              * frame -> header.channels
+          const int decoded_size = frame -> header.blocksize * frame -> header.channels
               * (frame -> header.bits_per_sample / 8); // 16384, 18432
 
           int samples = frame -> header.blocksize;
@@ -297,13 +291,9 @@ namespace SilentMedia {
             }
           }
 
-          double
-              totalSamples =
-                  this -> flacObj -> audioProxy -> getCurrentSamples(
-                      this -> fileId);
+          double totalSamples = this -> flacObj -> audioProxy -> getCurrentSamples(this -> fileId);
 
-          this -> flacObj -> audioProxy -> setCurrentSamples(this -> fileId,
-              totalSamples + sample);
+          this -> flacObj -> audioProxy -> setCurrentSamples(this -> fileId, totalSamples + sample);
 
           this -> flacObj -> audioProxy -> write(&outbuf, decoded_size);
 
@@ -313,26 +303,15 @@ namespace SilentMedia {
         /*
          * Callback error catch function.
          */
-        void FLACDecoder::error_callback(
-            ::FLAC__StreamDecoderErrorStatus status) {
+        void FLACDecoder::error_callback(::FLAC__StreamDecoderErrorStatus status) {
           if (status == FLAC__STREAM_DECODER_ERROR_STATUS_LOST_SYNC) {
-            cerr
-                << "Error: error_callback(): An error in the stream caused the decoder to lose synchronization"
-                << endl;
+            LOG4CXX_ERROR(logger, "An error in the stream caused the decoder to lose synchronization");
           } else if (status == FLAC__STREAM_DECODER_ERROR_STATUS_BAD_HEADER) {
-            cerr
-                << "Error: error_callback(): The decoder encountered a corrupted frame header"
-                << endl;
-          } else if (status
-              == FLAC__STREAM_DECODER_ERROR_STATUS_FRAME_CRC_MISMATCH) {
-            cerr
-                << "Error: error_callback(): The frame's data did not match the CRC in the footer"
-                << endl;
-          } else if (status
-              == FLAC__STREAM_DECODER_ERROR_STATUS_UNPARSEABLE_STREAM) {
-            cerr
-                << "Error: error_callback(): The decoder encountered reserved fields in use in the stream"
-                << endl;
+            LOG4CXX_ERROR(logger, "The decoder encountered a corrupted frame header");
+          } else if (status == FLAC__STREAM_DECODER_ERROR_STATUS_FRAME_CRC_MISMATCH) {
+            LOG4CXX_ERROR(logger, "The frame's data did not match the CRC in the footer");
+          } else if (status == FLAC__STREAM_DECODER_ERROR_STATUS_UNPARSEABLE_STREAM) {
+            LOG4CXX_ERROR(logger, "The decoder encountered reserved fields in use in the stream");
           }
         }
 
@@ -344,16 +323,14 @@ namespace SilentMedia {
           // get file name
           string fileName = this -> audioProxy -> getFileNameByFileId(fileId);
 
-          map < string, string > vorbisComments;
+          map <string, string> vorbisComments;
 
-          ::FLAC::Metadata::VorbisComment * tags =
-              new ::FLAC::Metadata::VorbisComment;
+          ::FLAC::Metadata::VorbisComment * tags = new ::FLAC::Metadata::VorbisComment;
           ::FLAC::Metadata::get_tags(fileName.c_str(), tags);
 
           // using unsigned, avoid warning
           for (uint i = 0; i < tags -> get_num_comments(); ++i) {
-            ::FLAC::Metadata::VorbisComment::Entry entry = tags -> get_comment(
-                i);
+            ::FLAC::Metadata::VorbisComment::Entry entry = tags -> get_comment(i);
 
             string key = entry.get_field_name();
             transform(key.begin(), key.end(), key.begin(), ::toupper);

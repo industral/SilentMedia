@@ -31,7 +31,7 @@ namespace SilentMedia {
       AudioInfo * AudioInfo::_audioInfo = NULL;
 
       AudioInfo::AudioInfo() {
-        //    ssystem(NULL), playCheck(false) {
+        //    ssystem(NULL) {
         //    this -> ssystem = SoundSystemManager::Instance();
 
         //    this -> audio = Audio::Instance();
@@ -48,8 +48,7 @@ namespace SilentMedia {
         return _audioInfo;
       }
 
-      void AudioInfo::setAudioParams(const string& fileId,
-          const string& fileName, long fileSize, double totalTime,
+      void AudioInfo::setAudioParams(const string& fileId, const string& fileName, long fileSize, double totalTime,
           int channels, int sampleRate, double bitRate, int bitsPerSample) {
         this -> fileNameMap[fileId] = fileName;
         this -> fileSizeMap[fileId] = fileSize;
@@ -89,8 +88,7 @@ namespace SilentMedia {
         return (this -> totalSamples[fileId]);
       }
 
-      void AudioInfo::setCurrentSamples(const string &fileId,
-          const double &samples) {
+      void AudioInfo::setCurrentSamples(const string &fileId, const double &samples) {
         this -> currentSamples[fileId] = samples;
       }
 
@@ -98,12 +96,11 @@ namespace SilentMedia {
         return this -> currentSamples[fileId];
       }
 
-      void AudioInfo::setVorbisComment(const string &fileId, const map <
-          string, string > &vorbisComments) {
+      void AudioInfo::setVorbisComment(const string &fileId, const map <string, string> &vorbisComments) {
         this -> vorbisComments[fileId] = vorbisComments;
       }
 
-      map < string, string > AudioInfo::getVorbisComments(const string &fileId) {
+      map <string, string> AudioInfo::getVorbisComments(const string &fileId) {
         return this -> vorbisComments[fileId];
       }
 
@@ -146,6 +143,14 @@ namespace SilentMedia {
 
       void AudioInfo::removeFileId(const string &fileId) {
         this -> fileIdMap[fileId].erase();
+      }
+
+      ::PlayStatus AudioInfo::getPlayStatus(const string & fileId) {
+        return this -> playStatus[fileId];
+      }
+
+      void AudioInfo::setPlayStatus(const string & fileId, const ::PlayStatus & playStatus) {
+        this -> playStatus[fileId] = playStatus;
       }
 
     }

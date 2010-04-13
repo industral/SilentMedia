@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, Alex Ivasyuv                                            *
+ * Copyright (c) 2009-2010, Alex Ivasyuv                                       *
  * All rights reserved.                                                        *
  *                                                                             *
  * Redistribution and use in source and binary forms, with or without          *
@@ -71,9 +71,8 @@ namespace SilentMedia {
            * @param[in] bitRate bit rate of track (224 kbps).
            * @param[in] bitsPerSample bits per sample in track(16/24/32).
            */
-          void setAudioParams(const string& fileId, const string& fileName,
-              long fileSize = -1, double totalTime = -1, int channels = -1,
-              int sampleRate = -1, double bitRate = -1, int bitsPerSample = -1);
+          void setAudioParams(const string& fileId, const string& fileName, long fileSize = -1, double totalTime = -1,
+              int channels = -1, int sampleRate = -1, double bitRate = -1, int bitsPerSample = -1);
 
           /**
            * Set appropriates parameter to SoundSystem. This method should call
@@ -102,9 +101,11 @@ namespace SilentMedia {
           void setCurrentSamples(const string &fileId, const double &samples);
           double getCurrentSamples(const string &fileId);
 
-          void setVorbisComment(const string &fileId, const map < string,
-              string > &vorbisComments);
-          map < string, string > getVorbisComments(const string &fileId);
+          void setVorbisComment(const string &fileId, const map <string, string> &vorbisComments);
+          map <string, string> getVorbisComments(const string &fileId);
+
+          ::PlayStatus getPlayStatus(const string & fileId);
+          void setPlayStatus(const string & fileId, const PlayStatus & playStatus);
 
         private:
           AudioInfo * _audioInfo;

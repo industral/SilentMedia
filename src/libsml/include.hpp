@@ -69,4 +69,8 @@
 
 using namespace log4cxx;
 
+enum PlayStatus {
+  Stop, Play, Pause
+};
+
 #endif

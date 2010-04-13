@@ -29,7 +29,7 @@ namespace SilentMedia {
   namespace Media {
     namespace Audio {
 
-      static LoggerPtr logger(Logger::getLogger("SilentMedia::Media::Audio"));
+      static LoggerPtr logger(Logger::getLogger("SilentMedia::Media::Audio::Audio"));
 
       // --------------------------------------------------------------------
       // Public methods
@@ -125,11 +125,13 @@ namespace SilentMedia {
       }
 
       void Audio::stop(const string &fileId) {
+        LOG4CXX_DEBUG(logger, "Trying to stop file name with id: " << fileId);
         if (threadMap[fileId]) {
-          LOG4CXX_DEBUG(logger, "Trying to stop");
           this -> getCodec(fileId) -> stop(fileId);
+          LOG4CXX_DEBUG(logger, "Stopped.");
+        } else {
+          LOG4CXX_WARN(logger, "Filename with id: " << fileId << "can't be found. Ignore it.");
         }
-        LOG4CXX_DEBUG(logger, "Stopped file name with id: " << fileId);
       }
 
       void Audio::close(const string &fileId) {
@@ -166,12 +168,20 @@ namespace SilentMedia {
         return _audioInfo -> getBitsPerSample(fileId);
       }
 
-      void Audio::setVorbisComment(const string &fileId, const map<string, string> &vorbisComments) {
+      void Audio::setVorbisComment(const string &fileId, const map <string, string> &vorbisComments) {
         this -> _audioInfo -> setVorbisComment(fileId, vorbisComments);
       }
 
-      map<string, string> Audio::getVorbisComments(const string &fileId) {
+      map <string, string> Audio::getVorbisComments(const string &fileId) {
         return this -> _audioInfo -> getVorbisComments(fileId);
+      }
+
+      ::PlayStatus Audio::getPlayStatus(const string & fileId) const {
+        return this -> _audioInfo -> getPlayStatus(fileId);
+      }
+
+      void Audio::setPlayStatus(const string& fileId, const ::PlayStatus & playStatus) {
+        this -> _audioInfo -> setPlayStatus(fileId, playStatus);
       }
 
       // --------------------------------------------------------------------

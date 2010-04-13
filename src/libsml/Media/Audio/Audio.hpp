@@ -109,18 +109,24 @@ namespace SilentMedia {
           long getBitRate(const string &fileId);
           int getBitsPerSample(const string &fileId);
 
-          void setVorbisComment(const string &fileId, const map<string, string> &vorbisComments);
-          map<string, string> getVorbisComments(const string &fileId);
+          void setVorbisComment(const string &fileId, const map <string, string> &vorbisComments);
+          map <string, string> getVorbisComments(const string &fileId);
+
+          /**
+           * @return {::PlayStatus} play status.
+           */
+          ::PlayStatus getPlayStatus(const string & fileId) const;
+          void setPlayStatus(const string& fileId, const ::PlayStatus & playStatus);
 
         private:
           SoundSystem::SoundSystem * _soundSystem;
           AudioInfo * _audioInfo;
 
-          list<string> supportedFormats;
-          map<string, Codec::AbstractCodec *> codecHashMap;
+          list <string> supportedFormats;
+          map <string, Codec::AbstractCodec *> codecHashMap;
 
-          map<string, boost::thread *> threadMap;
-          list<pthread_t> threadList;
+          map <string, boost::thread *> threadMap;
+          list <pthread_t> threadList;
 
           bool checkSupportedFormat(const string &fileName);
           string getExtension(const string &fileId);
