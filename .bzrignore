@@ -1,6 +1,6 @@
 .cproject
 .project
-.checkstyle
+.csettings
 
 Makefile
 CMakeCache.txt

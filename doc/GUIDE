@@ -1,39 +1,3 @@
-Required software:
-
-libconfig >= 1.4.3: http://www.hyperrealm.com/libconfig/
-cpptest >=1.1.0: http://cpptest.sourceforge.net/
-uriparser >= 0.7.5:  http://uriparser.sourceforge.net/
-libxspf >=1.2: http://sourceforge.net/projects/libspiff/files/
-
-googletest >= 1.4.0
-
-libboost (>= 1.40)
-libflac++-dev
-libvorbis-dev
-libao-dev
-libasound2-dev
-libwavpack-dev
-liblog4cxx (>= 0.1) http://logging.apache.org/log4cxx/
-
-for developing:
-cmake -D BuildType=Debug -D LibraryType=shared .
-
-for release:
-cmake -D BuildType=Release -D LibraryType=static .
-
-
-cmake -D Test=true .
-cmake -D OSS=1 .
-cmake -U OSS .
-
-http://bazaar.launchpad.net/~industral/silentmedia/devel/files
-
-cmake -G"Eclipse CDT4 - Unix Makefiles" -D CMAKE_BUILD_TYPE=Debug .
-
-sudo ln -s /data/siegerstein/silentmedia/src/libsml /usr/include
-sudo ln -s /data/siegerstein/silentmedia/libsml.so /usr/lib
-sudo ldconfig
-
 Audio * audio = new Audio();
 
 audio -> init(); // init Audio system
