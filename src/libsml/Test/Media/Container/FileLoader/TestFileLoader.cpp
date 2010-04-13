@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, Alex Ivasyuv                                            *
+ * Copyright (c) 2009-2010, Alex Ivasyuv                                       *
  * All rights reserved.                                                        *
  *                                                                             *
  * Redistribution and use in source and binary forms, with or without          *
@@ -50,66 +50,66 @@ namespace SilentMedia {
             this -> loader = NULL;
           }
 
-          /**
-           * Check to open non-existing file.
-           */
-          TEST_F(TestFileLoader, FileNotFound)
-          {
-            const string fakeFilePath = "/etc/bla-bla-bla";
-            EXPECT_THROW(loader -> open(fakeFilePath), ::SilentMedia::Throw::FileNotFound);
+        /**
+         * Check to open non-existing file.
+         */
+TEST_F        (TestFileLoader, FileNotFound)
+        {
+          const string fakeFilePath = "/etc/bla-bla-bla";
+          EXPECT_THROW(loader -> open(fakeFilePath), ::SilentMedia::Throw::FileNotFound);
 
-            try {
-              loader -> open(fakeFilePath);
-            } catch (::SilentMedia::Throw::FileNotFound theException) {
-              string expectedOutputMessage = "Exception: File not found: " + fakeFilePath;
-              EXPECT_EQ(expectedOutputMessage, theException.getMessage());
-            }
+          try {
+            loader -> open(fakeFilePath);
+          } catch (::SilentMedia::Throw::FileNotFound theException) {
+            string expectedOutputMessage = "Exception: File not found: " + fakeFilePath;
+            EXPECT_EQ(expectedOutputMessage, theException.getMessage());
           }
+        }
 
-          /**
-           * Check to open directory instead of file.
-           */
-          TEST_F(TestFileLoader, NotRegularFile) {
-            const string testFolder = "/etc";
-            EXPECT_THROW(loader -> open(testFolder), ::SilentMedia::Throw::NotRegularFile);
-          }
+        /**
+         * Check to open directory instead of file.
+         */
+        TEST_F(TestFileLoader, NotRegularFile) {
+          const string testFolder = "/etc";
+          EXPECT_THROW(loader -> open(testFolder), ::SilentMedia::Throw::NotRegularFile);
+        }
 
-          /**
-           * Check to open file with wrong permission.
-           */
-          TEST_F(TestFileLoader, ErrorOpenFile) {
-            const string testFile = "/etc/shadow";
-            EXPECT_THROW(loader -> open(testFile), ::SilentMedia::Throw::ErrorOpenFile);
-          }
+        /**
+         * Check to open file with wrong permission.
+         */
+        TEST_F(TestFileLoader, ErrorOpenFile) {
+          const string testFile = "/etc/shadow";
+          EXPECT_THROW(loader -> open(testFile), ::SilentMedia::Throw::ErrorOpenFile);
+        }
 
-          /**
-           * Check to open regular file.
-           */
-          TEST_F(TestFileLoader, TestFileOpen) {
-            const string testFile = "/etc/passwd";
-            EXPECT_NO_THROW(loader -> open(testFile));
-          }
+        /**
+         * Check to open regular file.
+         */
+        TEST_F(TestFileLoader, TestFileOpen) {
+          const string testFile = "/etc/passwd";
+          EXPECT_NO_THROW(loader -> open(testFile));
+        }
 
-          TEST_F(TestFileLoader, TestAudioContainerAndCodec) {
-            using namespace ::SilentMedia::Media::Container;
-            const string testFile = "/data/music/test/file.ogg";
+        TEST_F(TestFileLoader, TestAudioContainerAndCodec) {
+          using namespace ::SilentMedia::Media::Container;
+          const string testFile = "/data/music/test/file.ogg";
 
-            const ContainerType vorbisContainer = OGG;
-            const CodecType vorbisCodec = VORBIS;
+          const ContainerType vorbisContainer = OGG;
+          const CodecType vorbisCodec = VORBIS;
 
-            ASSERT_NO_THROW(loader -> open(testFile));
+          ASSERT_NO_THROW(loader -> open(testFile));
 
-            EXPECT_EQ(vorbisContainer, loader -> getContainer());
-            EXPECT_EQ(vorbisCodec, loader -> getCodec());
-          }
+          EXPECT_EQ(vorbisContainer, loader -> getContainer());
+          EXPECT_EQ(vorbisCodec, loader -> getCodec());
+        }
 
-          TEST_F(TestFileLoader, TestCloseFile) {
-            EXPECT_NO_THROW(loader -> close());
-          }
+        TEST_F(TestFileLoader, TestCloseFile) {
+          EXPECT_NO_THROW(loader -> close());
         }
       }
     }
   }
+}
 }
 
 int main(int argc, char **argv) {
