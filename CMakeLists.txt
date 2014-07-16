@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 2.6)
 PROJECT (SilentMedia)
 
 SET(SourcePath src/libsml)
+add_definitions( -DLIBAO=1 )
 
 IF (DEFINED OSS)
 SET(OSS_src
@@ -10,6 +11,21 @@ SET(OSS_src
     ${SourcePath}/Media/Audio/SoundSystem/OSS/Mixer/Mixer.cpp
 )
 ENDIF(DEFINED OSS)
+
+IF (DEFINED ALSA)
+SET(ALSA_src
+    ${SourcePath}/Media/Audio/SoundSystem/ALSA/DSP/DSP.cpp
+    ${SourcePath}/Media/Audio/SoundSystem/ALSA/Mixer/Mixer.cpp
+)
+ENDIF(DEFINED ALSA)
+
+IF (DEFINED LIBAO)
+SET(LIBAO_src
+    ${SourcePath}/Media/Audio/SoundSystem/libao/AO.cpp
+)
+ENDIF(DEFINED LIBAO)
+
+link_directories(/usr/local/lib /usr/local/Cellar/boost/1.55.0_2/lib /usr/local/Cellar/log4cxx/0.10.0/lib)
 
 SET(SilentMedia_src
 
@@ -26,16 +42,15 @@ SET(SilentMedia_src
     ${SourcePath}/Media/PlayList/PlayList.cpp
 
     ${OSS_src}
-    
-    ${SourcePath}/Media/Audio/SoundSystem/ALSA/DSP/DSP.cpp
-    ${SourcePath}/Media/Audio/SoundSystem/ALSA/Mixer/Mixer.cpp
+    ${ALSA_src}
+    ${LIBAO_src}
 
     ${SourcePath}/Media/Audio/Audio.cpp
     ${SourcePath}/Media/Audio/AudioInfo.cpp
     ${SourcePath}/Media/Audio/AudioProxy.cpp
 
     ${SourcePath}/Media/Audio/SoundSystem/SoundSystem.cpp
-    ${SourcePath}/Media/Audio/SoundSystem/libao/AO.cpp
+
 
     ${SourcePath}/Media/Audio/Codec/WAV/WAV.cpp
     ${SourcePath}/Media/Audio/Codec/Vorbis/Vorbis.cpp
@@ -44,22 +59,22 @@ SET(SilentMedia_src
 )
 
 SET(SilentMedia_LINKED_LIBRARY
-    sml
     vorbisfile
     FLAC++
     wavpack
     ao
-    asound
+    log4cxx
+    #asound
     boost_thread-mt
     boost_filesystem-mt
+    boost_system-mt
     xspf
-    gtest
+    #gtest
 )
 
 INCLUDE_DIRECTORIES(
     /usr/include
     /usr/local/include
-    /usr/include/c++/4.4
     ${SilentMedia_SOURCE_DIR}/src
     ${SilentMedia_SOURCE_DIR}/${SourcePath}
 )
@@ -71,6 +86,8 @@ IF(LibraryType STREQUAL "static")
   SET_TARGET_PROPERTIES(sml-static PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 ELSEIF(LibraryType STREQUAL "shared")
   ADD_LIBRARY(sml SHARED ${SilentMedia_src})
+  target_link_libraries (sml ${SilentMedia_LINKED_LIBRARY})
+
   
   # change compile optimization/debug flags # -Werror -pedantic
   IF(BuildType STREQUAL "Debug")
